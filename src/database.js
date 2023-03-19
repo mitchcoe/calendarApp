@@ -103,10 +103,11 @@ const updateEvent = (request, response) => { //is there a way to dynamically pic
   )
 };
 
-const deleteEvent = (request, response) => { // needs work
-	const id = parseInt(request.params.id);
-	pool.query(`DELETE FROM events WHERE events_id = $1`, [id])
-	.then(res => response.status(200).send(`Event deleted with ID: ${id}`))
+const deleteEvent = (request, response) => {
+	const { event_id } = request.body
+	pool.query(`DELETE FROM events WHERE event_id = $1`, [event_id])
+		.then(res => response.status(200).send({message: `Event deleted with ID: ${event_id}`}))
+		.catch(e => console.log(e.stack));
 };
 
 module.exports = {

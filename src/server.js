@@ -18,7 +18,7 @@ app.get('/events/:year/:month', db.getEventsByMonth);
 app.get('/events/:year/:month/:day', db.getEventsByDay);
 app.post('/events', db.createEvent);
 app.put('/events/:id', db.updateEvent);
-app.delete('/events/:id', db.deleteEvent);
+app.delete('/events/', db.deleteEvent);
 
 app.listen(port, () => {
   console.log(`App running on port ${port}.`)

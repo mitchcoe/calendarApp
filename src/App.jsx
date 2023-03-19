@@ -1,19 +1,20 @@
 import logo from './logo.svg';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import './App.css';
 
 export default function App() {
   const [eventsData, setEventsData] = useState([]);
 
-  useEffect(() => {
-    const getEventsData = async () => {
-      await fetch('/events')
-        .then(response => response.json())
-        .then(response => setEventsData(response))
-        .catch(error => console.log(error));
-    };
-    getEventsData();
+  const getEventsData = useCallback(async () => {
+    await fetch('/events')
+      .then(response => response.json())
+      .then(response => setEventsData(response))
+      .catch(error => console.log(error));
   }, []);
+
+  useEffect(() => {
+    getEventsData();
+  }, [getEventsData]);
 
   const defaultEvent = {
     title: 'test_event',
@@ -40,6 +41,22 @@ export default function App() {
       .catch(error => console.log(error));
   };
 
+  const deleteEvent = async () => {
+    await fetch('/events', {
+      method:'DELETE',
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({event_id: `${eventsData[eventsData.length - 1].event_id}`}),
+    })
+      .then(response => response.json())
+      .then(response => {
+        // console.log(response.message);
+        getEventsData();
+      })
+      .catch(error => console.log(error));
+  };
+
   return (
     <div className="App">
       <header className="App-header">
@@ -58,6 +75,9 @@ export default function App() {
       </header>
       <button onClick={createEvent}>
         Create Default Event Test
+      </button>
+      <button onClick={deleteEvent}>
+        Delete Default Event Test
       </button>
       {eventsData.length > 0 ? (
         <ul>
