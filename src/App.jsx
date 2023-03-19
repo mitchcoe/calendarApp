@@ -41,6 +41,27 @@ export default function App() {
       .catch(error => console.log(error));
   };
 
+  //this works but puts the updated event last in the state array
+  const updateEvent = async () => {
+    await fetch('/events', {
+      method:'PUT',
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        event_id: `${eventsData[0].event_id}`,
+        title: 'update test',
+        location: 'timbuktu'
+      }),
+    })
+    .then(response => response.json())
+    .then(response => {
+      // console.log(response.message);
+      getEventsData();
+    })
+    .catch(error => console.log(error));
+  };
+
   const deleteEvent = async () => {
     await fetch('/events', {
       method:'DELETE',
@@ -78,6 +99,9 @@ export default function App() {
       </button>
       <button onClick={deleteEvent}>
         Delete Default Event Test
+      </button>
+      <button onClick={updateEvent}>
+        Update Default Event Test
       </button>
       {eventsData.length > 0 ? (
         <ul>

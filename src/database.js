@@ -87,20 +87,24 @@ const createEvent = (request, response) => { //this needs some work for dates an
 };
 	
 
-const updateEvent = (request, response) => { //is there a way to dynamically pick columns? also dont use this right now
-  const id = parseInt(request.params.id)
-  const { name, email } = request.body
-
+const updateEvent = (request, response) => {
+  const { event_id, ...rest } = request.body
+	let updateString = ' ';
+	const updateParameters = []
+	const keyValuePairs = Object.entries(rest);
+	for (let i = 0; i < keyValuePairs.length; i++) {
+		let key = keyValuePairs[i][0];
+		let val = keyValuePairs[i][1];
+		updateString += `${key} = $${i+2}, `;
+		updateParameters.push(val)
+	};
+	updateString = updateString.slice(0, updateString.length - 2);
   pool.query(
-    'UPDATE events SET name = $1, email = $2 WHERE id = $3',
-    [name, email, id],
-    (error, results) => {
-      if (error) {
-        throw error
-      }
-      response.status(200).send(`Event modified with ID: ${id}`)
-    }
+    `UPDATE events SET${updateString} WHERE event_id = $1`,
+    [event_id, ...updateParameters],
   )
+		.then(res => response.status(200).send({message: `Event with ID: ${event_id} updated`}))
+		.catch(e => console.log(e.stack));
 };
 
 const deleteEvent = (request, response) => {
