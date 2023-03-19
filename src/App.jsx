@@ -9,14 +9,36 @@ export default function App() {
     const getEventsData = async () => {
       await fetch('/events')
         .then(response => response.json())
-        .then(response => {
-          // console.log(response)
-          setEventsData(response)
-        })
+        .then(response => setEventsData(response))
         .catch(error => console.log(error));
     };
     getEventsData();
   }, []);
+
+  const defaultEvent = {
+    title: 'test_event',
+    description: 'testing server and database connection',
+    location: 'Austin, TX',
+    date: '2024-03-31',
+    start_time: '2023-04-18 14:11:00-07',
+    end_time: '2023-04-18 15:00:00-07'
+  };
+
+  const createEvent = async () => {
+    await fetch('/events', {
+      method:'POST',
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(defaultEvent),
+    })
+      .then(response => response.json())
+      .then(response => {
+        // console.log(response.message, response.data);
+        setEventsData(eventsData.concat(response.data)); // is this the best way to do this?
+      })
+      .catch(error => console.log(error));
+  };
 
   return (
     <div className="App">
@@ -34,6 +56,9 @@ export default function App() {
           Learn React
         </a>
       </header>
+      <button onClick={createEvent}>
+        Create Default Event Test
+      </button>
       {eventsData.length > 0 ? (
         <ul>
           {eventsData.map((item, key) => (

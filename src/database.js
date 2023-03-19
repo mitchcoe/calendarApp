@@ -47,6 +47,7 @@ const getEventsByDay = (request,response) => {
 };
 
 const createEvent = (request, response) => { //this needs some work for dates and stuff probably
+	// console.log(request.body)
 	const { title, description, location, date, start_time, end_time } = request.body;
 	pool.query(`
 		INSERT INTO events (
@@ -57,12 +58,15 @@ const createEvent = (request, response) => { //this needs some work for dates an
 			start_time,
 			end_time
 		) 
-		VALUES($1, $2, $3, $4, $5)`, 
-		[title, description, location, date, start_time, end_time])
-		.then(res => response.status(200).send(`Event created`))
+		VALUES($1, $2, $3, $4, $5, $6) RETURNING *`,
+		[title || '', description || '', location || '', date, start_time, end_time])
+		.then(res => response.status(200).send({
+			data: res.rows,
+			message: `Event created with event ID ${res.rows[0].event_id}`
+		}))
 		.catch(e => console.log(e.stack));
 
-	// const defaultEvent = `
+	// const defaultEventCreateCommand = `
 	// 	INSERT INTO events (
 	// 		title,
 	// 		description,
@@ -80,7 +84,7 @@ const createEvent = (request, response) => { //this needs some work for dates an
 	// 		'2023-04-18 15:00:00-07'
 	// 	)
 	// `;
-}
+};
 	
 
 const updateEvent = (request, response) => { //is there a way to dynamically pick columns? also dont use this right now
@@ -97,13 +101,13 @@ const updateEvent = (request, response) => { //is there a way to dynamically pic
       response.status(200).send(`Event modified with ID: ${id}`)
     }
   )
-}
+};
 
 const deleteEvent = (request, response) => { // needs work
 	const id = parseInt(request.params.id);
 	pool.query(`DELETE FROM events WHERE events_id = $1`, [id])
 	.then(res => response.status(200).send(`Event deleted with ID: ${id}`))
-}
+};
 
 module.exports = {
 	getEvents,
