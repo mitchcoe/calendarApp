@@ -62,24 +62,24 @@ const createEvent = (request, response) => { //this needs some work for dates an
 		.then(res => response.status(200).send(`Event created`))
 		.catch(e => console.log(e.stack));
 
-	const defaultEvent = `
-		INSERT INTO events (
-			title,
-			description,
-			location,
-			date,
-			start_time,
-			end_time
-		) 
-		VALUES(
-			'test_event',
-			'testing server and database connection',
-			'Austin, TX',
-			CURRENT_DATE,
-			'2023-04-18 14:11:00-07',
-			'2023-04-18 15:00:00-07'
-		)
-	`;
+	// const defaultEvent = `
+	// 	INSERT INTO events (
+	// 		title,
+	// 		description,
+	// 		location,
+	// 		date,
+	// 		start_time,
+	// 		end_time
+	// 	) 
+	// 	VALUES(
+	// 		'test_event',
+	// 		'testing server and database connection',
+	// 		'Austin, TX',
+	// 		CURRENT_DATE,
+	// 		'2023-04-18 14:11:00-07',
+	// 		'2023-04-18 15:00:00-07'
+	// 	)
+	// `;
 }
 	
 
