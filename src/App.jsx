@@ -1,6 +1,7 @@
-import logo from './logo.svg';
+// import logo from './logo.svg';
 import { useState, useEffect, useCallback } from 'react';
 import './App.css';
+import Day from './components/Day';
 
 export default function App() {
   const [eventsData, setEventsData] = useState([]);
@@ -81,7 +82,7 @@ export default function App() {
   return (
     <div className="App">
       <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
+        {/* <img src={logo} className="App-logo" alt="logo" />
         <p>
           Edit <code>src/App.js</code> and save to reload.
         </p>
@@ -92,26 +93,29 @@ export default function App() {
           rel="noopener noreferrer"
         >
           Learn React
-        </a>
+        </a> */}
+        <div css={{display: 'flex'}}>
+          <button onClick={createEvent}>
+            Create Default Event Test
+          </button>
+          <button onClick={deleteEvent}>
+            Delete Default Event Test
+          </button>
+          <button onClick={updateEvent}>
+            Update Default Event Test
+          </button>
+        </div>
+        {eventsData.length > 0 ? (
+          // <ul>
+          //   {eventsData.map((item, key) => (
+          //     <li key={item.event_id}>
+          //       {JSON.stringify(item)}
+          //     </li>
+          //   ))}
+          // </ul>
+          <Day events={eventsData} />
+        ) : null}
       </header>
-      <button onClick={createEvent}>
-        Create Default Event Test
-      </button>
-      <button onClick={deleteEvent}>
-        Delete Default Event Test
-      </button>
-      <button onClick={updateEvent}>
-        Update Default Event Test
-      </button>
-      {eventsData.length > 0 ? (
-        <ul>
-          {eventsData.map((item, key) => (
-            <li key={item.event_id}>
-              {JSON.stringify(item)}
-            </li>
-          ))}
-        </ul>
-      ) : null}
     </div>
   );
 };
