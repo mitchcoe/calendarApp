@@ -1,6 +1,7 @@
 // import logo from './logo.svg';
 import { useState, useEffect, useCallback } from 'react';
 import './App.css';
+import CssBaseline from '@mui/material/CssBaseline';
 import Day from './components/Day';
 
 export default function App() {
@@ -81,7 +82,8 @@ export default function App() {
 
   return (
     <div className="App">
-      <header className="App-header">
+      <CssBaseline />
+      {/* <header className="App-header" css={{width: '50vw'}}> */}
         {/* <img src={logo} className="App-logo" alt="logo" />
         <p>
           Edit <code>src/App.js</code> and save to reload.
@@ -94,7 +96,7 @@ export default function App() {
         >
           Learn React
         </a> */}
-        <div css={{display: 'flex'}}>
+        <div className="App-header" css={{display: 'flex'}}>
           <button onClick={createEvent}>
             Create Default Event Test
           </button>
@@ -115,7 +117,7 @@ export default function App() {
           // </ul>
           <Day events={eventsData} />
         ) : null}
-      </header>
+      {/* </header> */}
     </div>
   );
 };

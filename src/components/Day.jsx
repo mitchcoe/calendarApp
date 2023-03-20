@@ -7,14 +7,15 @@ import TableCell from "@mui/material/TableCell";
 import Paper from "@mui/material/Paper";
 import Typography from "@mui/material/Typography";
 import '../App.css';
+import Event from "./Event";
 
 export default function Day(props) {
   const { events } = props;
   // console.log('events',events)
-  const times = ['12','1','2','3','4','5','6','7','8','9','10','11',];
+  const times = ['8AM','9AM','10AM','11AM','12PM','1PM','2PM','3PM','4PM','5PM'];
   return(
-    <TableContainer component={Paper} className="App-header">
-      <Table className="App-header">
+    <TableContainer component={Paper} className="App-header" sx={{width: '100%'}}>
+      <Table className="App-header" sx={{borderCollapse: 'unset'}}>
         {/* the header needs to be a date picker/display component */}
         <TableHead sx={{textAlign: 'center'}}> 
           <TableRow>
@@ -31,20 +32,12 @@ export default function Day(props) {
             <TableRow key={time}>
               <TableCell align="center" sx={{borderRight: 'solid', width: '5rem'}}>
                 <Typography color="white">
-                  {times[index] + ' AM'}
+                  {times[index]}
                 </Typography>
               </TableCell>
-              <TableCell sx={{height: '100px'}}/>
-            </TableRow>
-          ))}
-          {times.map((time, index) => (
-            <TableRow key={time}>
-              <TableCell align="center" sx={{borderRight: 'solid', width: '5rem'}}>
-                <Typography color="white">
-                  {times[index] + ' PM'}
-                </Typography>
+              <TableCell sx={{height: '80px', display: 'flex', width: '100%', padding: '16px'}}>
+                {/* <Event event={events[0]}/> */}
               </TableCell>
-              <TableCell sx={{height: '100px'}}/>
             </TableRow>
           ))}
         </TableBody>
