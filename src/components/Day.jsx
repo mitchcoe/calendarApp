@@ -9,28 +9,30 @@ import '../App.css';
 
 export default function Day(props) {
   const { events } = props;
-  console.log('events',events)
+  // console.log('events',events)
+  const times = ['12','1','2','3','4','5','6','7','8','9','10','11',];
   return(
     <TableContainer component={Paper} className="App-header">
       <Table className="App-header">
         <TableBody>
-          {events.map((event) => (
-            <TableRow key={event.event_id}>
-              <TableCell sx={{borderRight: 'solid'}}>
+          {times.map((time, index) => (
+            <TableRow key={time}>
+              <TableCell align="center" sx={{borderRight: 'solid', width: 100}}>
                 <Typography color="white">
-                  date
+                  {times[index] + ' AM'}
                 </Typography>
               </TableCell>
-              <TableCell>
+              <TableCell />
+            </TableRow>
+          ))}
+          {times.map((time, index) => (
+            <TableRow key={time}>
+              <TableCell align="center" sx={{borderRight: 'solid', width: 100}}>
                 <Typography color="white">
-                  {event.title}&nbsp;&nbsp;&nbsp;&nbsp;
-                  {event.description}&nbsp;&nbsp;&nbsp;&nbsp;
-                  {event.location}&nbsp;&nbsp;&nbsp;&nbsp;
-                  {event.date}&nbsp;&nbsp;&nbsp;&nbsp;
-                  {event.start_time}&nbsp;&nbsp;&nbsp;&nbsp;
-                  {event.end_time}&nbsp;&nbsp;&nbsp;&nbsp;
+                  {times[index] + ' PM'}
                 </Typography>
               </TableCell>
+              <TableCell />
             </TableRow>
           ))}
         </TableBody>
