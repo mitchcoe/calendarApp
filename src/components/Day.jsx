@@ -1,4 +1,5 @@
 import TableContainer from "@mui/material/TableContainer";
+import TableHead from "@mui/material/TableHead";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableRow from "@mui/material/TableRow";
@@ -14,25 +15,36 @@ export default function Day(props) {
   return(
     <TableContainer component={Paper} className="App-header">
       <Table className="App-header">
+        {/* the header needs to be a date picker/display component */}
+        <TableHead sx={{textAlign: 'center'}}> 
+          <TableRow>
+            <TableCell />
+            <TableCell scope="row" align="center">
+              <Typography color="white">
+                Month
+              </Typography>
+            </TableCell>
+          </TableRow>
+        </TableHead>
         <TableBody>
           {times.map((time, index) => (
             <TableRow key={time}>
-              <TableCell align="center" sx={{borderRight: 'solid', width: 100}}>
+              <TableCell align="center" sx={{borderRight: 'solid', width: '5rem'}}>
                 <Typography color="white">
                   {times[index] + ' AM'}
                 </Typography>
               </TableCell>
-              <TableCell />
+              <TableCell sx={{height: '100px'}}/>
             </TableRow>
           ))}
           {times.map((time, index) => (
             <TableRow key={time}>
-              <TableCell align="center" sx={{borderRight: 'solid', width: 100}}>
+              <TableCell align="center" sx={{borderRight: 'solid', width: '5rem'}}>
                 <Typography color="white">
                   {times[index] + ' PM'}
                 </Typography>
               </TableCell>
-              <TableCell />
+              <TableCell sx={{height: '100px'}}/>
             </TableRow>
           ))}
         </TableBody>
