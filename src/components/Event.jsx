@@ -10,8 +10,8 @@ import Paper from "@mui/material/Paper";
  * by 20 (20px is 1/4th the cell so 15 minutes.)
  */
 const calculateHeight = (startTime, endTime) => {
-  let startTimeMS = new Date(startTime.slice(0, startTime.length - 1)).getTime();
-  let endTimeMS = new Date(endTime.slice(0, endTime.length - 1)).getTime();
+  let startTimeMS = new Date(startTime).getTime();
+  let endTimeMS = new Date(endTime).getTime();
   return (endTimeMS - startTimeMS) / 1000 / 60 / 15 * 20;
 };
 

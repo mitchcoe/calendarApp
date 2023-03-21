@@ -47,8 +47,8 @@ export default function App() {
     description: 'testing event creation on the front end',
     location: 'Austin, TX',
     date: '2023-03-21',
-    start_time: '2023-03-21 03:45:00',
-    end_time: '2023-03-21 05:30:00'
+    start_time: '2023-03-21 08:45:00',
+    end_time: '2023-03-21 11:30:00'
   };
 
   const createEvent = async () => {

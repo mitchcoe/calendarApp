@@ -26,8 +26,8 @@ export default function Day(props) {
   const eventStartTime = (startTime) => { // this works but dates are getting messed up in the db, seems to be adding 5 hours
     let pixels = -800;
     let time = 'AM';
-    let hour = new Date(startTime.slice(0, startTime.length - 1)).getHours();
-    let minutes = new Date(startTime.slice(0, startTime.length - 1)).getMinutes() / 15 * 20;
+    let hour = new Date(startTime).getHours();
+    let minutes = new Date(startTime).getMinutes() / 15 * 20;
     if(hour > 12) {
       hour -= 12;
       time = 'PM'
