@@ -1,10 +1,10 @@
-// import logo from './logo.svg';
 import { useState, useEffect, useCallback } from 'react';
-// import './App.css';
+import * as React from 'react'
 import CssBaseline from '@mui/material/CssBaseline';
 import Container from '@mui/material/Container';
 import Day from './components/Day';
 import Event from "./components/Event";
+import EventsContainer from './components/EventsContainer';
 /** @jsx jsx */
 /** @jsxRuntime classic */
 // eslint-disable-next-line no-unused-vars
@@ -12,7 +12,6 @@ import { css, jsx } from '@emotion/react'
 
 export default function App() {
   const [eventsData, setEventsData] = useState([]);
-  // console.log(eventsData[0])
 
   const containerStyles = {
     textAlign: 'center',
@@ -47,8 +46,8 @@ export default function App() {
     description: 'testing event creation on the front end',
     location: 'Austin, TX',
     date: '2023-03-21',
-    start_time: '2023-03-21 08:45:00',
-    end_time: '2023-03-21 11:30:00'
+    start_time: '2023-03-21 09:45:00',
+    end_time: '2023-03-21 12:30:00'
   };
 
   const createEvent = async () => {
@@ -118,16 +117,12 @@ export default function App() {
           Update Default Event Test
         </button>
       </div>
-      {eventsData.length > 0 ? (
-        <Day events={eventsData} />
-      ) : null}
-      {/* <div css={{
-        position: 'absolute',
-        transform: 'translateY(-500px) translateX(96px)',
-        }}
-      >
-        <Event event={eventsData} />
-      </div> */}
+      <React.Fragment>
+        <Day />
+        {eventsData.length > 0 ? (
+          <EventsContainer events={eventsData}/>
+        ) : null}
+      </React.Fragment>
     </Container>
   );
 };
