@@ -1,11 +1,35 @@
 // import logo from './logo.svg';
 import { useState, useEffect, useCallback } from 'react';
-import './App.css';
+// import './App.css';
 import CssBaseline from '@mui/material/CssBaseline';
+import Container from '@mui/material/Container';
 import Day from './components/Day';
+import Event from "./components/Event";
+/** @jsx jsx */
+/** @jsxRuntime classic */
+// eslint-disable-next-line no-unused-vars
+import { css, jsx } from '@emotion/react'
 
 export default function App() {
   const [eventsData, setEventsData] = useState([]);
+  // console.log(eventsData[0])
+
+  const containerStyles = {
+    textAlign: 'center',
+    minHeight: '100vh',
+    minWidth: '100%',
+    backgroundColor: '#282c34',
+  };
+
+  const headerStyles = {
+    backgroundColor: '#282c34',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    fontSize: 'calc(10px + 2vmin)',
+    color: 'white',
+  }
 
   const getEventsData = useCallback(async () => {
     await fetch('/events')
@@ -81,43 +105,29 @@ export default function App() {
   };
 
   return (
-    <div className="App">
+    <Container sx={containerStyles}>
       <CssBaseline />
-      {/* <header className="App-header" css={{width: '50vw'}}> */}
-        {/* <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a> */}
-        <div className="App-header" css={{display: 'flex'}}>
-          <button onClick={createEvent}>
-            Create Default Event Test
-          </button>
-          <button onClick={deleteEvent}>
-            Delete Default Event Test
-          </button>
-          <button onClick={updateEvent}>
-            Update Default Event Test
-          </button>
-        </div>
-        {eventsData.length > 0 ? (
-          // <ul>
-          //   {eventsData.map((item, key) => (
-          //     <li key={item.event_id}>
-          //       {JSON.stringify(item)}
-          //     </li>
-          //   ))}
-          // </ul>
-          <Day events={eventsData} />
-        ) : null}
-      {/* </header> */}
-    </div>
+      <div css={headerStyles}>
+        <button onClick={createEvent}>
+          Create Default Event Test
+        </button>
+        <button onClick={deleteEvent}>
+          Delete Default Event Test
+        </button>
+        <button onClick={updateEvent}>
+          Update Default Event Test
+        </button>
+      </div>
+      {eventsData.length > 0 ? (
+        <Day events={eventsData} />
+      ) : null}
+      {/* <div css={{
+        position: 'absolute',
+        transform: 'translateY(-500px) translateX(96px)',
+        }}
+      >
+        <Event event={eventsData} />
+      </div> */}
+    </Container>
   );
 };
