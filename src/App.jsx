@@ -43,12 +43,12 @@ export default function App() {
   }, [getEventsData]);
 
   const defaultEvent = {
-    title: 'test_event',
-    description: 'testing server and database connection',
+    title: 'event_placing_test',
+    description: 'testing event creation on the front end',
     location: 'Austin, TX',
-    date: '2024-03-31',
-    start_time: '2023-04-18 14:11:00-07',
-    end_time: '2023-04-18 15:00:00-07'
+    date: '2023-03-21',
+    start_time: '2023-03-21 03:45:00',
+    end_time: '2023-03-21 05:30:00'
   };
 
   const createEvent = async () => {
@@ -88,7 +88,7 @@ export default function App() {
     .catch(error => console.log(error));
   };
 
-  const deleteEvent = async () => {
+  const deleteEvent = async () => { // this will target specific ID's later
     await fetch('/events', {
       method:'DELETE',
       headers: {

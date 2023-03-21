@@ -16,18 +16,39 @@ import { css, jsx } from '@emotion/react'
 
 export default function Day(props) {
   const { events } = props;
-  const eventContainerStyle = { // this needs work
+  // console.log(events)
+
+  /**
+   * 
+   * @param {string} startTime 
+   * @returns {number}
+   */
+  const eventStartTime = (startTime) => { // this works but dates are getting messed up in the db, seems to be adding 5 hours
+    let pixels = -800;
+    let time = 'AM';
+    let hour = new Date(startTime.slice(0, startTime.length - 1)).getHours();
+    let minutes = new Date(startTime.slice(0, startTime.length - 1)).getMinutes() / 15 * 20;
+    if(hour > 12) {
+      hour -= 12;
+      time = 'PM'
+    }
+    time === 'AM' ? pixels += ((hour - 8) * 80 + minutes) : pixels += (320 + (hour * 80) + minutes);
+    return pixels;
+  };
+
+  const eventContainerStyle = { // this needs work, probably needs to be its own component
     position: 'absolute',
-    transform: 'translateY(-500px) translateX(96px)',
-    minWidth: 'auto',
-    padding: '0px',
+    transform: `translateY(${eventStartTime(events[0].start_time)}px) translateX(96px)`, // -800 is the start, -80 is 5PM
+    maxWidth: 'calc(100vw - 144px)',
+    width: '100vw',
+    paddingRight: '16px',
     marginRight: '-16px',
-  }
-  // console.log('events',events)
+  };
   const times = ['8AM','9AM','10AM','11AM','12PM','1PM','2PM','3PM','4PM','5PM'];
+
   return(
     <React.Fragment>
-      <TableContainer component={Paper} className="App-header" sx={{width: '100%'}}>
+      <TableContainer component={Paper} className="App-header" sx={{width: '100%', borderRadius: 'unset', boxShadow: 'unset'}}>
         <Table className="App-header" sx={{borderCollapse: 'unset'}}>
           {/* the header needs to be a date picker/display component */}
           <TableHead sx={{textAlign: 'center'}}> 
