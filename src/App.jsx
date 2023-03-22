@@ -3,15 +3,17 @@ import * as React from 'react'
 import CssBaseline from '@mui/material/CssBaseline';
 import Container from '@mui/material/Container';
 import Day from './components/Day';
-// eslint-disable-next-line no-unused-vars
-import Event from "./components/Event";
 import EventsContainer from './components/EventsContainer';
+import { useSelector, useDispatch } from 'react-redux'
+import { getEvents } from './slices/eventSlice';
 /** @jsx jsx */
 /** @jsxRuntime classic */
 // eslint-disable-next-line no-unused-vars
 import { css, jsx } from '@emotion/react'
 
 export default function App() {
+  const events = useSelector((state) => state.events.eventList);
+  const dispatch = useDispatch();
   const [eventsData, setEventsData] = useState([]);
 
   const containerStyles = {
@@ -34,9 +36,9 @@ export default function App() {
   const getEventsData = useCallback(async () => {
     await fetch('/events')
       .then(response => response.json())
-      .then(response => setEventsData(response))
+      .then(response => dispatch(getEvents(response)))
       .catch(error => console.log(error));
-  }, []);
+  }, [dispatch]);
 
   useEffect(() => {
     getEventsData();
@@ -62,7 +64,7 @@ export default function App() {
       .then(response => response.json())
       .then(response => {
         // console.log(response.message, response.data);
-        setEventsData(eventsData.concat(response.data)); // is this the best way to do this?
+        setEventsData(eventsData.concat(response.data)); // is this the best way to do this? No
       })
       .catch(error => console.log(error));
   };
@@ -120,8 +122,8 @@ export default function App() {
       </div>
       <React.Fragment>
         <Day />
-        {eventsData.length > 0 ? (
-          <EventsContainer events={eventsData}/>
+        {events.length > 0 ? (
+          <EventsContainer events={events}/>
         ) : null}
       </React.Fragment>
     </Container>
