@@ -3,6 +3,7 @@ import * as React from 'react'
 import CssBaseline from '@mui/material/CssBaseline';
 import Container from '@mui/material/Container';
 import Day from './components/Day';
+// eslint-disable-next-line no-unused-vars
 import Event from "./components/Event";
 import EventsContainer from './components/EventsContainer';
 /** @jsx jsx */
