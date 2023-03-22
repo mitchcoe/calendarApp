@@ -14,12 +14,17 @@ export const eventsSlice = createSlice({
       const event = action.payload;
       state.eventList.push(...event);
     },
-    updateEvents: (state, action) => {
-      const event = action.payload;
+    updateEvents: (state, action) => { //this is broken, reeds the redux docs
+      console.log(action.payload)
+      // const updatedEvent = state.eventList.find( event => event.event_id = action.payload.event_id);
+      // updatedEvent = {
+      //   ...action.payload
+      // };
     },
-    deleteEvents: (state, action) => {
+    deleteEvents: (state, action) => { //also not really working
       const id = action.payload;
       state.eventList.filter( eventItem => eventItem.event_id !== id)
+      // console.log('state',state.eventList)
     },
   },
 });

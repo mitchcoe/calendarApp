@@ -100,17 +100,17 @@ const updateEvent = (request, response) => {
 	};
 	updateString = updateString.slice(0, updateString.length - 2);
   pool.query(
-    `UPDATE events SET${updateString} WHERE event_id = $1`,
+    `UPDATE events SET${updateString} WHERE event_id = $1 RETURNING *`,
     [event_id, ...updateParameters],
   )
-		.then(res => response.status(200).send({message: `Event with ID: ${event_id} updated`}))
+		.then(res => response.status(200).send({message: `Event with ID: ${event_id} updated`, updated: res.rows[0]}))
 		.catch(e => console.log(e.stack));
 };
 
 const deleteEvent = (request, response) => {
 	const { event_id } = request.body
 	pool.query(`DELETE FROM events WHERE event_id = $1`, [event_id])
-		.then(res => response.status(200).send({message: `Event deleted with ID: ${event_id}`}))
+		.then(res => response.status(200).send({message: `Event deleted with ID: ${event_id}`, id: event_id}))
 		.catch(e => console.log(e.stack));
 };
 
