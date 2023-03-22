@@ -5,7 +5,7 @@ import Container from '@mui/material/Container';
 import Day from './components/Day';
 import EventsContainer from './components/EventsContainer';
 import { useSelector, useDispatch } from 'react-redux'
-import { getEvents, createEvents, updateEvent, deleteEvent } from './slices/eventSlice';
+import { getEvents, createEvents, updateEvents, deleteEvents } from './slices/eventSlice';
 /** @jsx jsx */
 /** @jsxRuntime classic */
 // eslint-disable-next-line no-unused-vars
@@ -14,7 +14,7 @@ import { css, jsx } from '@emotion/react'
 export default function App() {
   const events = useSelector((state) => state.events.eventList);
   const dispatch = useDispatch();
-  const [eventsData, setEventsData] = useState([]);
+  // console.log(events)
 
   const containerStyles = {
     textAlign: 'center',
@@ -77,7 +77,7 @@ export default function App() {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        event_id: `${eventsData[0].event_id}`,
+        event_id: `${events[0].event_id}`,
         title: 'update test',
         location: 'timbuktu'
       }),
@@ -96,11 +96,12 @@ export default function App() {
       headers: {
         "Content-Type": "application/json"
       },
-      body: JSON.stringify({event_id: `${eventsData[eventsData.length - 1].event_id}`}),
+      body: JSON.stringify({event_id: `${events[events.length - 1].event_id}`}),
     })
       .then(response => response.json())
       .then(response => {
-        // console.log(response.message);
+        let id = parseInt(response.message.slice(-3))
+        dispatch(deleteEvents(id));
         getEventsData();
       })
       .catch(error => console.log(error));
