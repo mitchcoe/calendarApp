@@ -61,8 +61,7 @@ export default function Day(props) {
         </Table>
       </TableContainer>
       <Popper id={id} open={open} anchorEl={anchorEl} sx={{zIndex: 100}}>
-        {/* this may need to go in the EventForm component so the close buttons work */}
-        <EventForm />
+        <EventForm handleClick={handleClick}/>
       </Popper>
     </React.Fragment>
   );

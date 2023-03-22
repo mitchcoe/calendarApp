@@ -16,7 +16,8 @@ import {
   Typography,
 } from '@mui/material';
 
-export default function EventForm() {
+export default function EventForm(props) {
+  const {handleClick} = props
   const cardHeaderStyles = {
     display: 'flex',
     backgroundColor: 'red'
@@ -58,7 +59,7 @@ export default function EventForm() {
               <IconButton sx={iconButtonStyles}>
                 <DeleteIcon />
               </IconButton>
-              <IconButton sx={iconButtonStyles}>
+              <IconButton sx={iconButtonStyles} onClick={handleClick}>
                 <CloseIcon />
               </IconButton>
             </ButtonGroup>
