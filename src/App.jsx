@@ -5,7 +5,7 @@ import Container from '@mui/material/Container';
 import Day from './components/Day';
 import EventsContainer from './components/EventsContainer';
 import { useSelector, useDispatch } from 'react-redux'
-import { getEvents } from './slices/eventSlice';
+import { getEvents, createEvents, updateEvent, deleteEvent } from './slices/eventSlice';
 /** @jsx jsx */
 /** @jsxRuntime classic */
 // eslint-disable-next-line no-unused-vars
@@ -64,7 +64,7 @@ export default function App() {
       .then(response => response.json())
       .then(response => {
         // console.log(response.message, response.data);
-        setEventsData(eventsData.concat(response.data)); // is this the best way to do this? No
+        dispatch(createEvents(response.data));
       })
       .catch(error => console.log(error));
   };

@@ -8,23 +8,22 @@ export const eventsSlice = createSlice({
   reducers: {
     getEvents: (state, action) => {
       const events = action.payload;
-      console.log('events', events)
-      // events.forEach(event => state.eventList.push(event));
       state.eventList = [...events] // not sure about this
     },
-    createEvent: (state, action) => {
+    createEvents: (state, action) => {
+      const event = action.payload;
+      state.eventList.push(...event);
+    },
+    updateEvents: (state, action) => {
 
     },
-    updateEvent: (state, action) => {
-
-    },
-    deleteEvent: (state, action) => {
+    deleteEvents: (state, action) => {
 
     },
   },
 });
 
 // Action creators are generated for each case reducer function
-export const { getEvents, createEvent, updateEvent, deleteEvent } = eventsSlice.actions;
+export const { getEvents, createEvents, updateEvent, deleteEvent } = eventsSlice.actions;
 
 export default eventsSlice.reducer

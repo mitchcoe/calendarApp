@@ -7,7 +7,7 @@ import { css, jsx } from '@emotion/react'
 
 export default function EventsContainer(props) {
   const { events } = props;
-  console.log(events)
+  // console.log(events)
   const eventContainerStyles = { //this doesnt seem to do anything
     // position: 'absolute',
     // display: 'flex',
