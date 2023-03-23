@@ -46,7 +46,7 @@ export default function EventForm(props) {
       headers: {
         "Content-Type": "application/json"
       },
-      body: JSON.stringify(defaultEvent),
+      body: JSON.stringify(defaultEvent), //this needs to be form data
     })
       .then(response => response.json())
       .then(response => {
@@ -56,7 +56,6 @@ export default function EventForm(props) {
       .catch(error => console.log(error));
   };
 
-  //this works but puts the updated event last in the state array
   const updateEvent = async () => {
     await fetch('/events', {
       method:'PUT',
@@ -64,27 +63,26 @@ export default function EventForm(props) {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        event_id: `${events[0].event_id}`,
+        event_id: `${events[0].event_id}`, //this needs to be the selected event id
         title: 'update test',
         location: 'timbuktu'
       }),
     })
     .then(response => response.json())
     .then(response => {
-      // console.log(response);
-      // dispatch(updateEvents(response.updated))
-      getEventsData();
+      // console.log('updated event data response',response);
+      dispatch(updateEvents(response.updated))
     })
     .catch(error => console.log(error));
   };
 
-  const deleteEvent = async () => { // this will target specific ID's later
+  const deleteEvent = async () => { // this needs to target the selected event
     await fetch('/events', {
       method:'DELETE',
       headers: {
         "Content-Type": "application/json"
       },
-      body: JSON.stringify({event_id: `${events[events.length - 1].event_id}`}), // needs to target specific id
+      body: JSON.stringify({event_id: `${events[events.length - 1].event_id}`}),
     })
       .then(response => response.json())
       .then(response => {

@@ -10,7 +10,7 @@ import { getEvents } from './slices/eventSlice';
 export default function App() {
   const events = useSelector((state) => state.events.eventList);
   const dispatch = useDispatch();
-  console.log(events)
+  // console.log('events rendered in app.jsx', events)
 
   const containerStyles = {
     textAlign: 'center',

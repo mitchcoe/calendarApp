@@ -8,28 +8,21 @@ export const eventsSlice = createSlice({
   reducers: {
     getEvents: (state, action) => {
       const events = action.payload;
-      state.eventList = [...events] // not sure about this
+      state.eventList = events;
     },
     createEvents: (state, action) => {
       const event = action.payload;
       state.eventList.push(...event);
     },
-    updateEvents: (state, action) => { //this is broken, reeds the redux docs
-      console.log(action.payload)
-      // const updatedEvent = state.eventList.find( event => event.event_id = action.payload.event_id);
-      // updatedEvent = {
-      //   ...action.payload
-      // };
+    updateEvents: (state, action) => {
+      const updatedEvent = state.eventList.find( event => event.event_id = action.payload.event_id);
+      Object.assign(updatedEvent, action.payload);
     },
-    deleteEvents: (state, action) => { //also not really working
-      const id = action.payload;
-      state.eventList.filter( eventItem => eventItem.event_id !== id)
-      // console.log('state',state.eventList)
+    deleteEvents: (state, action) => {
+      state.eventList.filter( eventItem => eventItem.event_id !== action.payload)
     },
   },
 });
 
-// Action creators are generated for each case reducer function
 export const { getEvents, createEvents, updateEvents, deleteEvents } = eventsSlice.actions;
-
-export default eventsSlice.reducer
+export default eventsSlice.reducer;
