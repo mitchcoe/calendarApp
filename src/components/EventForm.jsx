@@ -2,7 +2,7 @@ import { useCallback } from 'react';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import CloseIcon from '@mui/icons-material/Close';
-import {MobileDatePicker, TimePicker, LocalizationProvider} from '@mui/x-date-pickers';
+import {MobileDatePicker, MobileTimePicker, LocalizationProvider} from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import {
   Box,
@@ -19,11 +19,14 @@ import {
 import { useSelector, useDispatch } from 'react-redux'
 // eslint-disable-next-line no-unused-vars
 import { getEvents, createEvents, updateEvents, deleteEvents } from '../slices/eventSlice';
+import { clearEventChanges, handleEventChanges } from '../slices/formSlice';
 
 export default function EventForm(props) {
   const events = useSelector((state) => state.events.eventList);
+  const { title, description, location, phone, date, start_time, end_time, anchorType } = useSelector((state) => state.form)
   const dispatch = useDispatch();
 
+  // eslint-disable-next-line no-unused-vars
   const defaultEvent = {
     title: 'event_placing_test',
     description: 'testing event creation on the front end',
@@ -46,11 +49,10 @@ export default function EventForm(props) {
       headers: {
         "Content-Type": "application/json"
       },
-      body: JSON.stringify(defaultEvent), //this needs to be form data
+      body: JSON.stringify({title, description, location, phone, date, start_time, end_time}),
     })
       .then(response => response.json())
       .then(response => {
-        // console.log(response.message, response.data);
         dispatch(createEvents(response.data));
       })
       .catch(error => console.log(error));
@@ -94,10 +96,30 @@ export default function EventForm(props) {
 
   const {handleClick} = props
 
-const handleSubmit = () => {
-  createEvent();
-  handleClick();
-}
+  const handleSubmit = async (event) => {
+    await createEvent();
+    handleClick(event);
+  }
+
+  const handleClear = () => {
+    dispatch(clearEventChanges())
+  }
+
+  const handleFieldChange = (event) => {
+    dispatch(handleEventChanges({[event.target.id]: event.target.value}))
+  }
+
+  const handeDateFieldChange = (event) => {
+    dispatch(handleEventChanges({date: `${event['$y']}-0${event['$M']+ 1}-${event['$D']}`}))
+  }
+
+  const handleStartTimeFieldChange = (event) => {
+    dispatch(handleEventChanges({start_time: `${date} ${event['$H'] < 12 ? `0${event['$H']}` : event['$H']}:${event['$m'] === 0 ? `0${event['$m']}` : event['$m']}:00`}))
+  }
+
+  const handleEndTimeFieldChange = (event) => {
+    dispatch(handleEventChanges({end_time: `${date} ${event['$H'] < 12 ? `0${event['$H']}` : event['$H']}:${event['$m'] === 0 ? `0${event['$m']}` : event['$m']}:00`}))
+  }
 
   const cardHeaderStyles = {
     display: 'flex',
@@ -107,7 +129,7 @@ const handleSubmit = () => {
     display: 'flex',
     flexDirection: 'column',
   }
-  const buttonContainerStyles = {
+  const buttonContainerStyles = { 
     display: 'flex',
     justifyContent: 'space-evenly',
   };
@@ -129,7 +151,7 @@ const handleSubmit = () => {
           sx={cardHeaderStyles}
           title={
             <Typography>
-              Create Event
+              {anchorType} Event
             </Typography>
           }
           action={
@@ -151,37 +173,52 @@ const handleSubmit = () => {
             id="title"
             label="Title"
             sx={fieldStyles}
+            value={title}
+            onChange={handleFieldChange}
           />
           <TextField
             id="description"
             label="Description"
             sx={fieldStyles}
+            value={description}
+            onChange={handleFieldChange}
           />
           <TextField
             id="location"
             label="Location"
             sx={fieldStyles}
+            value={location}
+            onChange={handleFieldChange}
           />
           <TextField
             id="phone"
             label="Phone #"
             sx={fieldStyles}
+            value={phone}
+            onChange={handleFieldChange}
           />
           <LocalizationProvider dateAdapter={AdapterDayjs}>
             <MobileDatePicker
+              controlled
               id="date"
-              // defaultValue="2023-03-22"
+              disablePast
               sx={fieldStyles}
+              // value={date} dayjs does not like this for some reason
+              onChange={handeDateFieldChange}
             />
-            <TimePicker
+            <MobileTimePicker
               id="start_time"
               label="Start Time"
               sx={fieldStyles}
+              // value={start_time} // maybe do a custom hook to update new value in the future
+              onChange={handleStartTimeFieldChange}
             />
-            <TimePicker
+            <MobileTimePicker
               id="end_time"
               label="End Time"
               sx={fieldStyles}
+              // value={end_time}
+              onChange={handleEndTimeFieldChange}
             />
           </LocalizationProvider>
         </CardContent>
@@ -189,7 +226,7 @@ const handleSubmit = () => {
           <Button id="submit" variant="outlined" onClick={handleSubmit}>
             Create
           </Button>
-          <Button id="clear" variant="outlined" color="primary">
+          <Button id="clear" variant="outlined" color="primary" onClick={handleClear}>
             Clear
           </Button>
         </CardActions>

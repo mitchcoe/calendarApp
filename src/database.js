@@ -48,18 +48,19 @@ const getEventsByDay = (request,response) => {
 
 const createEvent = (request, response) => { //this needs some work for dates and stuff probably
 	// console.log(request.body)
-	const { title, description, location, date, start_time, end_time } = request.body;
+	const { title, description, location, phone, date, start_time, end_time } = request.body;
 	pool.query(`
 		INSERT INTO events (
 			title,
 			description,
+      phone,
 			location,
 			date,
 			start_time,
 			end_time
 		) 
-		VALUES($1, $2, $3, $4, $5, $6) RETURNING *`,
-		[title || '', description || '', location || '', date, start_time, end_time])
+		VALUES($1, $2, $3, $4, $5, $6, $7) RETURNING *`,
+		[title || '', description || '', location || '', phone || null, date, start_time, end_time])
 		.then(res => response.status(200).send({
 			data: res.rows,
 			message: `Event created with event ID ${res.rows[0].event_id}`

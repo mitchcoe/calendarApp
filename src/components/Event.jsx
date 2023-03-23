@@ -16,7 +16,7 @@ const calculateHeight = (startTime, endTime) => {
 };
 
 export default function Event(props) {
-  const { event, zIndex } = props;
+  const { event, zIndex, handleClick } = props;
   const colors = ['blue', 'red', 'green']
   function getRandomColor(max) {
     return colors[Math.floor(Math.random() * max)];
@@ -53,6 +53,7 @@ export default function Event(props) {
       zIndex: `${zIndex}`,
       border: '1px solid black'
       }}
+      // onClick={handleClick} not working
     >
       <Typography>
         {event.title}

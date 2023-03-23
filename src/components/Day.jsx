@@ -10,15 +10,18 @@ import Typography from "@mui/material/Typography";
 import Popper from '@mui/material/Popper';
 import EventForm from './EventForm';
 import '../App.css';
+import { toggleEventForm } from '../slices/formSlice'
+import { useSelector, useDispatch } from 'react-redux'
 
 export default function Day(props) {
   const [anchorEl, setAnchorEl] = React.useState(null);
+  const open = useSelector((state) => state.form.open)
+  const dispatch = useDispatch();
   
-  const handleClick = (event) => {
+  const handleClick =  (event) => {
     setAnchorEl(anchorEl ? null : event.currentTarget);
+    dispatch(toggleEventForm({open: !open, anchorType: event.target.localName === 'td' ? 'Create' : 'Update' }))
   };
-  
-  const open = Boolean(anchorEl);
   const id = open ? 'simple-popper' : undefined;
   const times = ['8AM','9AM','10AM','11AM','12PM','1PM','2PM','3PM','4PM','5PM'];
   
