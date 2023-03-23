@@ -1,6 +1,9 @@
+import * as React from 'react'
 import Typography from "@mui/material/Typography";
 import Paper from "@mui/material/Paper";
-
+import Popper from '@mui/material/Popper';
+import EventForm from './EventForm';
+import { useSelector } from 'react-redux'
 /**
  * 
  * @param {string} startTime 
@@ -16,17 +19,20 @@ const calculateHeight = (startTime, endTime) => {
 };
 
 export default function Event(props) {
-  const { event, zIndex, handleClick } = props;
+  const { event, zIndex, handleClick, anchorEl } = props;
+  const open = useSelector((state) => state.form.open)
   const colors = ['blue', 'red', 'green']
   function getRandomColor(max) {
     return colors[Math.floor(Math.random() * max)];
   }
+  const id = open ? 'simple-popper' : undefined;
+
   /**
    * 
    * @param {string} startTime 
    * @returns {number}
    */
-  const eventStartTime = (startTime) => { // this works but dates are getting messed up in the db, seems to be adding 5 hours
+  const eventStartTime = (startTime) => {
     let pixels = -800;
     let time = 'AM';
     let hour = new Date(startTime).getHours();
@@ -40,26 +46,31 @@ export default function Event(props) {
   };
 
   return (
-    <Paper sx={{
-      backgroundColor: `${getRandomColor(3)}`,
-      maxHeight: '800px',
-      height: `${calculateHeight(event.start_time, event.end_time)}px`,
-      transform: `translateY(${eventStartTime(event.start_time)}px) translateX(96px)`,
-      padding: '16px 0px 16px 16px',
-      maxWidth: 'calc(100vw - 144px)',
-      width: '100%',
-      mr: '8px',
-      position: 'absolute',
-      zIndex: `${zIndex}`,
-      border: '1px solid black'
-      }}
-      // onClick={handleClick} not working
-    >
-      <Typography>
-        {event.title}
-        <br />
-        {event.location}
-      </Typography>
-    </Paper>
+    <React.Fragment>
+      <Paper sx={{
+        backgroundColor: `${getRandomColor(3)}`,
+        maxHeight: '800px',
+        height: `${calculateHeight(event.start_time, event.end_time)}px`,
+        transform: `translateY(${eventStartTime(event.start_time)}px) translateX(96px)`,
+        padding: '16px 0px 16px 16px',
+        maxWidth: 'calc(100vw - 144px)',
+        width: '100%',
+        mr: '8px',
+        position: 'absolute',
+        zIndex: `${zIndex}`,
+        border: '1px solid black'
+        }}
+        onClick={handleClick}
+      >
+        <Typography>
+          {event.title}
+          <br />
+          {event.location}
+        </Typography>
+      </Paper>
+      <Popper id={id} open={open} anchorEl={anchorEl} sx={{zIndex: 100}}>
+        <EventForm handleClick={handleClick}/>
+      </Popper>
+    </React.Fragment>
   )
 };

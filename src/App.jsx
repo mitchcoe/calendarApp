@@ -6,11 +6,29 @@ import Day from './components/Day';
 import EventsContainer from './components/EventsContainer';
 import { useSelector, useDispatch } from 'react-redux'
 import { getEvents } from './slices/eventSlice';
+import { toggleEventForm } from './slices/formSlice'
 
 export default function App() {
+  const [anchorEl, setAnchorEl] = React.useState(null);
   const events = useSelector((state) => state.events.eventList);
+  const open = useSelector((state) => state.form.open)
   const dispatch = useDispatch();
+  const handleClick =  (event) => { //this make things re-render every click
+    setAnchorEl(anchorEl ? null : event.currentTarget); //this doesnt compare anchorEls
+    dispatch(toggleEventForm({open: !open, anchorType: event.target.localName === 'td' ? 'Create' : 'Update' }))
+  };
   // console.log('events rendered in app.jsx', events)
+
+  const getEventsData = useCallback(async () => {
+    await fetch('/events')
+      .then(response => response.json())
+      .then(response => dispatch(getEvents(response)))
+      .catch(error => console.log(error));
+  }, [dispatch]);
+
+  useEffect(() => {
+    getEventsData();
+  }, [getEventsData]);
 
   const containerStyles = {
     textAlign: 'center',
@@ -29,24 +47,18 @@ export default function App() {
   //   color: 'white',
   // }
 
-  const getEventsData = useCallback(async () => {
-    await fetch('/events')
-      .then(response => response.json())
-      .then(response => dispatch(getEvents(response)))
-      .catch(error => console.log(error));
-  }, [dispatch]);
-
-  useEffect(() => {
-    getEventsData();
-  }, [getEventsData]);
 
   return (
     <Container sx={containerStyles}>
       <CssBaseline />
       <React.Fragment>
-        <Day />
+        <Day handleClick={handleClick} anchorEl={anchorEl} />
         {events.length > 0 ? (
-          <EventsContainer events={events}/>
+          <EventsContainer
+            events={events}
+            handleClick={handleClick}
+            anchorEl={anchorEl}
+          />
         ) : null}
       </React.Fragment>
     </Container>

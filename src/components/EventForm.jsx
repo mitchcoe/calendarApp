@@ -24,6 +24,7 @@ import { clearEventChanges, handleEventChanges } from '../slices/formSlice';
 export default function EventForm(props) {
   const events = useSelector((state) => state.events.eventList);
   const { title, description, location, phone, date, start_time, end_time, anchorType } = useSelector((state) => state.form)
+  const { handleClick } = props;
   const dispatch = useDispatch();
 
   // eslint-disable-next-line no-unused-vars
@@ -94,10 +95,8 @@ export default function EventForm(props) {
       .catch(error => console.log(error));
   };
 
-  const {handleClick} = props
-
   const handleSubmit = async (event) => {
-    await createEvent();
+    await anchorType === 'Create' ? createEvent() : updateEvent();
     handleClick(event);
   }
 
@@ -224,7 +223,7 @@ export default function EventForm(props) {
         </CardContent>
         <CardActions id="submit_buttons" sx={buttonContainerStyles}>
           <Button id="submit" variant="outlined" onClick={handleSubmit}>
-            Create
+            {anchorType}
           </Button>
           <Button id="clear" variant="outlined" color="primary" onClick={handleClear}>
             Clear
