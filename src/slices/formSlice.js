@@ -12,6 +12,7 @@ const defaultFormState = {
 
 const closedState = {
   // anchorEl: null,
+  editing: false,
   anchorType: null,
   open: false,
   anchorId: null,
@@ -40,8 +41,12 @@ export const formSlice = createSlice({
       // console.log(Object.values(clear))
       Object.assign(state, defaultFormState);
     },
+    toggleEditingState: (state, action) => {
+      // console.log('editing',state.editing)
+      state.editing = !state.editing
+    }
   },
 });
 
-export const { toggleEventForm, handleEventChanges, clearEventChanges } = formSlice.actions;
+export const { toggleEventForm, handleEventChanges, clearEventChanges, toggleEditingState } = formSlice.actions;
 export default formSlice.reducer;

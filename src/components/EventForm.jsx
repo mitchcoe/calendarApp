@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import dayjs from 'dayjs';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
@@ -20,15 +20,44 @@ import {
 import { useSelector, useDispatch } from 'react-redux'
 // eslint-disable-next-line no-unused-vars
 import { getEvents, createEvents, updateEvents, deleteEvents } from '../slices/eventSlice';
-import { clearEventChanges, handleEventChanges } from '../slices/formSlice';
+import { clearEventChanges, handleEventChanges, toggleEditingState } from '../slices/formSlice';
+
+const eightAM = dayjs().set('hour', 8).startOf('hour');
+const sixPM = dayjs().set('hour', 18).startOf('hour')
+const fivePM = dayjs().set('hour', 17).startOf('hour')
 
 export default function EventForm(props) {
   const [startValue, setStartValue] = useState('');
   const [endValue, setEndValue] = useState('');
   const [dateValue, setDateValue] = useState('');
+  const [error, setError] = useState(null);
+
+  const errorMessage = useMemo(() => {
+    switch (error) {
+      case 'maxDate':
+      case 'minDate': {
+        return 'Please select a date in the first quarter of 2022';
+      }
+      case 'invalidDate': {
+        return 'Your date is not valid';
+      }
+      case 'minTime': {
+        return 'Please select a time between 8AM and 6PM'
+      }
+      case 'maxTime': {
+        return 'Please select a time between 8AM and 6PM'
+      }
+      default: {
+        console.log(error)
+        return '';
+      }
+    }
+  }, [error]);
+
   // eslint-disable-next-line no-unused-vars
   const events = useSelector((state) => state.events.eventList);
   const formId = useSelector((state) => state.form.event_id);
+  const editingEnabled = useSelector((state) => state.form.editing);
   const { title, description, location, phone, date, start_time, end_time, anchorType } = useSelector((state) => state.form)
   // eslint-disable-next-line no-unused-vars
   const { handleClick, eventId } = props;
@@ -143,6 +172,7 @@ export default function EventForm(props) {
   }
 
   const timeStringFormatter = (type, event) => {
+    console.log(type, event)
     let newTimeString = `${date} ${event['$H'] < 12 ? `0${event['$H']}` : event['$H']}:${event['$m'] === 0 ? `0${event['$m']}` : event['$m']}:00`;
     let existingTimeString = `${date.slice(0, date.indexOf("T"))} ${event['$H'] < 12 ? `0${event['$H']}` : event['$H']}:${event['$m'] === 0 ? `0${event['$m']}` : event['$m']}:00`
     let timeStringObject = {
@@ -152,13 +182,19 @@ export default function EventForm(props) {
   }
 
   const handleStartTimeFieldChange = (event) => {
+    if(event === null) return
     setStartValue(event)
     dispatch(handleEventChanges(timeStringFormatter('start_time', event)))
   }
 
   const handleEndTimeFieldChange = (event) => {
+    if(event === null) return
     setEndValue(event)
     dispatch(handleEventChanges(timeStringFormatter('end_time', event)))
+  }
+
+  const handleEditToggle = (event) => {
+    dispatch(toggleEditingState(!editingEnabled))
   }
 
   const cardHeaderStyles = {
@@ -197,7 +233,7 @@ export default function EventForm(props) {
           action={
             <ButtonGroup id="app_bar" sx={buttonContainerStyles}>
               {anchorType && anchorType === 'Update' && (
-                <IconButton sx={iconButtonStyles} onClick={handleUpdateSubmit}>
+                <IconButton sx={iconButtonStyles} onClick={handleEditToggle}>
                   <EditIcon />
                 </IconButton>
               )}
@@ -246,6 +282,7 @@ export default function EventForm(props) {
               controlled
               id="date"
               disablePast
+              required
               sx={fieldStyles}
               value={dateValue || (date && dayjs(date))}
               onChange={handeDateFieldChange}
@@ -254,22 +291,41 @@ export default function EventForm(props) {
               id="start_time"
               label="Start Time"
               sx={fieldStyles}
+              disabled={!date}
+              minTime={eightAM}
+              maxTime={fivePM}
               value={startValue || (start_time && dayjs(start_time))}
               onChange={handleStartTimeFieldChange}
+              onError={(newError) => setError(newError)}
+              slotProps={{
+                textField: {
+                  helperText: errorMessage,
+                },
+              }}
             />
             <MobileTimePicker
               id="end_time"
               label="End Time"
               sx={fieldStyles}
+              disabled={!date}
+              minTime={eightAM}
+              maxTime={sixPM}
               value={ endValue  || (end_time && dayjs(end_time))}
               onChange={handleEndTimeFieldChange}
+              onError={(newError) => setError(newError)}
+              slotProps={{
+                textField: {
+                  helperText: errorMessage,
+                },
+              }}
             />
           </LocalizationProvider>
         </CardContent>
         <CardActions id="submit_buttons" sx={buttonContainerStyles}>
-          <Button
+          <Button //form needs validation before this should be enabled
             id="submit"
             variant="outlined"
+            disabled={anchorType === 'Create' ? false : !(anchorType && anchorType === 'Update' && editingEnabled)  }
             onClick={(event) => {
               anchorType && anchorType === 'Create' ? handleCreateSubmit(event) : handleUpdateSubmit(event)
             }}
