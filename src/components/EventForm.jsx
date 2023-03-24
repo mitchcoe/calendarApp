@@ -22,9 +22,12 @@ import { getEvents, createEvents, updateEvents, deleteEvents } from '../slices/e
 import { clearEventChanges, handleEventChanges } from '../slices/formSlice';
 
 export default function EventForm(props) {
+  // eslint-disable-next-line no-unused-vars
   const events = useSelector((state) => state.events.eventList);
+  const formId = useSelector((state) => state.form.event_id);
   const { title, description, location, phone, date, start_time, end_time, anchorType } = useSelector((state) => state.form)
-  const { handleClick } = props;
+  // eslint-disable-next-line no-unused-vars
+  const { handleClick, eventId } = props;
   const dispatch = useDispatch();
 
   // eslint-disable-next-line no-unused-vars
@@ -37,6 +40,7 @@ export default function EventForm(props) {
     end_time: '2023-03-21 12:30:00'
   };
 
+  // eslint-disable-next-line no-unused-vars
   const getEventsData = useCallback(async () => {
     await fetch('/events')
       .then(response => response.json())
@@ -66,37 +70,41 @@ export default function EventForm(props) {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        event_id: `${events[0].event_id}`, //this needs to be the selected event id
+        event_id: `${formId}`,
         title: 'update test',
         location: 'timbuktu'
       }),
     })
     .then(response => response.json())
-    .then(response => {
-      // console.log('updated event data response',response);
-      dispatch(updateEvents(response.updated))
-    })
+    .then(response => dispatch(updateEvents(response.updated)))
     .catch(error => console.log(error));
   };
 
-  const deleteEvent = async () => { // this needs to target the selected event
+  const deleteEvent = async () => {
     await fetch('/events', {
       method:'DELETE',
       headers: {
         "Content-Type": "application/json"
       },
-      body: JSON.stringify({event_id: `${events[events.length - 1].event_id}`}),
+      body: JSON.stringify({event_id: formId}),
     })
       .then(response => response.json())
-      .then(response => {
-        dispatch(deleteEvents(response.id));
-        getEventsData();
-      })
+      .then(response => dispatch(deleteEvents(response.id)))
       .catch(error => console.log(error));
   };
 
-  const handleSubmit = async (event) => {
-    await anchorType === 'Create' ? createEvent() : updateEvent();
+  const handleCreateSubmit = (event) => {
+    createEvent();
+    handleClick(event);
+  };
+
+  const handleUpdateSubmit = (event) => {
+    updateEvent();
+    handleClick(event)
+  };
+
+  const handleDelete = (event) => {
+    deleteEvent();
     handleClick(event);
   }
 
@@ -155,12 +163,16 @@ export default function EventForm(props) {
           }
           action={
             <ButtonGroup id="app_bar" sx={buttonContainerStyles}>
-              <IconButton sx={iconButtonStyles} onClick={updateEvent}>
-                <EditIcon />
-              </IconButton>
-              <IconButton sx={iconButtonStyles} onClick={deleteEvent}>
-                <DeleteIcon />
-              </IconButton>
+              {anchorType && anchorType === 'Update' && (
+                <IconButton sx={iconButtonStyles} onClick={handleUpdateSubmit}>
+                  <EditIcon />
+                </IconButton>
+              )}
+              {anchorType && anchorType === 'Update' && (
+                <IconButton sx={iconButtonStyles} onClick={handleDelete}>
+                  <DeleteIcon />
+                </IconButton>
+              )}
               <IconButton sx={iconButtonStyles} onClick={handleClick}>
                 <CloseIcon />
               </IconButton>
@@ -222,7 +234,13 @@ export default function EventForm(props) {
           </LocalizationProvider>
         </CardContent>
         <CardActions id="submit_buttons" sx={buttonContainerStyles}>
-          <Button id="submit" variant="outlined" onClick={handleSubmit}>
+          <Button
+            id="submit"
+            variant="outlined"
+            onClick={(event) => {
+              anchorType && anchorType === 'Create' ? handleCreateSubmit(event) : handleUpdateSubmit(event)
+            }}
+          >
             {anchorType}
           </Button>
           <Button id="clear" variant="outlined" color="primary" onClick={handleClear}>

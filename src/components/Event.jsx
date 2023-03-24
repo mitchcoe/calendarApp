@@ -60,16 +60,17 @@ export default function Event(props) {
         zIndex: `${zIndex}`,
         border: '1px solid black'
         }}
-        onClick={handleClick}
+        onClick={(e) => {handleClick(e, event)}}
       >
         <Typography>
           {event.title}
+          {event.event_id}
           <br />
           {event.location}
         </Typography>
       </Paper>
       <Popper id={id} open={open} anchorEl={anchorEl} sx={{zIndex: 100}}>
-        <EventForm handleClick={handleClick}/>
+        <EventForm handleClick={handleClick} eventId={event.event_id}/>
       </Popper>
     </React.Fragment>
   )

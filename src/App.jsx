@@ -12,10 +12,17 @@ export default function App() {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const events = useSelector((state) => state.events.eventList);
   const open = useSelector((state) => state.form.open)
+  // const formId = useSelector((state) => state.form.event_id);
   const dispatch = useDispatch();
-  const handleClick =  (event) => { //this make things re-render every click
+  const handleClick =  (event, props) => { //this make things re-render every click
+    // console.log(Object.values(event.currentTarget))
+    // console.log(props)
     setAnchorEl(anchorEl ? null : event.currentTarget); //this doesnt compare anchorEls
-    dispatch(toggleEventForm({open: !open, anchorType: event.target.localName === 'td' ? 'Create' : 'Update' }))
+    dispatch(toggleEventForm({
+      open: !open,
+      anchorType: event.target.localName === 'td' ? 'Create' : 'Update',
+      event_id: event.target.localName === 'td' ? null : event?.event_id || props?.event_id
+    }))
   };
   // console.log('events rendered in app.jsx', events)
 
@@ -37,23 +44,12 @@ export default function App() {
     backgroundColor: '#282c34',
   };
 
-  // const headerStyles = {
-  //   backgroundColor: '#282c34',
-  //   display: 'flex',
-  //   flexDirection: 'column',
-  //   alignItems: 'center',
-  //   justifyContent: 'center',
-  //   fontSize: 'calc(10px + 2vmin)',
-  //   color: 'white',
-  // }
-
-
   return (
     <Container sx={containerStyles}>
       <CssBaseline />
       <React.Fragment>
         <Day handleClick={handleClick} anchorEl={anchorEl} />
-        {events.length > 0 ? (
+        {events?.length > 0 ? (
           <EventsContainer
             events={events}
             handleClick={handleClick}
