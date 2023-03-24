@@ -6,7 +6,7 @@ import Day from './components/Day';
 import EventsContainer from './components/EventsContainer';
 import { useSelector, useDispatch } from 'react-redux'
 import { getEvents } from './slices/eventSlice';
-import { toggleEventForm } from './slices/formSlice'
+import { toggleEventForm, handleEventChanges } from './slices/formSlice'
 
 export default function App() {
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -23,6 +23,7 @@ export default function App() {
       anchorType: event.target.localName === 'td' ? 'Create' : 'Update',
       event_id: event.target.localName === 'td' ? null : event?.event_id || props?.event_id
     }))
+    if (props) dispatch(handleEventChanges({...props}));
   };
   // console.log('events rendered in app.jsx', events)
 

@@ -32,12 +32,12 @@ export const formSlice = createSlice({
       }
     },
     handleEventChanges: (state, action) => {
-      console.log('handle event change', action.payload, Object.values(Object.assign(state, action.payload)))
+      // console.log('handle event change', action.payload, Object.values(Object.assign(state, action.payload)))
       Object.assign(state, action.payload);
     },
     clearEventChanges: (state, action) => {
-      let blah = Object.assign(state, defaultFormState);
-      console.log(Object.values(blah))
+      // let clear = Object.assign(state, defaultFormState);
+      // console.log(Object.values(clear))
       Object.assign(state, defaultFormState);
     },
   },

@@ -1,4 +1,5 @@
-import { useCallback } from 'react';
+import { useState, useCallback } from 'react';
+import dayjs from 'dayjs';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import CloseIcon from '@mui/icons-material/Close';
@@ -22,6 +23,9 @@ import { getEvents, createEvents, updateEvents, deleteEvents } from '../slices/e
 import { clearEventChanges, handleEventChanges } from '../slices/formSlice';
 
 export default function EventForm(props) {
+  const [startValue, setStartValue] = useState('');
+  const [endValue, setEndValue] = useState('');
+  const [dateValue, setDateValue] = useState('');
   // eslint-disable-next-line no-unused-vars
   const events = useSelector((state) => state.events.eventList);
   const formId = useSelector((state) => state.form.event_id);
@@ -64,16 +68,30 @@ export default function EventForm(props) {
   };
 
   const updateEvent = async () => {
+    let updatedObject = { event_id: formId };
+    let formChanges = {
+      title,
+      description,
+      location,
+      phone,
+      date,
+      start_time,
+      end_time,
+    }
+
+    for(let key in formChanges) {
+      if(key) {
+        updatedObject[key] = formChanges[key]
+      }
+    }
+    // console.log('updatedObject',updatedObject)
+    
     await fetch('/events', {
       method:'PUT',
       headers: {
         "Content-Type": "application/json"
       },
-      body: JSON.stringify({
-        event_id: `${formId}`,
-        title: 'update test',
-        location: 'timbuktu'
-      }),
+      body: JSON.stringify(updatedObject),
     })
     .then(response => response.json())
     .then(response => dispatch(updateEvents(response.updated)))
@@ -109,7 +127,10 @@ export default function EventForm(props) {
   }
 
   const handleClear = () => {
-    dispatch(clearEventChanges())
+    dispatch(clearEventChanges());
+    setDateValue('');
+    setStartValue('');
+    setEndValue('');
   }
 
   const handleFieldChange = (event) => {
@@ -117,15 +138,27 @@ export default function EventForm(props) {
   }
 
   const handeDateFieldChange = (event) => {
+    setDateValue(event)
     dispatch(handleEventChanges({date: `${event['$y']}-0${event['$M']+ 1}-${event['$D']}`}))
   }
 
+  const timeStringFormatter = (type, event) => {
+    let newTimeString = `${date} ${event['$H'] < 12 ? `0${event['$H']}` : event['$H']}:${event['$m'] === 0 ? `0${event['$m']}` : event['$m']}:00`;
+    let existingTimeString = `${date.slice(0, date.indexOf("T"))} ${event['$H'] < 12 ? `0${event['$H']}` : event['$H']}:${event['$m'] === 0 ? `0${event['$m']}` : event['$m']}:00`
+    let timeStringObject = {
+      [type] : date && date.includes('T') ? existingTimeString : newTimeString,
+    }
+    return timeStringObject
+  }
+
   const handleStartTimeFieldChange = (event) => {
-    dispatch(handleEventChanges({start_time: `${date} ${event['$H'] < 12 ? `0${event['$H']}` : event['$H']}:${event['$m'] === 0 ? `0${event['$m']}` : event['$m']}:00`}))
+    setStartValue(event)
+    dispatch(handleEventChanges(timeStringFormatter('start_time', event)))
   }
 
   const handleEndTimeFieldChange = (event) => {
-    dispatch(handleEventChanges({end_time: `${date} ${event['$H'] < 12 ? `0${event['$H']}` : event['$H']}:${event['$m'] === 0 ? `0${event['$m']}` : event['$m']}:00`}))
+    setEndValue(event)
+    dispatch(handleEventChanges(timeStringFormatter('end_time', event)))
   }
 
   const cardHeaderStyles = {
@@ -214,21 +247,21 @@ export default function EventForm(props) {
               id="date"
               disablePast
               sx={fieldStyles}
-              // value={date} dayjs does not like this for some reason
+              value={dateValue || (date && dayjs(date))}
               onChange={handeDateFieldChange}
             />
             <MobileTimePicker
               id="start_time"
               label="Start Time"
               sx={fieldStyles}
-              // value={start_time} // maybe do a custom hook to update new value in the future
+              value={startValue || (start_time && dayjs(start_time))}
               onChange={handleStartTimeFieldChange}
             />
             <MobileTimePicker
               id="end_time"
               label="End Time"
               sx={fieldStyles}
-              // value={end_time}
+              value={ endValue  || (end_time && dayjs(end_time))}
               onChange={handleEndTimeFieldChange}
             />
           </LocalizationProvider>
