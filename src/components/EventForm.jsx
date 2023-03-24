@@ -221,7 +221,7 @@ export default function EventForm(props) {
   }
 
   return(
-    <Box component="form" autoComplete="off" sx={{width: '25vw'}}>
+    <Box component="form" autoComplete="off" sx={{minWidth: '300px', width: '30vw'}}>
       <Card>
         <CardHeader
           sx={cardHeaderStyles}
