@@ -6,7 +6,7 @@ import Event from "./Event";
 import { css, jsx } from '@emotion/react'
 
 export default function EventsContainer(props) {
-  const { events, handleClick, anchorEl } = props;
+  const { events, handleClick } = props;
   // console.log(events)
   const eventContainerStyles = { //this doesnt seem to do anything
     // position: 'absolute',
@@ -26,7 +26,6 @@ export default function EventsContainer(props) {
           event={eventItem}
           zIndex={index}
           handleClick={handleClick}
-          anchorEl={anchorEl}
         />
       ))}
     </div>
