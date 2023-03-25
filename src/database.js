@@ -33,16 +33,14 @@ const getEventsByMonth = (request,response) => {
 };
 
 const getEventsByDay = (request,response) => {
-	const year = parseInt(request.params.month);
+	const year = parseInt(request.params.year);
 	const month = parseInt(request.params.month);
 	const day = parseInt(request.params.day);
-	pool.query(`SELECT * FROM events WHERE EXTRACT(MONTH FROM events.date) = $1 
+	pool.query(`SELECT * FROM events WHERE EXTRACT(YEAR FROM events.date) = $1 
 							AND EXTRACT(MONTH FROM events.date) = $2 
 							AND EXTRACT(DAY FROM events.date) = $3`,
 							[year, month, day])
-		.then(res =>  {
-			response.status(200).json(res.rows)
-		})
+		.then(res =>  response.status(200).json(res.rows))
 		.catch(e => console.log(e.stack));
 };
 

@@ -1,4 +1,4 @@
-import { useEffect, useCallback } from 'react';
+import { useEffect, useCallback, useMemo } from 'react';
 import * as React from 'react'
 import CssBaseline from '@mui/material/CssBaseline';
 import Container from '@mui/material/Container';
@@ -8,16 +8,23 @@ import Day from './components/Day';
 import EventsContainer from './components/EventsContainer';
 import EventForm from './components/EventForm';
 import { useSelector, useDispatch } from 'react-redux'
-import { getEvents } from './slices/eventSlice';
+import { getEvents, getEventsByDay, setSelectedDate } from './slices/eventSlice';
 import { toggleEventForm, handleEventChanges, clearEventChanges } from './slices/formSlice'
 
 export default function App() {
   // hooks and useSelector cause re-renders
   const [anchorEl, setAnchorEl] = React.useState(null);
   const events = useSelector((state) => state.events.eventList);
+  // const todaysEvents = useSelector((state) => state.events.currentEventList);
+  const selectedDate = useSelector((state) => state.events.selectedDate);
   const open = useSelector((state) => state.form.open)
   // const formId = useSelector((state) => state.form.event_id);
   const dispatch = useDispatch();
+  
+  let today = new Date(Date.now()).toISOString();
+  if(!selectedDate) dispatch(setSelectedDate(today));
+  let newSelectedDate =  useMemo(() => new Date(selectedDate), [selectedDate]);
+
   const handleClose = (event) => {
     setAnchorEl(null);
     dispatch(toggleEventForm({
@@ -52,9 +59,21 @@ export default function App() {
       .catch(error => console.log(error));
   }, [dispatch]);
 
+  const getEventsByDayData = useCallback(async () => {
+    let year = newSelectedDate?.getFullYear()
+    let month = newSelectedDate?.getMonth();
+    let day = newSelectedDate?.getDate();
+
+    await fetch(`/events/${year}/${month + 1}/${day}`)
+      .then(response => response.json())
+      .then(response => dispatch(getEventsByDay(response)))
+      .catch(error => console.log('ERROR:', error));
+  }, [dispatch, newSelectedDate]);
+
   useEffect(() => {
     getEventsData();
-  }, [getEventsData]);
+    if(selectedDate) getEventsByDayData();
+  }, [getEventsData, getEventsByDayData, selectedDate]);
 
   const containerStyles = {
     textAlign: 'center',

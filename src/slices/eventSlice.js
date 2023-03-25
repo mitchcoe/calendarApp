@@ -4,11 +4,17 @@ export const eventsSlice = createSlice({
   name: 'events',
   initialState: {
     eventList: [],
+    currentEventList: [],
+    selectedDate: null,
   },
   reducers: {
     getEvents: (state, action) => {
       const events = action.payload;
       state.eventList = events;
+    },
+    getEventsByDay: (state, action) => {
+      const eventsByDay = action.payload;
+      state.currentEventList = eventsByDay;
     },
     createEvents: (state, action) => {
       const event = action.payload;
@@ -22,8 +28,11 @@ export const eventsSlice = createSlice({
       const itemToDelete = state.eventList.findIndex(item => item.event_id === action.payload)
       if (itemToDelete !== - 1) state.eventList.splice(itemToDelete, 1)
     },
+    setSelectedDate: (state, action) => {
+      state.selectedDate = action.payload
+    }
   },
 });
 
-export const { getEvents, createEvents, updateEvents, deleteEvents } = eventsSlice.actions;
+export const { getEvents, getEventsByDay, createEvents, updateEvents, deleteEvents, setSelectedDate } = eventsSlice.actions;
 export default eventsSlice.reducer;

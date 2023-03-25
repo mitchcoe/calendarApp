@@ -8,10 +8,11 @@ import TableCell from "@mui/material/TableCell";
 import Paper from "@mui/material/Paper";
 import Typography from "@mui/material/Typography";
 import '../App.css';
-// import { useSelector } from 'react-redux'
+import { useSelector } from 'react-redux'
 
 export default function Day(props) {
   // const open = useSelector((state) => state.form.open)
+  let today = new Date(useSelector((state) => state.events.selectedDate));
   const { handleClick } = props;
   // const id = open ? 'simple-popper' : undefined;
   const times = ['8AM','9AM','10AM','11AM','12PM','1PM','2PM','3PM','4PM','5PM'];
@@ -32,7 +33,12 @@ export default function Day(props) {
             <TableCell />
             <TableCell scope="row" align="center">
               <Typography color="white">
-                Month
+                {new Intl.DateTimeFormat("en-US", {
+                  weekday: "long",
+                  year: "numeric",
+                  month: "long",
+                  day: "numeric",
+                }).format(today)}
               </Typography>
             </TableCell>
           </TableRow>
