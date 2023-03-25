@@ -48,7 +48,7 @@ export default function EventForm(props) {
         return 'Please select a time between 8AM and 6PM'
       }
       default: {
-        console.log(error)
+        // console.log(error)
         return '';
       }
     }
@@ -60,7 +60,7 @@ export default function EventForm(props) {
   const editingEnabled = useSelector((state) => state.form.editing);
   const { title, description, location, phone, date, start_time, end_time, anchorType } = useSelector((state) => state.form)
   // eslint-disable-next-line no-unused-vars
-  const { handleClick, eventId } = props;
+  const { handleClick, eventId, handleClose} = props;
   const dispatch = useDispatch();
 
   // eslint-disable-next-line no-unused-vars
@@ -242,7 +242,7 @@ export default function EventForm(props) {
                   <DeleteIcon />
                 </IconButton>
               )}
-              <IconButton sx={iconButtonStyles} onClick={handleClick}>
+              <IconButton sx={iconButtonStyles} onClick={handleClose}>
                 <CloseIcon />
               </IconButton>
             </ButtonGroup>

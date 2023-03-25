@@ -29,7 +29,7 @@ export const formSlice = createSlice({
       if(action.payload.open === true) {
         Object.assign(state, action.payload);
       } else {
-        Object.assign(state ,closedState);
+        Object.assign(state, closedState);
       }
     },
     handleEventChanges: (state, action) => {
@@ -44,7 +44,7 @@ export const formSlice = createSlice({
     toggleEditingState: (state, action) => {
       // console.log('editing',state.editing)
       state.editing = !state.editing
-    }
+    },
   },
 });
 

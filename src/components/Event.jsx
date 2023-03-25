@@ -18,10 +18,10 @@ const calculateHeight = (startTime, endTime) => {
 
 export default function Event(props) {
   const { event, zIndex, handleClick } = props;
-  const colors = ['blue', 'red', 'green']
-  function getRandomColor(max) {
-    return colors[Math.floor(Math.random() * max)];
-  }
+  // const colors = ['blue', 'red', 'green']
+  // function getRandomColor(max) {
+  //   return colors[Math.floor(Math.random() * max)];
+  // }
 
   /**
    * 
@@ -43,7 +43,8 @@ export default function Event(props) {
 
   return (
     <Paper sx={{
-      backgroundColor: `${getRandomColor(3)}`,
+      // backgroundColor: `${getRandomColor(3)}`,
+      backgroundColor: 'red',
       maxHeight: '800px',
       height: `${calculateHeight(event.start_time, event.end_time)}px`,
       transform: `translateY(${eventStartTime(event.start_time)}px) translateX(96px)`,

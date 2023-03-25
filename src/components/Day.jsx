@@ -8,12 +8,12 @@ import TableCell from "@mui/material/TableCell";
 import Paper from "@mui/material/Paper";
 import Typography from "@mui/material/Typography";
 import '../App.css';
-import { useSelector } from 'react-redux'
+// import { useSelector } from 'react-redux'
 
 export default function Day(props) {
-  const open = useSelector((state) => state.form.open)
+  // const open = useSelector((state) => state.form.open)
   const { handleClick } = props;
-  const id = open ? 'simple-popper' : undefined;
+  // const id = open ? 'simple-popper' : undefined;
   const times = ['8AM','9AM','10AM','11AM','12PM','1PM','2PM','3PM','4PM','5PM'];
   
   return(
@@ -46,7 +46,7 @@ export default function Day(props) {
                 </Typography>
               </TableCell>
               <TableCell
-                aria-describedby={id}
+                // aria-describedby={id}
                 sx={{
                   height: '80px',
                   display: 'flex',

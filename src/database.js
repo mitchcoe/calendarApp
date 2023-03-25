@@ -53,14 +53,14 @@ const createEvent = (request, response) => { //this needs some work for dates an
 		INSERT INTO events (
 			title,
 			description,
-      phone,
 			location,
+      phone,
 			date,
 			start_time,
 			end_time
 		) 
 		VALUES($1, $2, $3, $4, $5, $6, $7) RETURNING *`,
-		[title || '', description || '', location || '', phone || null, date, start_time, end_time])
+		[title || '', description || '', location || '', phone || '', date, start_time, end_time])
 		.then(res => response.status(200).send({
 			data: res.rows,
 			message: `Event created with event ID ${res.rows[0].event_id}`
