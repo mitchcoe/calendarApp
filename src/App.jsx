@@ -14,8 +14,8 @@ import { toggleEventForm, handleEventChanges, clearEventChanges } from './slices
 export default function App() {
   // hooks and useSelector cause re-renders
   const [anchorEl, setAnchorEl] = React.useState(null);
-  const events = useSelector((state) => state.events.eventList);
-  // const todaysEvents = useSelector((state) => state.events.currentEventList);
+  // const events = useSelector((state) => state.events.eventList);
+  const todaysEvents = useSelector((state) => state.events.currentEventList);
   const selectedDate = useSelector((state) => state.events.selectedDate);
   const open = useSelector((state) => state.form.open)
   // const formId = useSelector((state) => state.form.event_id);
@@ -23,7 +23,7 @@ export default function App() {
   
   let today = new Date(Date.now()).toISOString();
   if(!selectedDate) dispatch(setSelectedDate(today));
-  let newSelectedDate =  useMemo(() => new Date(selectedDate), [selectedDate]);
+  let newSelectedDate =  useMemo(() => new Date(selectedDate?.slice(0, selectedDate.indexOf("Z"))), [selectedDate]);
 
   const handleClose = (event) => {
     setAnchorEl(null);
@@ -51,6 +51,7 @@ export default function App() {
   // const open = Boolean(anchorEl)
   const id = open ? 'simple-popper' : undefined;
   // console.log('events rendered in app.jsx', events)
+  // console.log("current events today", todaysEvents)
 
   const getEventsData = useCallback(async () => {
     await fetch('/events')
@@ -87,9 +88,9 @@ export default function App() {
       <CssBaseline />
       <React.Fragment>
         <Day handleClick={handleClick} anchorEl={anchorEl} />
-        {events?.length > 0 ? (
+        {todaysEvents?.length > 0 ? (
           <EventsContainer
-            events={events}
+            events={todaysEvents}
             handleClick={handleClick}
           />
         ) : null}
