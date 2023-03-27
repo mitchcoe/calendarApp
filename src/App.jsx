@@ -35,6 +35,7 @@ export default function App() {
   };
 
   const handleClick = (event, props) => {
+    console.log('props', JSON.stringify(props))
     if(props && open) {
       dispatch(clearEventChanges())
       setAnchorEl(event.currentTarget);
@@ -74,7 +75,7 @@ export default function App() {
   useEffect(() => {
     getEventsData();
     if(selectedDate) getEventsByDayData();
-  }, [getEventsData, getEventsByDayData, selectedDate]);
+  }, [getEventsData, getEventsByDayData, selectedDate, todaysEvents]);
 
   const containerStyles = {
     textAlign: 'center',

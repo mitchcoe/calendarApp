@@ -171,26 +171,16 @@ export default function EventForm(props) {
     dispatch(handleEventChanges({date: `${event['$y']}-0${event['$M']+ 1}-${event['$D']}`}))
   }
 
-  const timeStringFormatter = (type, event) => {
-    console.log(type, event)
-    let newTimeString = `${date} ${event['$H'] < 12 ? `0${event['$H']}` : event['$H']}:${event['$m'] === 0 ? `0${event['$m']}` : event['$m']}:00`;
-    let existingTimeString = `${date.slice(0, date.indexOf("T"))} ${event['$H'] < 12 ? `0${event['$H']}` : event['$H']}:${event['$m'] === 0 ? `0${event['$m']}` : event['$m']}:00`
-    let timeStringObject = {
-      [type] : date && date.includes('T') ? existingTimeString : newTimeString,
-    }
-    return timeStringObject
-  }
-
   const handleStartTimeFieldChange = (event) => {
     if(event === null) return
     setStartValue(event)
-    dispatch(handleEventChanges(timeStringFormatter('start_time', event)))
+    dispatch(handleEventChanges({start_time: event['$d'].toISOString()}))
   }
 
   const handleEndTimeFieldChange = (event) => {
     if(event === null) return
     setEndValue(event)
-    dispatch(handleEventChanges(timeStringFormatter('end_time', event)))
+    dispatch(handleEventChanges({end_time: event['$d'].toISOString()}))
   }
 
   const handleEditToggle = (event) => {

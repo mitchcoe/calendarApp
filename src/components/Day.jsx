@@ -64,6 +64,15 @@ export default function Day(props) {
   // const id = open ? 'simple-popper' : undefined;
   const times = ['8AM','9AM','10AM','11AM','12PM','1PM','2PM','3PM','4PM','5PM'];
 
+  const insertStartTimeProp = (time, date) => {
+    let hour = parseInt(time.slice(0, time.indexOf('M') - 1));
+    hour = hour < 8 ? hour+= 12 : hour;
+    hour+= 5; // need to look up timezone stuff, this works for now (US central time)
+    date = date.split('T');
+    date[1] = `${hour}:00:00.000Z`;
+    return date.join('T');
+  }
+
   const dateFormatter = (day) => {
     return new Intl.DateTimeFormat("en-US", {
       weekday: "long",
@@ -126,7 +135,7 @@ export default function Day(props) {
                   width: '100%',
                   padding: '16px',
                 }}
-                onClick={handleClick}
+                onClick={(e) => handleClick(e, {date: today, start_time: insertStartTimeProp(time, today)})}
               />
             </TableRow>
           ))}
