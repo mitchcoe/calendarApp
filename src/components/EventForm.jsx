@@ -20,7 +20,7 @@ import {
 import { useSelector, useDispatch } from 'react-redux'
 // eslint-disable-next-line no-unused-vars
 import { getEvents, createEvents, updateEvents, deleteEvents } from '../slices/eventSlice';
-import { clearEventChanges, handleEventChanges, toggleEditingState } from '../slices/formSlice';
+import { clearEventChanges, handleEventChanges, toggleEditingState, setValidState } from '../slices/formSlice';
 
 const eightAM = dayjs().set('hour', 8).startOf('hour');
 const sixPM = dayjs().set('hour', 18).startOf('hour')
@@ -47,8 +47,11 @@ export default function EventForm(props) {
       case 'maxTime': {
         return 'Please select a time between 8AM and 6PM'
       }
+      case null: {
+        return ''
+      }
       default: {
-        // console.log(error)
+        console.log(error)
         return '';
       }
     }
@@ -58,7 +61,7 @@ export default function EventForm(props) {
   const events = useSelector((state) => state.events.eventList);
   const formId = useSelector((state) => state.form.event_id);
   const editingEnabled = useSelector((state) => state.form.editing);
-  const { title, description, location, phone, date, start_time, end_time, anchorType } = useSelector((state) => state.form)
+  const { title, description, location, phone, date, start_time, end_time, anchorType, valid } = useSelector((state) => state.form)
   // eslint-disable-next-line no-unused-vars
   const { handleClick, eventId, handleClose} = props;
   const dispatch = useDispatch();
@@ -187,6 +190,16 @@ export default function EventForm(props) {
     dispatch(toggleEditingState(!editingEnabled))
   }
 
+  const handleError = (err) => {
+    if(err === null) {
+      dispatch(setValidState(true));
+      setError(null);
+    } else {
+      dispatch(setValidState(false));
+      setError(err);
+    }
+  }
+
   const cardHeaderStyles = {
     display: 'flex',
     backgroundColor: 'red'
@@ -286,7 +299,7 @@ export default function EventForm(props) {
               maxTime={fivePM}
               value={startValue || (start_time && dayjs(start_time))}
               onChange={handleStartTimeFieldChange}
-              onError={(newError) => setError(newError)}
+              onError={(newError) => handleError(newError)}
               slotProps={{
                 textField: {
                   helperText: errorMessage,
@@ -302,7 +315,7 @@ export default function EventForm(props) {
               maxTime={sixPM}
               value={ endValue  || (end_time && dayjs(end_time))}
               onChange={handleEndTimeFieldChange}
-              onError={(newError) => setError(newError)}
+              onError={(newError) => handleError(newError)}
               slotProps={{
                 textField: {
                   helperText: errorMessage,
@@ -315,14 +328,20 @@ export default function EventForm(props) {
           <Button //form needs validation before this should be enabled
             id="submit"
             variant="outlined"
-            disabled={anchorType === 'Create' ? false : !(anchorType && anchorType === 'Update' && editingEnabled)  }
+            disabled={ anchorType === 'Create' ? !valid : !editingEnabled || !valid }
             onClick={(event) => {
               anchorType && anchorType === 'Create' ? handleCreateSubmit(event) : handleUpdateSubmit(event)
             }}
           >
             {anchorType}
           </Button>
-          <Button id="clear" variant="outlined" color="primary" onClick={handleClear}>
+          <Button
+            id="clear"
+            variant="outlined"
+            color="primary"
+            onClick={handleClear}
+            disabled={anchorType === 'Create' ? editingEnabled : !editingEnabled}
+          >
             Clear
           </Button>
         </CardActions>

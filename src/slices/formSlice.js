@@ -8,6 +8,7 @@ const defaultFormState = {
   date: '',
   start_time: '',
   end_time: '',
+  valid: true,
 };
 
 const closedState = {
@@ -45,8 +46,11 @@ export const formSlice = createSlice({
       // console.log('editing',state.editing)
       state.editing = !state.editing
     },
+    setValidState: (state, action) => {
+      state.valid = action.payload
+    }
   },
 });
 
-export const { toggleEventForm, handleEventChanges, clearEventChanges, toggleEditingState } = formSlice.actions;
+export const { toggleEventForm, handleEventChanges, clearEventChanges, toggleEditingState, setValidState } = formSlice.actions;
 export default formSlice.reducer;
