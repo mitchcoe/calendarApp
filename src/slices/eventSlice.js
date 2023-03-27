@@ -18,15 +18,15 @@ export const eventsSlice = createSlice({
     },
     createEvents: (state, action) => {
       const event = action.payload;
-      state.eventList.push(...event);
+      state.currentEventList.push(...event);
     },
     updateEvents: (state, action) => {
-      let updatedEventIndex = state.eventList.findIndex( event => event.event_id === action.payload.event_id);
-      if (updatedEventIndex !== - 1) state.eventList.splice(updatedEventIndex, 1, action.payload)
+      let updatedEventIndex = state.currentEventList.findIndex( event => event.event_id === action.payload.event_id);
+      if (updatedEventIndex !== - 1) state.currentEventList.splice(updatedEventIndex, 1, action.payload)
     },
     deleteEvents: (state, action) => {
-      const itemToDelete = state.eventList.findIndex(item => item.event_id === action.payload)
-      if (itemToDelete !== - 1) state.eventList.splice(itemToDelete, 1)
+      const itemToDelete = state.currentEventList.findIndex(item => item.event_id === action.payload)
+      if (itemToDelete !== - 1) state.currentEventList.splice(itemToDelete, 1)
     },
     setSelectedDate: (state, action) => {
       state.selectedDate = action.payload

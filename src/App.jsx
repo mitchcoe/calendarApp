@@ -23,7 +23,7 @@ export default function App() {
   
   let today = new Date(Date.now()).toISOString();
   if(!selectedDate) dispatch(setSelectedDate(today));
-  let newSelectedDate =  useMemo(() => new Date(selectedDate?.slice(0, selectedDate.indexOf("Z"))), [selectedDate]);
+  let newSelectedDate = useMemo(() => new Date(selectedDate?.slice(0, selectedDate.indexOf("Z"))), [selectedDate]);
 
   const handleClose = (event) => {
     setAnchorEl(null);
