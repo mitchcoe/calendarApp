@@ -83,8 +83,7 @@ export default function Day(props) {
   };
 
   const monthDayYear = (val) => {
-    // console.log('monthdayyear', val['$d'].toISOString()) // this is shorter but sets a time with the date
-    return new Date(`${val['$y']}-0${val['$M']+ 1}-${val['$D']}`).toISOString()
+    return val['$d'].toISOString()
   };
 
   const handleDateChange = async (date) => {

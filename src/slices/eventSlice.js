@@ -5,7 +5,7 @@ export const eventsSlice = createSlice({
   initialState: {
     eventList: [],
     currentEventList: [],
-    selectedDate: null,
+    selectedDate: new Date(Date.now()).toISOString(),
   },
   reducers: {
     getEvents: (state, action) => {
