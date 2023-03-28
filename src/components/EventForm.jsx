@@ -3,6 +3,7 @@ import dayjs from 'dayjs';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import CloseIcon from '@mui/icons-material/Close';
+import Tooltip from '@mui/material/Tooltip';
 import {MobileDatePicker, MobileTimePicker, LocalizationProvider} from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import {
@@ -21,6 +22,10 @@ import { useSelector, useDispatch } from 'react-redux'
 // eslint-disable-next-line no-unused-vars
 import { getEvents, createEvents, updateEvents, deleteEvents } from '../slices/eventSlice';
 import { clearEventChanges, handleEventChanges, toggleEditingState, setValidState } from '../slices/formSlice';
+/** @jsx jsx */
+/** @jsxRuntime classic */
+// eslint-disable-next-line no-unused-vars
+import { css, jsx } from '@emotion/react'
 
 const eightAM = dayjs().set('hour', 8).startOf('hour');
 const sixPM = dayjs().set('hour', 18).startOf('hour')
@@ -163,6 +168,7 @@ export default function EventForm(props) {
     setDateValue('');
     setStartValue('');
     setEndValue('');
+    dispatch(setValidState(false));
   }
 
   const handleFieldChange = (event) => {
@@ -223,6 +229,73 @@ export default function EventForm(props) {
     mb: '16px'
   }
 
+  const customTextField = (label, value) => (
+    <TextField
+      id={label.toLowerCase()}
+      label={label}
+      sx={fieldStyles}
+      value={value}
+      onChange={handleFieldChange}
+      disabled={ anchorType === 'Create' ? false : !editingEnabled }
+    />
+  )
+
+  const customTimePicker = (props) => {
+    const { timeType, timeTypeValueState, timeTypeValueRedux, minimumTime, maximumTime, onChangeFunc} = props
+    let formattedLabel = (label) => {
+      return label.split('_')
+        .map((item) => item = item.charAt(0).toUpperCase() + item.slice(1))
+        .join(' ');
+    };
+
+    return(
+      <Tooltip
+      disableFocusListener
+      disableTouchListener
+      disableHoverListener={!!date}
+      title="Select a valid date first"
+    >
+      {/* this div is needed because of what i think is this issue: https://github.com/mui/material-ui/issues/33476 */}
+      <div css={{display: 'inline-flex', width: '100%'}}> 
+        <MobileTimePicker
+          id={timeType}
+          label={formattedLabel(timeType)}
+          sx={[fieldStyles, {width: '100%'}]}
+          disabled={ (anchorType === 'Create' ? false : !editingEnabled) || !date }
+          minTime={minimumTime}
+          maxTime={maximumTime}
+          value={timeTypeValueState || (timeTypeValueRedux && dayjs(timeTypeValueRedux))}
+          onChange={onChangeFunc}
+          onError={(newError) => handleError(newError)}
+          slotProps={{
+            textField: {
+              helperText: errorMessage,
+            },
+          }}
+        />
+      </div>
+    </Tooltip>
+    );
+  };
+
+  const startTimePicker = customTimePicker({
+    timeType: 'start_time',
+    timeTypeValueState: startValue,
+    timeTypeValueRedux: start_time,
+    minimumTime: eightAM,
+    maximumTime: fivePM,
+    onChangeFunc: handleStartTimeFieldChange,
+  })
+
+  const endTimePicker = customTimePicker({
+    timeType: 'end_time',
+    timeTypeValueState: endValue,
+    timeTypeValueRedux: end_time,
+    minimumTime: eightAM,
+    maximumTime: sixPM,
+    onChangeFunc: handleEndTimeFieldChange,
+  })
+
   return(
     <Box component="form" autoComplete="off" sx={{minWidth: '300px', width: '30vw'}}>
       <Card>
@@ -252,76 +325,24 @@ export default function EventForm(props) {
           }
         />
         <CardContent sx={cardContentStyles}>
-          <TextField
-            id="title"
-            label="Title"
-            sx={fieldStyles}
-            value={title}
-            onChange={handleFieldChange}
-          />
-          <TextField
-            id="description"
-            label="Description"
-            sx={fieldStyles}
-            value={description}
-            onChange={handleFieldChange}
-          />
-          <TextField
-            id="location"
-            label="Location"
-            sx={fieldStyles}
-            value={location}
-            onChange={handleFieldChange}
-          />
-          <TextField
-            id="phone"
-            label="Phone #"
-            sx={fieldStyles}
-            value={phone}
-            onChange={handleFieldChange}
-          />
+          {customTextField('Title', title)}
+          {customTextField('Description', description)}
+          {customTextField('Location', location)}
+          {customTextField('Phone', phone)}
           <LocalizationProvider dateAdapter={AdapterDayjs}>
             <MobileDatePicker
               controlled
               id="date"
+              label="Date"
               disablePast
               required
               sx={fieldStyles}
               value={dateValue || (date && dayjs(date))}
               onChange={handeDateFieldChange}
+              disabled={ anchorType === 'Create' ? false : !editingEnabled }
             />
-            <MobileTimePicker
-              id="start_time"
-              label="Start Time"
-              sx={fieldStyles}
-              disabled={!date}
-              minTime={eightAM}
-              maxTime={fivePM}
-              value={startValue || (start_time && dayjs(start_time))}
-              onChange={handleStartTimeFieldChange}
-              onError={(newError) => handleError(newError)}
-              slotProps={{
-                textField: {
-                  helperText: errorMessage,
-                },
-              }}
-            />
-            <MobileTimePicker
-              id="end_time"
-              label="End Time"
-              sx={fieldStyles}
-              disabled={!date}
-              minTime={eightAM}
-              maxTime={sixPM}
-              value={ endValue  || (end_time && dayjs(end_time))}
-              onChange={handleEndTimeFieldChange}
-              onError={(newError) => handleError(newError)}
-              slotProps={{
-                textField: {
-                  helperText: errorMessage,
-                },
-              }}
-            />
+            {startTimePicker}
+            {endTimePicker}
           </LocalizationProvider>
         </CardContent>
         <CardActions id="submit_buttons" sx={buttonContainerStyles}>
