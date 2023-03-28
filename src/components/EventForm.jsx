@@ -1,9 +1,9 @@
 import { useState, useCallback, useMemo } from 'react';
+import * as React from 'react'
 import dayjs from 'dayjs';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import CloseIcon from '@mui/icons-material/Close';
-import Tooltip from '@mui/material/Tooltip';
 import {MobileDatePicker, MobileTimePicker, LocalizationProvider} from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import {
@@ -17,6 +17,8 @@ import {
   IconButton,
   CardHeader,
   Typography,
+  Modal, 
+  Tooltip,
 } from '@mui/material';
 import { useSelector, useDispatch } from 'react-redux'
 // eslint-disable-next-line no-unused-vars
@@ -36,6 +38,7 @@ export default function EventForm(props) {
   const [endValue, setEndValue] = useState('');
   const [dateValue, setDateValue] = useState('');
   const [error, setError] = useState(null);
+  const [modalOpen, setModalOpen] = useState(false)
 
   const errorMessage = useMemo(() => {
     switch (error) {
@@ -160,7 +163,7 @@ export default function EventForm(props) {
 
   const handleDelete = (event) => {
     deleteEvent();
-    handleClick(event);
+    handleClose(event);
   }
 
   const handleClear = () => {
@@ -204,7 +207,16 @@ export default function EventForm(props) {
       dispatch(setValidState(false));
       setError(err);
     }
-  }
+  };
+
+  const handleModalOpen = () => setModalOpen(true);
+
+  const handleModalClose = () => setModalOpen(false);
+
+  const handleModalCloseAndDelete = (event) => {
+    setModalOpen(false);
+    handleDelete(event);
+  };
 
   const cardHeaderStyles = {
     display: 'flex',
@@ -228,6 +240,41 @@ export default function EventForm(props) {
   const fieldStyles = {
     mb: '16px'
   }
+
+  const modalStyles = {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    width: 400,
+    bgcolor: 'background.paper',
+    border: '2px solid #000',
+    boxShadow: 24,
+    p: 4,
+  }
+
+  const DeleteModal = () => (
+    <Modal
+      open={modalOpen}
+      onClose={handleModalClose}
+      aria-labelledby="modal-modal-title"
+      aria-describedby="modal-modal-description"
+    >
+      <Box sx={modalStyles}>
+      <Typography id="modal-modal-title" variant="h6" component="h2">
+        Are You Sure You Want To Delete This Event?
+      </Typography>
+      <div css={[buttonContainerStyles, {marginTop: '16px'}]}>
+        <Button variant="outlined" onClick={handleModalClose}>
+          No
+        </Button>
+        <Button variant="outlined" onClick={handleModalCloseAndDelete}>
+          Yes
+        </Button>
+      </div>
+      </Box>
+    </Modal>
+  )
 
   const customTextField = (label, value) => (
     <TextField
@@ -309,14 +356,14 @@ export default function EventForm(props) {
           action={
             <ButtonGroup id="app_bar" sx={buttonContainerStyles}>
               {anchorType && anchorType === 'Update' && (
-                <IconButton sx={iconButtonStyles} onClick={handleEditToggle}>
-                  <EditIcon />
-                </IconButton>
-              )}
-              {anchorType && anchorType === 'Update' && (
-                <IconButton sx={iconButtonStyles} onClick={handleDelete}>
-                  <DeleteIcon />
-                </IconButton>
+                <React.Fragment>
+                  <IconButton sx={iconButtonStyles} onClick={handleEditToggle}>
+                    <EditIcon />
+                  </IconButton>
+                  <IconButton sx={iconButtonStyles} onClick={handleModalOpen}>
+                    <DeleteIcon />
+                  </IconButton>
+                </React.Fragment>
               )}
               <IconButton sx={iconButtonStyles} onClick={handleClose}>
                 <CloseIcon />
@@ -349,6 +396,7 @@ export default function EventForm(props) {
           <Button //form needs validation before this should be enabled
             id="submit"
             variant="outlined"
+            sx={{visibility: (anchorType === 'Update' && editingEnabled) ? 'unset' : anchorType === 'Create' ? 'unset' : 'hidden'}}
             disabled={ anchorType === 'Create' ? !valid : !editingEnabled || !valid }
             onClick={(event) => {
               anchorType && anchorType === 'Create' ? handleCreateSubmit(event) : handleUpdateSubmit(event)
@@ -360,6 +408,7 @@ export default function EventForm(props) {
             id="clear"
             variant="outlined"
             color="primary"
+            sx={{visibility: anchorType === 'Update' && editingEnabled ? 'unset' : anchorType === 'Create' ? 'unset' : 'hidden'}}
             onClick={handleClear}
             disabled={anchorType === 'Create' ? editingEnabled : !editingEnabled}
           >
@@ -367,6 +416,7 @@ export default function EventForm(props) {
           </Button>
         </CardActions>
       </Card>
+      <DeleteModal />
     </Box>
   )
 };
