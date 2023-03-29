@@ -13,6 +13,7 @@ import { toggleEventForm, handleEventChanges, clearEventChanges } from './slices
 
 export default function App() {
   // hooks and useSelector cause re-renders
+  // console.log('im rendering')
   const [anchorEl, setAnchorEl] = React.useState(null);
   // const events = useSelector((state) => state.events.eventList);
   const todaysEvents = useSelector((state) => state.events.currentEventList);
@@ -53,6 +54,14 @@ export default function App() {
   const id = open ? 'simple-popper' : undefined;
   // console.log('events rendered in app.jsx', events)
   // console.log("current events today", todaysEvents)
+  // const deleteTable = useCallback(async() => {
+  //   await fetch('/', {
+  //     method:'DELETE',
+  //     headers: {
+  //       "Content-Type": "application/json"
+  //     },
+  //   })
+  // }, [])
 
   const getEventsData = useCallback(async () => {
     await fetch('/events')
@@ -71,6 +80,24 @@ export default function App() {
       .then(response => dispatch(getEventsByDay(response)))
       .catch(error => console.log('ERROR:', error));
   }, [dispatch, newSelectedDate]);
+
+  // const getEventsByYearData = useCallback(async () => {
+  //   let year = newSelectedDate?.getFullYear()
+
+  //   await fetch(`/events/${year}`)
+  //     .then(response => response.json())
+  //     .then(response => console.log('get events by year', response))
+  //     .catch(error => console.log('ERROR:', error));
+  // }, [newSelectedDate]);
+
+  // const getEventsByMonthData = useCallback(async () => {
+  //   let year = newSelectedDate?.getFullYear()
+  //   let month = newSelectedDate?.getMonth();
+  //   await fetch(`/events/${year}/${month + 1}/`)
+  //     .then(response => response.json())
+  //     .then(response => console.log('get events by month', response))
+  //     .catch(error => console.log('ERROR:', error));
+  // }, [newSelectedDate]);
 
   useEffect(() => {
     getEventsData();
