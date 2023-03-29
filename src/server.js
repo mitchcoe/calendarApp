@@ -1,8 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const db = require('./database');
-// const knexConfig = require('./db/knexfile');
-// const knex = require('knex')(knexConfig[process.env.NODE_ENV])
 const app = express();
 const port = 8080;
 

@@ -1,15 +1,7 @@
 // const defaultData = require('./database/defaultData');
 // require('dotenv').config()
-const knex = require('knex')({
-  client: 'pg',
-  connection: {
-    user: 'me',
-    host: 'localhost',
-    database: 'calendarapp',
-    password: 'Bobcats#123!',
-    port: 5432,
-  }
-});
+const knexConfig = require('../knexfile');
+const knex = require('knex')(knexConfig[process.env.NODE_ENV || 'development'])
 
 // knex.schema.dropTableIfExists('blah');
 
