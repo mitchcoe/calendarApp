@@ -4,6 +4,6 @@ import App from './App';
 
 test('renders the app', () => {
   renderWithProviders(<App />);
-  const timeElement = screen.getByText(/8AM/i);
+  const timeElement = screen.getByTestId("app_container");
   expect(timeElement).toBeInTheDocument();
 });

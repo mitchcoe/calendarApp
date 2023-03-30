@@ -112,7 +112,7 @@ export default function App() {
   };
 
   return (
-    <Container sx={containerStyles}>
+    <Container sx={containerStyles} data-testid="app_container">
       <CssBaseline />
       <React.Fragment>
         <Day handleClick={handleClick} anchorEl={anchorEl} />

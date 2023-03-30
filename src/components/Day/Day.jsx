@@ -128,7 +128,8 @@ export default function Day(props) {
                 </Typography>
               </TableCell>
               <TableCell
-                // aria-describedby={id}
+                data-testid="empty_cell"
+                aria-describedby={time}
                 sx={{
                   height: '80px',
                   display: 'flex',
