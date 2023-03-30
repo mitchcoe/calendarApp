@@ -9,9 +9,9 @@ import Paper from "@mui/material/Paper";
 import Typography from "@mui/material/Typography";
 import {DatePicker, LocalizationProvider} from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import '../App.css';
+import '../../App.css';
 import { useSelector, useDispatch } from 'react-redux'
-import { setSelectedDate } from '../slices/eventSlice';
+import { setSelectedDate } from '../../slices/eventSlice';
 import dayjs from 'dayjs';
 
 const datePickerSlotProps = {

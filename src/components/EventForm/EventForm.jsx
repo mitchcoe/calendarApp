@@ -22,8 +22,8 @@ import {
 } from '@mui/material';
 import { useSelector, useDispatch } from 'react-redux'
 // eslint-disable-next-line no-unused-vars
-import { getEvents, createEvents, updateEvents, deleteEvents } from '../slices/eventSlice';
-import { clearEventChanges, handleEventChanges, toggleEditingState, setValidState } from '../slices/formSlice';
+import { getEvents, createEvents, updateEvents, deleteEvents } from '../../slices/eventSlice';
+import { clearEventChanges, handleEventChanges, toggleEditingState, setValidState } from '../../slices/formSlice';
 /** @jsx jsx */
 /** @jsxRuntime classic */
 // eslint-disable-next-line no-unused-vars
@@ -344,7 +344,7 @@ export default function EventForm(props) {
   })
 
   return(
-    <Box component="form" autoComplete="off" sx={{minWidth: '300px', width: '30vw'}}>
+    <Box component="form" autoComplete="off" sx={{minWidth: '300px', width: '30vw'}} data-testid="event_form">
       <Card>
         <CardHeader
           sx={cardHeaderStyles}

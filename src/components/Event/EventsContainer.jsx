@@ -19,7 +19,7 @@ export default function EventsContainer(props) {
     // zIndex: 900
   };
   return (
-    <div css={eventContainerStyles}>
+    <div css={eventContainerStyles} data-testid="event_container">
       {events.map((eventItem, index) => (
         <Event
           key={eventItem.event_id}
