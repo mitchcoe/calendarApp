@@ -112,7 +112,7 @@ export default function Day(props) {
               <LocalizationProvider dateAdapter={AdapterDayjs}>
                 <DatePicker
                   slotProps={datePickerSlotProps}
-                  value={datePickerValue ? datePickerValue : dayjs(new Date(today))}
+                  value={datePickerValue || dayjs(new Date(today))}
                   onChange={handleDateChange}
                 /> 
               </LocalizationProvider>
