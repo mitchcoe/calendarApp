@@ -85,12 +85,12 @@ export default function EventForm(props) {
   };
 
   // eslint-disable-next-line no-unused-vars
-  const getEventsData = useCallback(async () => {
-    await fetch('/events')
-      .then(response => response.json())
-      .then(response => dispatch(getEvents(response)))
-      .catch(error => console.log(error));
-  }, [dispatch]);
+  // const getEventsData = useCallback(async () => {
+  //   await fetch('/events')
+  //     .then(response => response.json())
+  //     .then(response => dispatch(getEvents(response)))
+  //     .catch(error => console.log(error));
+  // }, [dispatch]);
 
   const createEvent = async () => {
     await fetch('/events', {
@@ -305,6 +305,7 @@ export default function EventForm(props) {
       {/* this div is needed because of what i think is this issue: https://github.com/mui/material-ui/issues/33476 */}
       <div css={{display: 'inline-flex', width: '100%'}}> 
         <MobileTimePicker
+          data-testid={"error_message"}
           id={timeType}
           label={formattedLabel(timeType)}
           sx={[fieldStyles, {width: '100%'}]}
