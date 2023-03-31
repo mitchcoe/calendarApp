@@ -42,20 +42,22 @@ export default function Event(props) {
   };
 
   return (
-    <Paper sx={{
-      // backgroundColor: `${getRandomColor(3)}`,
-      backgroundColor: 'red',
-      maxHeight: '800px',
-      height: `${calculateHeight(event.start_time, event.end_time)}px`,
-      transform: `translateY(${eventStartTime(event.start_time)}px) translateX(96px)`,
-      padding: '16px 0px 16px 16px',
-      maxWidth: 'calc(100vw - 144px)',
-      width: '100%',
-      mr: '8px',
-      position: 'absolute',
-      zIndex: `${zIndex}`,
-      border: '1px solid black'
+    <Paper 
+      sx={{
+        // backgroundColor: `${getRandomColor(3)}`,
+        backgroundColor: 'red',
+        maxHeight: '800px',
+        height: `${calculateHeight(event.start_time, event.end_time)}px`,
+        transform: `translateY(${eventStartTime(event.start_time)}px) translateX(96px)`,
+        padding: '16px 0px 16px 16px',
+        maxWidth: 'calc(100vw - 144px)',
+        width: '100%',
+        mr: '8px',
+        position: 'absolute',
+        zIndex: `${zIndex}`,
+        border: '1px solid black'
       }}
+      data-testid="test_event"
       onClick={(e) => {handleClick(e, event)}}
     >
       <Typography>
