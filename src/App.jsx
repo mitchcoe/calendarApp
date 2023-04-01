@@ -10,6 +10,7 @@ import EventForm from './components/EventForm/EventForm';
 import { useSelector, useDispatch } from 'react-redux'
 import { getEvents, getEventsByDay, setSelectedDate } from './slices/eventSlice';
 import { toggleEventForm, handleEventChanges, clearEventChanges } from './slices/formSlice'
+// const formUtils = require('./components/EventForm/EventForm');
 
 export default function App() {
   // hooks and useSelector cause re-renders

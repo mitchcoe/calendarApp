@@ -161,10 +161,10 @@ export default function EventForm(props) {
     handleClick(event)
   };
 
-  const handleDelete = (event) => {
-    deleteEvent();
-    handleClose(event);
-  }
+  // const handleDelete = (event) => {
+  //   deleteEvent();
+  //   handleClose(event);
+  // }
 
   const handleClear = () => {
     dispatch(clearEventChanges());
@@ -214,8 +214,9 @@ export default function EventForm(props) {
   const handleModalClose = () => setModalOpen(false);
 
   const handleModalCloseAndDelete = (event) => {
+    handleClose(event);
     setModalOpen(false);
-    handleDelete(event);
+    deleteEvent();
   };
 
   const cardHeaderStyles = {
@@ -265,10 +266,10 @@ export default function EventForm(props) {
         Are You Sure You Want To Delete This Event?
       </Typography>
       <div css={[buttonContainerStyles, {marginTop: '16px'}]}>
-        <Button variant="outlined" onClick={handleModalClose}>
+        <Button variant="outlined" onClick={handleModalClose} data-testid="modal_close_button">
           No
         </Button>
-        <Button variant="outlined" onClick={handleModalCloseAndDelete}>
+        <Button variant="outlined" onClick={handleModalCloseAndDelete} data-testid="modal_delete_button">
           Yes
         </Button>
       </div>
@@ -358,15 +359,15 @@ export default function EventForm(props) {
             <ButtonGroup id="app_bar" sx={buttonContainerStyles}>
               {anchorType && anchorType === 'Update' && (
                 <React.Fragment>
-                  <IconButton sx={iconButtonStyles} onClick={handleEditToggle}>
+                  <IconButton sx={iconButtonStyles} onClick={handleEditToggle} data-testid="edit_button">
                     <EditIcon />
                   </IconButton>
-                  <IconButton sx={iconButtonStyles} onClick={handleModalOpen}>
+                  <IconButton sx={iconButtonStyles} onClick={handleModalOpen} data-testid="delete_button">
                     <DeleteIcon />
                   </IconButton>
                 </React.Fragment>
               )}
-              <IconButton sx={iconButtonStyles} onClick={handleClose}>
+              <IconButton sx={iconButtonStyles} onClick={handleClose} data-testid="close_button">
                 <CloseIcon />
               </IconButton>
             </ButtonGroup>
@@ -379,6 +380,7 @@ export default function EventForm(props) {
           {customTextField('Phone', phone)}
           <LocalizationProvider dateAdapter={AdapterDayjs}>
             <MobileDatePicker
+              data-testid="date_picker"
               controlled
               id="date"
               label="Date"
@@ -395,17 +397,17 @@ export default function EventForm(props) {
         </CardContent>
         <CardActions id="submit_buttons" sx={buttonContainerStyles}>
           <Button //form needs validation before this should be enabled
+            data-testid="submit_button"
             id="submit"
             variant="outlined"
             sx={{visibility: (anchorType === 'Update' && editingEnabled) ? 'unset' : anchorType === 'Create' ? 'unset' : 'hidden'}}
             disabled={ anchorType === 'Create' ? !valid : !editingEnabled || !valid }
-            onClick={(event) => {
-              anchorType && anchorType === 'Create' ? handleCreateSubmit(event) : handleUpdateSubmit(event)
-            }}
+            onClick={anchorType && anchorType === 'Create' ? handleCreateSubmit : handleUpdateSubmit}
           >
             {anchorType}
           </Button>
           <Button
+            data-testid="clear_button"
             id="clear"
             variant="outlined"
             color="primary"
@@ -417,7 +419,7 @@ export default function EventForm(props) {
           </Button>
         </CardActions>
       </Card>
-      <DeleteModal />
+      <DeleteModal data-testid="delete_modal"/>
     </Box>
   )
 };
