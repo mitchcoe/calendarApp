@@ -102,6 +102,7 @@ export default function App() {
 
   useEffect(() => {
     getEventsData();
+    // getAttachments()
     if(selectedDate) getEventsByDayData();
   }, [getEventsData, getEventsByDayData, selectedDate]); // adding todaysEvents causes infinite loop
 
@@ -111,6 +112,27 @@ export default function App() {
     minWidth: '100%',
     backgroundColor: '#282c34',
   };
+
+  const fileUpload = async (event) => {
+    event.preventDefault()
+    let form = document.getElementById('fileUploadForm')
+    let formData = new FormData(form)
+
+    await fetch('/attachments', {
+      method:'POST',
+      body: formData
+    })
+    .then(response => response.json())
+    .then(response => console.log(response))
+    .catch(error => console.log(error));
+  }
+
+  // const getAttachments = async () => {
+  //   await fetch('/attachments')
+  //     .then(response => response.json())
+  //     .then(response => console.log(response))
+  //     .catch(error => console.log(error));
+  // }
 
   return (
     <Container sx={containerStyles} data-testid="app_container">
@@ -154,6 +176,23 @@ export default function App() {
       >
         <EventForm handleClick={handleClick} handleClose={handleClose} />
       </Popper>
+      <form
+        action="/attachments"
+        encType="multipart/form-data"
+        method="post"
+        id="fileUploadForm"
+      >
+        <input
+          type="file"
+          accept="image/*"
+          name="file"
+          id="fileUploadSubmit"
+        />
+        <button type="submit" id="fileUploadSubmit" className="btn btn-default" onClick={fileUpload}>Upload event</button>
+      </form>
+      {/* <form action="/attachments" encType="multipart/form-data" method="get">
+        <input type="submit" value="Get me the image!" className="btn btn-default" />
+      </form> */}
     </Container>
   );
 };

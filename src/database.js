@@ -120,6 +120,32 @@ const deleteEvent = (request, response) => {
 		.catch(e => console.log(e.stack));
 };
 
+const createAttachment = (request, response) => {
+  knex('attachments').insert({
+    file_type: request.file.mimetype,
+    file_name: request.file.originalname,
+    file_path: request.file.path,
+    event_id: 1
+  }, ['event_id'])
+  .then(res => response.status(200).send({
+    id: res[0].event_id,
+    message: `Attachment created with event ID ${res[0].event_id}`
+  }))
+  .catch(e => console.log(e.stack));
+};
+
+// const getAttachments = (request, response) => {
+//   console.log('hello?')
+//   const { event_id } = request.body
+//   // knex.raw(`select encode(file_data, 'base64') from attachments where event_id = 1`)
+//   knex('attachments').where({event_id})
+//     .then(res => {
+//       console.log(res)
+//       response.status(200).json(res.rows)
+//     })
+//     .catch(e => console.log(e.stack));
+// };
+
 //deleteTable,
 module.exports = {
   getEvents,
@@ -128,5 +154,7 @@ module.exports = {
 	getEventsByDay,
   createEvent,
   updateEvent,
-  deleteEvent
+  deleteEvent,
+  createAttachment,
+  // getAttachments
 };

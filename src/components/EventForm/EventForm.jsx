@@ -275,7 +275,7 @@ export default function EventForm(props) {
       </div>
       </Box>
     </Modal>
-  )
+  );
 
   const customTextField = (label, value) => (
     <TextField
@@ -286,7 +286,7 @@ export default function EventForm(props) {
       onChange={handleFieldChange}
       disabled={ anchorType === 'Create' ? false : !editingEnabled }
     />
-  )
+  );
 
   const customTimePicker = (props) => {
     const { timeType, timeTypeValueState, timeTypeValueRedux, minimumTime, maximumTime, onChangeFunc} = props
@@ -346,7 +346,7 @@ export default function EventForm(props) {
   })
 
   return(
-    <Box component="form" autoComplete="off" sx={{minWidth: '300px', width: '30vw'}} data-testid="event_form">
+    <Box component="form" encType="multipart/form-data" autoComplete="off" sx={{minWidth: '300px', width: '30vw'}} data-testid="event_form">
       <Card>
         <CardHeader
           sx={cardHeaderStyles}
@@ -378,6 +378,14 @@ export default function EventForm(props) {
           {customTextField('Description', description)}
           {customTextField('Location', location)}
           {customTextField('Phone', phone)}
+          {/* <form action="/attachments" encType="multipart/form-data" method="post">
+            <input
+              type="file"
+              accept="image/*"
+              onChange={fileUpload}
+              name="image"
+            />
+          </form> */}
           <LocalizationProvider dateAdapter={AdapterDayjs}>
             <MobileDatePicker
               data-testid="date_picker"
