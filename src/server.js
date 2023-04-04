@@ -41,7 +41,7 @@ app.get('/events', db.getEvents);
 app.get('/events/:year', db.getEventsByYear);
 app.get('/events/:year/:month', db.getEventsByMonth);
 app.get('/events/:year/:month/:day', db.getEventsByDay);
-app.get('/attachments', db.getAttachments);
+// app.get('/attachments', db.getAttachments);
 app.post('/events', db.createEvent);
 app.post('/attachments', upload.single('file'), db.createAttachment);
 app.put('/events', db.updateEvent);

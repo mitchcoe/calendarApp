@@ -9,6 +9,8 @@ const defaultFormState = {
   start_time: '',
   end_time: '',
   valid: true,
+  hasAttachments: false,
+  hasReminders: false,
 };
 
 const closedState = {

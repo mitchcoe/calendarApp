@@ -121,16 +121,21 @@ const deleteEvent = (request, response) => {
 };
 
 const createAttachment = (request, response) => {
+  let eventsToUpdate = knex.raw(`select events.event_id from events, attachments
+                                  where events.event_id = attachments.event_id`)
   knex('attachments').insert({
     file_type: request.file.mimetype,
     file_name: request.file.originalname,
     file_path: request.file.path,
-    event_id: 1
+    event_id: 2 //this needs to change
   }, ['event_id'])
   .then(res => response.status(200).send({
     id: res[0].event_id,
     message: `Attachment created with event ID ${res[0].event_id}`
   }))
+  .then(() => {
+    return knex('events').whereIn('event_id', eventsToUpdate).update({hasAttachments: true})
+  })
   .catch(e => console.log(e.stack));
 };
 
