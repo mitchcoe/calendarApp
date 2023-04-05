@@ -22,8 +22,8 @@ import {
 } from '@mui/material';
 import { useSelector, useDispatch } from 'react-redux'
 // eslint-disable-next-line no-unused-vars
-import { getEvents, createEvents, updateEvents, deleteEvents } from '../slices/eventSlice';
-import { clearEventChanges, handleEventChanges, toggleEditingState, setValidState } from '../slices/formSlice';
+import { getEvents, createEvents, updateEvents, deleteEvents } from '../../slices/eventSlice';
+import { clearEventChanges, handleEventChanges, toggleEditingState, setValidState } from '../../slices/formSlice';
 /** @jsx jsx */
 /** @jsxRuntime classic */
 // eslint-disable-next-line no-unused-vars
@@ -85,12 +85,12 @@ export default function EventForm(props) {
   };
 
   // eslint-disable-next-line no-unused-vars
-  const getEventsData = useCallback(async () => {
-    await fetch('/events')
-      .then(response => response.json())
-      .then(response => dispatch(getEvents(response)))
-      .catch(error => console.log(error));
-  }, [dispatch]);
+  // const getEventsData = useCallback(async () => {
+  //   await fetch('/events')
+  //     .then(response => response.json())
+  //     .then(response => dispatch(getEvents(response)))
+  //     .catch(error => console.log(error));
+  // }, [dispatch]);
 
   const createEvent = async () => {
     await fetch('/events', {
@@ -161,10 +161,10 @@ export default function EventForm(props) {
     handleClick(event)
   };
 
-  const handleDelete = (event) => {
-    deleteEvent();
-    handleClose(event);
-  }
+  // const handleDelete = (event) => {
+  //   deleteEvent();
+  //   handleClose(event);
+  // }
 
   const handleClear = () => {
     dispatch(clearEventChanges());
@@ -214,8 +214,9 @@ export default function EventForm(props) {
   const handleModalClose = () => setModalOpen(false);
 
   const handleModalCloseAndDelete = (event) => {
+    handleClose(event);
     setModalOpen(false);
-    handleDelete(event);
+    deleteEvent();
   };
 
   const cardHeaderStyles = {
@@ -265,10 +266,10 @@ export default function EventForm(props) {
         Are You Sure You Want To Delete This Event?
       </Typography>
       <div css={[buttonContainerStyles, {marginTop: '16px'}]}>
-        <Button variant="outlined" onClick={handleModalClose}>
+        <Button variant="outlined" onClick={handleModalClose} data-testid="modal_close_button">
           No
         </Button>
-        <Button variant="outlined" onClick={handleModalCloseAndDelete}>
+        <Button variant="outlined" onClick={handleModalCloseAndDelete} data-testid="modal_delete_button">
           Yes
         </Button>
       </div>
@@ -305,6 +306,7 @@ export default function EventForm(props) {
       {/* this div is needed because of what i think is this issue: https://github.com/mui/material-ui/issues/33476 */}
       <div css={{display: 'inline-flex', width: '100%'}}> 
         <MobileTimePicker
+          data-testid={"error_message"}
           id={timeType}
           label={formattedLabel(timeType)}
           sx={[fieldStyles, {width: '100%'}]}
@@ -344,7 +346,7 @@ export default function EventForm(props) {
   })
 
   return(
-    <Box component="form" autoComplete="off" sx={{minWidth: '300px', width: '30vw'}}>
+    <Box component="form" autoComplete="off" sx={{minWidth: '300px', width: '30vw'}} data-testid="event_form">
       <Card>
         <CardHeader
           sx={cardHeaderStyles}
@@ -357,15 +359,15 @@ export default function EventForm(props) {
             <ButtonGroup id="app_bar" sx={buttonContainerStyles}>
               {anchorType && anchorType === 'Update' && (
                 <React.Fragment>
-                  <IconButton sx={iconButtonStyles} onClick={handleEditToggle}>
+                  <IconButton sx={iconButtonStyles} onClick={handleEditToggle} data-testid="edit_button">
                     <EditIcon />
                   </IconButton>
-                  <IconButton sx={iconButtonStyles} onClick={handleModalOpen}>
+                  <IconButton sx={iconButtonStyles} onClick={handleModalOpen} data-testid="delete_button">
                     <DeleteIcon />
                   </IconButton>
                 </React.Fragment>
               )}
-              <IconButton sx={iconButtonStyles} onClick={handleClose}>
+              <IconButton sx={iconButtonStyles} onClick={handleClose} data-testid="close_button">
                 <CloseIcon />
               </IconButton>
             </ButtonGroup>
@@ -378,6 +380,7 @@ export default function EventForm(props) {
           {customTextField('Phone', phone)}
           <LocalizationProvider dateAdapter={AdapterDayjs}>
             <MobileDatePicker
+              data-testid="date_picker"
               controlled
               id="date"
               label="Date"
@@ -394,17 +397,17 @@ export default function EventForm(props) {
         </CardContent>
         <CardActions id="submit_buttons" sx={buttonContainerStyles}>
           <Button //form needs validation before this should be enabled
+            data-testid="submit_button"
             id="submit"
             variant="outlined"
             sx={{visibility: (anchorType === 'Update' && editingEnabled) ? 'unset' : anchorType === 'Create' ? 'unset' : 'hidden'}}
             disabled={ anchorType === 'Create' ? !valid : !editingEnabled || !valid }
-            onClick={(event) => {
-              anchorType && anchorType === 'Create' ? handleCreateSubmit(event) : handleUpdateSubmit(event)
-            }}
+            onClick={anchorType && anchorType === 'Create' ? handleCreateSubmit : handleUpdateSubmit}
           >
             {anchorType}
           </Button>
           <Button
+            data-testid="clear_button"
             id="clear"
             variant="outlined"
             color="primary"
@@ -416,7 +419,7 @@ export default function EventForm(props) {
           </Button>
         </CardActions>
       </Card>
-      <DeleteModal />
+      <DeleteModal data-testid="delete_modal"/>
     </Box>
   )
 };

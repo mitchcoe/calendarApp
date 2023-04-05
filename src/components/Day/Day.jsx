@@ -9,9 +9,9 @@ import Paper from "@mui/material/Paper";
 import Typography from "@mui/material/Typography";
 import {DatePicker, LocalizationProvider} from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import '../App.css';
+import '../../App.css';
 import { useSelector, useDispatch } from 'react-redux'
-import { setSelectedDate } from '../slices/eventSlice';
+import { setSelectedDate } from '../../slices/eventSlice';
 import dayjs from 'dayjs';
 
 const datePickerSlotProps = {
@@ -112,7 +112,7 @@ export default function Day(props) {
               <LocalizationProvider dateAdapter={AdapterDayjs}>
                 <DatePicker
                   slotProps={datePickerSlotProps}
-                  value={datePickerValue ? datePickerValue : dayjs(new Date(today))}
+                  value={datePickerValue || dayjs(new Date(today))}
                   onChange={handleDateChange}
                 /> 
               </LocalizationProvider>
@@ -128,7 +128,8 @@ export default function Day(props) {
                 </Typography>
               </TableCell>
               <TableCell
-                // aria-describedby={id}
+                data-testid="empty_cell"
+                aria-describedby={time}
                 sx={{
                   height: '80px',
                   display: 'flex',

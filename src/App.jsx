@@ -4,12 +4,13 @@ import CssBaseline from '@mui/material/CssBaseline';
 import Container from '@mui/material/Container';
 import Popper from '@mui/material/Popper';
 // import ClickAwayListener from '@mui/base/ClickAwayListener';
-import Day from './components/Day';
-import EventsContainer from './components/EventsContainer';
-import EventForm from './components/EventForm';
+import Day from './components/Day/Day';
+import EventsContainer from './components/Event/EventsContainer';
+import EventForm from './components/EventForm/EventForm';
 import { useSelector, useDispatch } from 'react-redux'
 import { getEvents, getEventsByDay, setSelectedDate } from './slices/eventSlice';
 import { toggleEventForm, handleEventChanges, clearEventChanges } from './slices/formSlice'
+// const formUtils = require('./components/EventForm/EventForm');
 
 export default function App() {
   // hooks and useSelector cause re-renders
@@ -112,7 +113,7 @@ export default function App() {
   };
 
   return (
-    <Container sx={containerStyles}>
+    <Container sx={containerStyles} data-testid="app_container">
       <CssBaseline />
       <React.Fragment>
         <Day handleClick={handleClick} anchorEl={anchorEl} />
