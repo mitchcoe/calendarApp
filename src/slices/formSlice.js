@@ -62,8 +62,11 @@ export const formSlice = createSlice({
       let attachment = action.payload
       state.attachmentsList.push(...attachment)
     },
-    // deleteAttachments: (state, action) => {
-    // },
+    deleteAttachments: (state, action) => {
+      // console.log('delete attachments', action.payload)
+      const itemToDelete = state.attachmentsList.findIndex(item => item.attachment_id === action.payload)
+      if (itemToDelete !== - 1) state.attachmentsList.splice(itemToDelete, 1)
+    },
   },
 });
 
@@ -75,6 +78,6 @@ export const {
   setValidState,
   getAttachments,
   addAttachments,
-  // deleteAttachments
+  deleteAttachments,
 } = formSlice.actions;
 export default formSlice.reducer;

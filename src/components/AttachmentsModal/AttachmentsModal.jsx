@@ -14,7 +14,7 @@ import {
   // Tooltip,
 } from '@mui/material';
 import { useSelector, useDispatch } from 'react-redux'
-import { getAttachments, addAttachments } from '../../slices/formSlice';
+import { getAttachments, addAttachments, deleteAttachments } from '../../slices/formSlice';
 // import AttachmentsPreview from './AttachmentsPreview
 
 export default function AttachmentsModal(props) {
@@ -28,6 +28,20 @@ export default function AttachmentsModal(props) {
       .then(response => dispatch(getAttachments(response)))
       .catch(error => console.log(error));
   },[dispatch, event_id])
+
+  const deleteAttachmentsData = async (attachment_id, file_path, event_id) => {
+    await fetch(`/attachments/${attachment_id}`, {
+      method: 'DELETE',
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({file_path, event_id})
+    })
+    .then(response => response.json())
+    .then(response => dispatch(deleteAttachments(response.id)))
+    .then(() => getAttachmentsData())
+    .catch(error => console.log(error));
+  }
 
   useEffect(() => {
     if(hasAttachments && attachmentsModalOpen) getAttachmentsData()
@@ -93,7 +107,16 @@ export default function AttachmentsModal(props) {
             />
             <CardContent sx={{display: 'flex'}}>
               {attachmentsList.map((attachment) => (
-                <img src={`${attachment.file_path.slice(8)}`} alt="attachment" key={`${attachment.attachment_id}`}/>
+                <div key={`${attachment.attachment_id}`}>
+                  <img src={`${attachment.file_path.slice(8)}`} alt="attachment" />
+                  <Button
+                    id="fileUploadDelete"
+                    className="btn btn-default"
+                    onClick={() => deleteAttachmentsData(attachment.attachment_id, attachment.file_path, event_id)}
+                  >
+                    Delete Attachment
+                  </Button>
+                </div>
               ))}
             </CardContent>
           </Card>

@@ -37,7 +37,7 @@
     "migrate": "knex migrate:latest",
     "seed": "knex seed:run",
     "rollback": "knex migrate:down",
-    "data_reset": "knex migrate:latest && knex seed:run"
+    "data_reset": "knex migrate:rollback --all && knex migrate:up && knex migrate:up && knex seed:run && knex migrate:latest"
   },
   "eslintConfig": {
     "extends": [

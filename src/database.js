@@ -1,8 +1,8 @@
+const fs = require('fs');
 // const defaultData = require('./database/defaultData');
 // require('dotenv').config()
 const knexConfig = require('../knexfile');
 const knex = require('knex')(knexConfig[process.env.NODE_ENV || 'development'])
-
 // knex.schema.dropTableIfExists('blah');
 
 // knex.schema.createTable('events', function (table) {
@@ -112,7 +112,7 @@ const updateEvent = (request, response) => {
 
 const deleteEvent = (request, response) => {
 	const { event_id } = request.body
-  knex('events').where({event_id}).del()
+  knex.select().from('events', 'attachments').where({event_id}).del()
 		.then(res => response.status(200).send({
       message: `Event deleted with ID: ${event_id}`,
       id: event_id
@@ -134,9 +134,7 @@ const createAttachment = (request, response) => {
     data: res,
     message: `Attachment created with event ID ${res[0].event_id}`
   }))
-  .then(() => {
-    return knex('events').whereIn('event_id', eventsToUpdate).update({hasAttachments: true})
-  })
+  .then(() => knex('events').whereIn('event_id', eventsToUpdate).update({hasAttachments: true}))
   .catch(e => console.log(e.stack));
 };
 
@@ -146,6 +144,25 @@ const getAttachments = (request, response) => {
     .then(res => response.status(200).json(res))
     .catch(e => console.log(e.stack));
 };
+
+const deleteAttachments = (request, response) => {
+  const { attachment_id } = request.params;
+  const { file_path, event_id } = request.body;
+
+  knex('attachments').where({attachment_id: parseInt(attachment_id)}).del()
+    .then(res => response.status(200).send({
+      message: `Attachment deleted with ID: ${attachment_id}`,
+      id: attachment_id
+    }))
+    .then(() => knex('events').where({event_id}).update({hasAttachments: false}))
+    .then(() => {
+      fs.unlink(file_path, (err) => {
+        if (err) throw err;
+        console.log(`${file_path} was deleted`);
+      })
+    })
+    .catch(e => console.log(e.stack));
+}
 
 //deleteTable,
 module.exports = {
@@ -157,5 +174,6 @@ module.exports = {
   updateEvent,
   deleteEvent,
   createAttachment,
-  getAttachments
+  getAttachments,
+  deleteAttachments
 };
