@@ -4,6 +4,7 @@ const bodyParser = require('body-parser');
 const db = require('./database');
 const app = express();
 const port = 8080;
+app.use(express.static('uploads'))
 
 app.use(bodyParser.json())
 app.use(
@@ -41,9 +42,9 @@ app.get('/events', db.getEvents);
 app.get('/events/:year', db.getEventsByYear);
 app.get('/events/:year/:month', db.getEventsByMonth);
 app.get('/events/:year/:month/:day', db.getEventsByDay);
-// app.get('/attachments', db.getAttachments);
+app.get('/attachments/:event_id', db.getAttachments);
 app.post('/events', db.createEvent);
-app.post('/attachments', upload.single('file'), db.createAttachment);
+app.post('/attachments/:event_id', upload.single('file'), db.createAttachment);
 app.put('/events', db.updateEvent);
 app.delete('/events', db.deleteEvent);
 

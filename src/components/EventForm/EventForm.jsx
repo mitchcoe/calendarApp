@@ -1,9 +1,10 @@
-import { useState, useCallback, useMemo } from 'react';
+import { useState,  useMemo } from 'react';
 import * as React from 'react'
 import dayjs from 'dayjs';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import CloseIcon from '@mui/icons-material/Close';
+import AttachFileIcon from '@mui/icons-material/AttachFile';
 import {MobileDatePicker, MobileTimePicker, LocalizationProvider} from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import {
@@ -24,6 +25,7 @@ import { useSelector, useDispatch } from 'react-redux'
 // eslint-disable-next-line no-unused-vars
 import { getEvents, createEvents, updateEvents, deleteEvents } from '../../slices/eventSlice';
 import { clearEventChanges, handleEventChanges, toggleEditingState, setValidState } from '../../slices/formSlice';
+import AttachmentsModal from '../AttachmentsModal/AttachmentsModal'
 /** @jsx jsx */
 /** @jsxRuntime classic */
 // eslint-disable-next-line no-unused-vars
@@ -39,6 +41,7 @@ export default function EventForm(props) {
   const [dateValue, setDateValue] = useState('');
   const [error, setError] = useState(null);
   const [modalOpen, setModalOpen] = useState(false)
+  const [attachmentsModalOpen, setAttachmentsModalOpen] = useState(false)
 
   const errorMessage = useMemo(() => {
     switch (error) {
@@ -67,9 +70,8 @@ export default function EventForm(props) {
 
   // eslint-disable-next-line no-unused-vars
   const events = useSelector((state) => state.events.eventList);
-  const formId = useSelector((state) => state.form.event_id);
   const editingEnabled = useSelector((state) => state.form.editing);
-  const { title, description, location, phone, date, start_time, end_time, anchorType, valid } = useSelector((state) => state.form)
+  const { title, description, location, phone, date, start_time, end_time, anchorType, valid, hasAttachments, event_id } = useSelector((state) => state.form)
   // eslint-disable-next-line no-unused-vars
   const { handleClick, eventId, handleClose} = props;
   const dispatch = useDispatch();
@@ -108,7 +110,7 @@ export default function EventForm(props) {
   };
 
   const updateEvent = async () => {
-    let updatedObject = { event_id: formId };
+    let updatedObject = { event_id };
     let formChanges = {
       title,
       description,
@@ -144,7 +146,7 @@ export default function EventForm(props) {
       headers: {
         "Content-Type": "application/json"
       },
-      body: JSON.stringify({event_id: formId}),
+      body: JSON.stringify({ event_id }),
     })
       .then(response => response.json())
       .then(response => dispatch(deleteEvents(response.id)))
@@ -218,6 +220,9 @@ export default function EventForm(props) {
     setModalOpen(false);
     deleteEvent();
   };
+
+  const handleAttachmentsModalOpen = () => setAttachmentsModalOpen(true)
+  const handleAttachmentsModalClose = () => setAttachmentsModalOpen(false)
 
   const cardHeaderStyles = {
     display: 'flex',
@@ -362,6 +367,9 @@ export default function EventForm(props) {
                   <IconButton sx={iconButtonStyles} onClick={handleEditToggle} data-testid="edit_button">
                     <EditIcon />
                   </IconButton>
+                  <IconButton sx={iconButtonStyles} onClick={handleAttachmentsModalOpen} data-testid="attachment_button">
+                    <AttachFileIcon />
+                  </IconButton>
                   <IconButton sx={iconButtonStyles} onClick={handleModalOpen} data-testid="delete_button">
                     <DeleteIcon />
                   </IconButton>
@@ -428,6 +436,13 @@ export default function EventForm(props) {
         </CardActions>
       </Card>
       <DeleteModal data-testid="delete_modal"/>
+      <AttachmentsModal
+        attachmentsModalOpen={attachmentsModalOpen}
+        handleAttachmentsModalClose={handleAttachmentsModalClose}
+        modalStyles={modalStyles}
+        hasAttachments={hasAttachments}
+        event_id={event_id}
+      />
     </Box>
   )
 };

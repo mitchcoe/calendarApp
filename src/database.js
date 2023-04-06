@@ -121,16 +121,17 @@ const deleteEvent = (request, response) => {
 };
 
 const createAttachment = (request, response) => {
+  const { event_id } = request.params
   let eventsToUpdate = knex.raw(`select events.event_id from events, attachments
                                   where events.event_id = attachments.event_id`)
   knex('attachments').insert({
     file_type: request.file.mimetype,
     file_name: request.file.originalname,
     file_path: request.file.path,
-    event_id: 2 //this needs to change
-  }, ['event_id'])
+    event_id: parseInt(event_id)
+  }, ['*'])
   .then(res => response.status(200).send({
-    id: res[0].event_id,
+    data: res,
     message: `Attachment created with event ID ${res[0].event_id}`
   }))
   .then(() => {
@@ -139,17 +140,12 @@ const createAttachment = (request, response) => {
   .catch(e => console.log(e.stack));
 };
 
-// const getAttachments = (request, response) => {
-//   console.log('hello?')
-//   const { event_id } = request.body
-//   // knex.raw(`select encode(file_data, 'base64') from attachments where event_id = 1`)
-//   knex('attachments').where({event_id})
-//     .then(res => {
-//       console.log(res)
-//       response.status(200).json(res.rows)
-//     })
-//     .catch(e => console.log(e.stack));
-// };
+const getAttachments = (request, response) => {
+  const { event_id } = request.params
+  knex('attachments').where({event_id: parseInt(event_id)})
+    .then(res => response.status(200).json(res))
+    .catch(e => console.log(e.stack));
+};
 
 //deleteTable,
 module.exports = {
@@ -161,5 +157,5 @@ module.exports = {
   updateEvent,
   deleteEvent,
   createAttachment,
-  // getAttachments
+  getAttachments
 };

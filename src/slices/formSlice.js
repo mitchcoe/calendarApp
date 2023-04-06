@@ -11,6 +11,7 @@ const defaultFormState = {
   valid: true,
   hasAttachments: false,
   hasReminders: false,
+  attachmentsList: [],
 };
 
 const closedState = {
@@ -50,9 +51,30 @@ export const formSlice = createSlice({
     },
     setValidState: (state, action) => {
       state.valid = action.payload
-    }
+    },
+    getAttachments: (state, action) => {
+      // console.log('getAttachment', action.payload)
+      let attachments = action.payload
+      state.attachmentsList = attachments
+    },
+    addAttachments: (state, action) => {
+      // console.log('addAttachment', action.payload)
+      let attachment = action.payload
+      state.attachmentsList.push(...attachment)
+    },
+    // deleteAttachments: (state, action) => {
+    // },
   },
 });
 
-export const { toggleEventForm, handleEventChanges, clearEventChanges, toggleEditingState, setValidState } = formSlice.actions;
+export const {
+  toggleEventForm,
+  handleEventChanges,
+  clearEventChanges,
+  toggleEditingState,
+  setValidState,
+  getAttachments,
+  addAttachments,
+  // deleteAttachments
+} = formSlice.actions;
 export default formSlice.reducer;
