@@ -1,23 +1,6 @@
 const fs = require('fs');
-// const defaultData = require('./database/defaultData');
-// require('dotenv').config()
 const knexConfig = require('../knexfile');
 const knex = require('knex')(knexConfig[process.env.NODE_ENV || 'development'])
-// knex.schema.dropTableIfExists('blah');
-
-// knex.schema.createTable('events', function (table) {
-//   table.increments('event_id').primary().notNullable();
-//   table.string('title').notNullable();
-//   table.string('description').notNullable();
-//   table.string('location').notNullable();
-//   table.string('phone').notNullable();
-//   table.timestamp('date').notNullable();
-//   table.timestamp('start_time').notNullable();
-//   table.timestamp('end_time').notNullable();
-// });
-
-// const deleteTable = knex('events').insert(defaultData, ['event_id'])
-// const deleteTable = knex.schema.dropTableIfExists('blah')
 
 const getEvents = (req, response) => {
 	knex.select().from('events')

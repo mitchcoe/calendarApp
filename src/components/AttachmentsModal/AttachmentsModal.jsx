@@ -1,25 +1,27 @@
-import { useEffect, useCallback } from 'react';
+import { useEffect, useCallback, useState } from 'react';
 import {
   Box,
-  Card,
+  // Card,
   // CardActions,
-  CardContent,
+  // CardContent,
   Button,
   // ButtonGroup,
-  // TextField,
+  TextField,
   // IconButton,
-  CardHeader,
-  Typography,
-  Modal, 
+  // CardHeader,
+  // Typography,
+  Modal,
+  Stack,
   // Tooltip,
 } from '@mui/material';
 import { useSelector, useDispatch } from 'react-redux'
 import { getAttachments, addAttachments, deleteAttachments } from '../../slices/formSlice';
-// import AttachmentsPreview from './AttachmentsPreview
+import AttachmentsPreview from '../AttachmentsPreview/AttachmentsPreview'
 
 export default function AttachmentsModal(props) {
   const { attachmentsModalOpen, handleAttachmentsModalClose, modalStyles, hasAttachments, event_id } = props;
   const attachmentsList = useSelector((state) => state.form.attachmentsList);
+  const [attachmentFileName, setAttachmentFileName] = useState('')
   const dispatch = useDispatch();
 
   const getAttachmentsData = useCallback( async () => {
@@ -68,58 +70,72 @@ export default function AttachmentsModal(props) {
       aria-labelledby="modal-modal-title"
       aria-describedby="modal-modal-description"
     >
-      <Box sx={modalStyles}>
+      <Box sx={[modalStyles, {width: 700, maxHeight: 700}]}>
         <form
           action="/attachments"
           encType="multipart/form-data"
           method="post"
           id="fileUploadForm"
         >
-          <input
-            type="file"
-            accept="image/*"
-            name="file"
-            id="fileUploadInput"
-            // inputProps={{
-            //   name: "file",
-            //   type: "file",
-            //   accept: "image/*"
-            // }}
-          />
-          <Button
-            type="submit"
-            id="fileUploadSubmit"
-            className="btn btn-default"
-            onClick={fileUpload}
-          >
-            Add Attachments
-          </Button>
+          <Stack direction="row" alignItems="center" spacing={2}>
+            <Button variant="contained" component="label">
+              Choose file:
+              <input
+                type="file"
+                accept="image/*"
+                name="file"
+                id="fileUploadInput"
+                multiple
+                hidden
+                onChange={(e) => setAttachmentFileName(e.target.value.slice(e.target.value.lastIndexOf('\\') + 1))}
+              />
+            </Button>
+            <TextField
+              value={attachmentFileName}
+              label="Selected File:"
+              variant="outlined"
+              inputProps={{
+                readOnly: true,
+                multiple: true,
+              }}
+            />
+            <Button
+              type="submit"
+              id="fileUploadSubmit"
+              className="btn btn-default"
+              onClick={fileUpload}
+              variant="contained"
+            >
+              Add Attachment
+            </Button>
+          </Stack>
         </form>
         {attachmentsList?.length ? (
-          <Card>
-            <CardHeader
-              // sx={cardHeaderStyles}
-              title={
-                <Typography>
-                  Attachments:
-                </Typography>
-              }
-            />
-            <CardContent sx={{display: 'flex'}}>
-              {attachmentsList.map((attachment) => (
-                <div key={`${attachment.attachment_id}`}>
-                  <img src={`${attachment.file_path.slice(8)}`} alt="attachment" />
-                  <Button
-                    id="fileUploadDelete"
-                    className="btn btn-default"
-                    onClick={() => deleteAttachmentsData(attachment.attachment_id, attachment.file_path, event_id)}
-                  >
-                    Delete Attachment
-                  </Button>
-                </div>
-              ))}
-            </CardContent>
-          </Card>
+          // <Card>
+          //   <CardHeader
+          //     // sx={cardHeaderStyles}
+          //     title={
+          //       <Typography>
+          //         Attachments:
+          //       </Typography>
+          //     }
+          //   />
+          //   <CardContent sx={{display: 'flex'}}>
+          //     {attachmentsList.map((attachment) => (
+          //       <div key={`${attachment.attachment_id}`}>
+          //         <img src={`${attachment.file_path.slice(8)}`} alt="attachment" />
+          //         <Button
+          //           id="fileUploadDelete"
+          //           className="btn btn-default"
+          //           onClick={() => deleteAttachmentsData(attachment.attachment_id, attachment.file_path, event_id)}
+          //         >
+          //           Delete Attachment
+          //         </Button>
+          //       </div>
+          //     ))}
+          //   </CardContent>
+          // </Card>
+          <AttachmentsPreview attachmentsList={attachmentsList} event_id={event_id} mode="select"/>
         ) : null}
       </Box>
     </Modal>
