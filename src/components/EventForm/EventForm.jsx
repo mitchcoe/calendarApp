@@ -386,14 +386,6 @@ export default function EventForm(props) {
           {customTextField('Description', description)}
           {customTextField('Location', location)}
           {customTextField('Phone', phone)}
-          {/* <form action="/attachments" encType="multipart/form-data" method="post">
-            <input
-              type="file"
-              accept="image/*"
-              onChange={fileUpload}
-              name="image"
-            />
-          </form> */}
           <LocalizationProvider dateAdapter={AdapterDayjs}>
             <MobileDatePicker
               data-testid="date_picker"

@@ -12,6 +12,7 @@ const defaultFormState = {
   hasAttachments: false,
   hasReminders: false,
   attachmentsList: [],
+  attachmentPreviews: [],
 };
 
 const closedState = {
@@ -67,6 +68,18 @@ export const formSlice = createSlice({
       const itemToDelete = state.attachmentsList.findIndex(item => item.attachment_id === action.payload)
       if (itemToDelete !== - 1) state.attachmentsList.splice(itemToDelete, 1)
     },
+    setAttachmentPreviews: (state, action) => {
+      // console.log('setAttachmentPreviews', action)
+      let preview = action.payload;
+      state.attachmentPreviews.push(preview)
+    },
+    deleteAttachmentPreviews: (state, action) => {
+      const itemToDelete = state.attachmentPreviews.findIndex(item => item.file_name === action.payload)
+      if (itemToDelete !== - 1) state.attachmentPreviews.splice(itemToDelete, 1)
+    },
+    clearAttachmentPreviews: (state, action) => {
+      state.attachmentPreviews = [];
+    },
   },
 });
 
@@ -79,5 +92,8 @@ export const {
   getAttachments,
   addAttachments,
   deleteAttachments,
+  setAttachmentPreviews,
+  deleteAttachmentPreviews,
+  clearAttachmentPreviews,
 } = formSlice.actions;
 export default formSlice.reducer;

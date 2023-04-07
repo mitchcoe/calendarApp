@@ -1,4 +1,4 @@
-import { useEffect, useCallback, useState } from 'react';
+import { useEffect, useCallback } from 'react';
 import {
   Box,
   // Card,
@@ -6,7 +6,7 @@ import {
   // CardContent,
   Button,
   // ButtonGroup,
-  TextField,
+  // TextField,
   // IconButton,
   // CardHeader,
   // Typography,
@@ -15,13 +15,18 @@ import {
   // Tooltip,
 } from '@mui/material';
 import { useSelector, useDispatch } from 'react-redux'
-import { getAttachments, addAttachments, deleteAttachments } from '../../slices/formSlice';
+import {
+  getAttachments,
+  addAttachments,
+  // deleteAttachments,
+  setAttachmentPreviews,
+} from '../../slices/formSlice';
 import AttachmentsPreview from '../AttachmentsPreview/AttachmentsPreview'
 
 export default function AttachmentsModal(props) {
   const { attachmentsModalOpen, handleAttachmentsModalClose, modalStyles, hasAttachments, event_id } = props;
-  const attachmentsList = useSelector((state) => state.form.attachmentsList);
-  const [attachmentFileName, setAttachmentFileName] = useState('')
+  const attachmentPreviews = useSelector((state) => state.form.attachmentPreviews);
+  // const attachmentsList = useSelector((state) => state.form.attachmentsList);
   const dispatch = useDispatch();
 
   const getAttachmentsData = useCallback( async () => {
@@ -29,25 +34,25 @@ export default function AttachmentsModal(props) {
       .then(response => response.json())
       .then(response => dispatch(getAttachments(response)))
       .catch(error => console.log(error));
-  },[dispatch, event_id])
+  },[dispatch, event_id]);
 
-  const deleteAttachmentsData = async (attachment_id, file_path, event_id) => {
-    await fetch(`/attachments/${attachment_id}`, {
-      method: 'DELETE',
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({file_path, event_id})
-    })
-    .then(response => response.json())
-    .then(response => dispatch(deleteAttachments(response.id)))
-    .then(() => getAttachmentsData())
-    .catch(error => console.log(error));
-  }
+  // const deleteAttachmentsData = async (attachment_id, file_path, event_id) => {
+  //   await fetch(`/attachments/${attachment_id}`, {
+  //     method: 'DELETE',
+  //     headers: {
+  //       "Content-Type": "application/json"
+  //     },
+  //     body: JSON.stringify({file_path, event_id})
+  //   })
+  //   .then(response => response.json())
+  //   .then(response => dispatch(deleteAttachments(response.id)))
+  //   .then(() => getAttachmentsData())
+  //   .catch(error => console.log(error));
+  // };
 
   useEffect(() => {
     if(hasAttachments && attachmentsModalOpen) getAttachmentsData()
-  }, [getAttachmentsData, hasAttachments, attachmentsModalOpen])
+  }, [getAttachmentsData, hasAttachments, attachmentsModalOpen]);
 
   const fileUpload = async (event) => {
     event.preventDefault()
@@ -60,8 +65,27 @@ export default function AttachmentsModal(props) {
     })
     .then(response => response.json())
     .then(response => dispatch(addAttachments(response.data)))
+    .then(() => handleAttachmentsModalClose())
     .catch(error => console.log(error));
-  }
+  };
+
+  const handleAddPreview = (e) => {
+    const files = [...e.target.files];
+
+    files.forEach(async (file) => {
+      let filereader = new FileReader();
+      filereader.onload = async (val) => {
+        let attachment = {
+          file_type: file.type,
+          file_path: filereader.result,
+          file_name: file.name,
+          event_id: event_id,
+        }
+        dispatch(setAttachmentPreviews(attachment))
+      };
+      filereader.readAsDataURL(file)
+    });
+  };
 
   return (
     <Modal
@@ -77,7 +101,7 @@ export default function AttachmentsModal(props) {
           method="post"
           id="fileUploadForm"
         >
-          <Stack direction="row" alignItems="center" spacing={2}>
+          <Stack direction="row" alignItems="center" spacing={8}>
             <Button variant="contained" component="label">
               Choose file:
               <input
@@ -87,18 +111,9 @@ export default function AttachmentsModal(props) {
                 id="fileUploadInput"
                 multiple
                 hidden
-                onChange={(e) => setAttachmentFileName(e.target.value.slice(e.target.value.lastIndexOf('\\') + 1))}
+                onChange={handleAddPreview}
               />
             </Button>
-            <TextField
-              value={attachmentFileName}
-              label="Selected File:"
-              variant="outlined"
-              inputProps={{
-                readOnly: true,
-                multiple: true,
-              }}
-            />
             <Button
               type="submit"
               id="fileUploadSubmit"
@@ -106,36 +121,16 @@ export default function AttachmentsModal(props) {
               onClick={fileUpload}
               variant="contained"
             >
-              Add Attachment
+              Add Attachments
             </Button>
           </Stack>
         </form>
-        {attachmentsList?.length ? (
-          // <Card>
-          //   <CardHeader
-          //     // sx={cardHeaderStyles}
-          //     title={
-          //       <Typography>
-          //         Attachments:
-          //       </Typography>
-          //     }
-          //   />
-          //   <CardContent sx={{display: 'flex'}}>
-          //     {attachmentsList.map((attachment) => (
-          //       <div key={`${attachment.attachment_id}`}>
-          //         <img src={`${attachment.file_path.slice(8)}`} alt="attachment" />
-          //         <Button
-          //           id="fileUploadDelete"
-          //           className="btn btn-default"
-          //           onClick={() => deleteAttachmentsData(attachment.attachment_id, attachment.file_path, event_id)}
-          //         >
-          //           Delete Attachment
-          //         </Button>
-          //       </div>
-          //     ))}
-          //   </CardContent>
-          // </Card>
-          <AttachmentsPreview attachmentsList={attachmentsList} event_id={event_id} mode="select"/>
+        {attachmentPreviews?.length ? (
+          <AttachmentsPreview
+            attachmentsList={attachmentPreviews}
+            event_id={event_id}
+            mode="preview"
+          />
         ) : null}
       </Box>
     </Modal>
