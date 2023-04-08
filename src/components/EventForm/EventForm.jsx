@@ -1,10 +1,11 @@
-import { useState,  useMemo } from 'react';
+import { useState,  useMemo, useCallback, useEffect } from 'react';
 import * as React from 'react'
 import dayjs from 'dayjs';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import CloseIcon from '@mui/icons-material/Close';
 import AttachFileIcon from '@mui/icons-material/AttachFile';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import {MobileDatePicker, MobileTimePicker, LocalizationProvider} from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import {
@@ -20,12 +21,16 @@ import {
   Typography,
   Modal, 
   Tooltip,
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
 } from '@mui/material';
 import { useSelector, useDispatch } from 'react-redux'
 // eslint-disable-next-line no-unused-vars
 import { getEvents, createEvents, updateEvents, deleteEvents } from '../../slices/eventSlice';
-import { clearEventChanges, handleEventChanges, toggleEditingState, setValidState } from '../../slices/formSlice';
+import { clearEventChanges, handleEventChanges, toggleEditingState, setValidState, getAttachments } from '../../slices/formSlice';
 import AttachmentsModal from '../AttachmentsModal/AttachmentsModal'
+import AttachmentsPreview from '../AttachmentsPreview/AttachmentsPreview';
 /** @jsx jsx */
 /** @jsxRuntime classic */
 // eslint-disable-next-line no-unused-vars
@@ -71,7 +76,10 @@ export default function EventForm(props) {
   // eslint-disable-next-line no-unused-vars
   const events = useSelector((state) => state.events.eventList);
   const editingEnabled = useSelector((state) => state.form.editing);
-  const { title, description, location, phone, date, start_time, end_time, anchorType, valid, hasAttachments, event_id } = useSelector((state) => state.form)
+  const { title, description, location,
+          phone, date, start_time,
+          end_time, anchorType, valid,
+          hasAttachments, event_id, attachmentsList } = useSelector((state) => state.form)
   // eslint-disable-next-line no-unused-vars
   const { handleClick, eventId, handleClose} = props;
   const dispatch = useDispatch();
@@ -93,6 +101,17 @@ export default function EventForm(props) {
   //     .then(response => dispatch(getEvents(response)))
   //     .catch(error => console.log(error));
   // }, [dispatch]);
+
+  const getAttachmentsData = useCallback( async () => {
+    await fetch(`/attachments/${event_id}`)
+      .then(response => response.json())
+      .then(response => dispatch(getAttachments(response)))
+      .catch(error => console.log(error));
+  },[dispatch, event_id]);
+
+  useEffect(() => {
+    if(hasAttachments) getAttachmentsData()
+  }, [getAttachmentsData, hasAttachments]);
 
   const createEvent = async () => {
     await fetch('/events', {
@@ -351,7 +370,13 @@ export default function EventForm(props) {
   })
 
   return(
-    <Box component="form" encType="multipart/form-data" autoComplete="off" sx={{minWidth: '300px', width: '30vw'}} data-testid="event_form">
+    <Box
+      component="form"
+      encType="multipart/form-data"
+      autoComplete="off"
+      sx={{minWidth: '300px', width: '30vw'}}
+      data-testid="event_form"
+    >
       <Card>
         <CardHeader
           sx={cardHeaderStyles}
@@ -402,6 +427,36 @@ export default function EventForm(props) {
             {startTimePicker}
             {endTimePicker}
           </LocalizationProvider>
+          {attachmentsList?.length ? (
+          <Accordion
+            sx={{
+              position: 'fixed',
+              bottom: 0,
+              zIndex: "1000",
+              width: '100%',
+              ml: '-16px !important',
+              borderTop: '1px solid black',
+            }}
+          >
+            <AccordionSummary
+              expandIcon={<ExpandMoreIcon />}
+              aria-controls="attachments-content"
+              id="attachments-header"
+              sx={{bgcolor: 'white', borderBottom: '1px solid black',}}
+            >
+              <Typography>
+                Attachments
+              </Typography>
+            </AccordionSummary>
+            <AccordionDetails sx={{height: '100%'}}>
+              <AttachmentsPreview
+                attachmentsList={attachmentsList}
+                event_id={event_id}
+                mode="current"
+              />
+            </AccordionDetails>
+          </Accordion>
+          ) : null}
         </CardContent>
         <CardActions id="submit_buttons" sx={buttonContainerStyles}>
           <Button //form needs validation before this should be enabled

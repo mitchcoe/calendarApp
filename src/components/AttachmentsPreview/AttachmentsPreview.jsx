@@ -5,6 +5,8 @@ import ListSubheader from '@mui/material/ListSubheader';
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
 import DeleteIcon from '@mui/icons-material/Delete';
+import { useTheme } from '@mui/material/styles';
+import useMediaQuery from '@mui/material/useMediaQuery';
 
 import { useDispatch } from 'react-redux'
 import {
@@ -15,6 +17,11 @@ import {
 } from '../../slices/formSlice';
 
 export default function AttachmentsPreview(props) {
+  const theme = useTheme();
+  const small = useMediaQuery(theme.breakpoints.down('sm'))
+  const medium = useMediaQuery(theme.breakpoints.down('md'))
+  const large = useMediaQuery(theme.breakpoints.down('lg'))
+
   const { attachmentsList, event_id, mode } = props;
   // console.log('AttachmentsPreview', attachmentsList, event_id)
   const dispatch = useDispatch();
@@ -50,15 +57,22 @@ export default function AttachmentsPreview(props) {
 
   return (
     <ImageList sx={{ width: '100%', height: 'auto', maxHeight: 300, maxWidth: 600 }}>
-      <ImageListItem key="Subheader" cols={3}>
+      <ImageListItem 
+        key="Subheader"
+        cols={(small && 1) || (medium && 2) || (large && 2) || 3}
+        // cols={3}
+      >
       <ListSubheader component="div">
         <Typography>
-          {mode === 'preview' ? 'Selected Files' : 'Attachments'}
+          {mode === 'preview' ? 'Selected Files' : ''}
         </Typography>
       </ListSubheader>
       </ImageListItem>
       {attachmentsList.map((attachment, index) => (
-        <ImageListItem key={mode === 'preview' ? attachment.file_name + index : attachment.attachment_id} sx={{maxHeight: 200, maxWidth: 200}}>
+        <ImageListItem
+          key={mode === 'preview' ? attachment.file_name + index : attachment.attachment_id}
+          sx={{maxHeight: 200, maxWidth: 200, minWidth: 200}}
+        >
           {mode === 'preview' ? (
             <img 
               src={`${attachment.file_path}`}

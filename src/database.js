@@ -137,7 +137,13 @@ const deleteAttachments = (request, response) => {
       message: `Attachment deleted with ID: ${attachment_id}`,
       id: attachment_id
     }))
-    .then(() => knex('events').where({event_id}).update({hasAttachments: false}))
+    .then(() => knex('attachments').where({event_id}))
+    .then((res) => {
+      if(res.length === 0) {
+        return knex('events').where({event_id}).update({hasAttachments: false})
+      }
+      return;
+    })
     .then(() => {
       fs.unlink(file_path, (err) => {
         if (err) throw err;
