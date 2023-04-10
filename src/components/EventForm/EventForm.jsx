@@ -174,12 +174,12 @@ export default function EventForm(props) {
 
   const handleCreateSubmit = (event) => {
     createEvent();
-    handleClick(event);
+    handleClose(event);
   };
 
   const handleUpdateSubmit = (event) => {
     updateEvent();
-    handleClick(event)
+    handleClose(event)
   };
 
   // const handleDelete = (event) => {
@@ -431,7 +431,7 @@ export default function EventForm(props) {
           <Accordion
             sx={{
               position: 'fixed',
-              bottom: 0,
+              bottom: 55,
               zIndex: "1000",
               width: '100%',
               ml: '-16px !important',
@@ -439,7 +439,7 @@ export default function EventForm(props) {
             }}
           >
             <AccordionSummary
-              expandIcon={<ExpandMoreIcon />}
+              expandIcon={<ExpandMoreIcon sx={{transform: 'rotate(180deg)'}}/>}
               aria-controls="attachments-content"
               id="attachments-header"
               sx={{bgcolor: 'white', borderBottom: '1px solid black',}}
@@ -458,7 +458,7 @@ export default function EventForm(props) {
           </Accordion>
           ) : null}
         </CardContent>
-        <CardActions id="submit_buttons" sx={buttonContainerStyles}>
+        <CardActions id="submit_buttons" sx={[buttonContainerStyles, {mt: 4}]}>
           <Button //form needs validation before this should be enabled
             data-testid="submit_button"
             id="submit"

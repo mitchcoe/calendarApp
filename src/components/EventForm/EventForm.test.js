@@ -101,7 +101,7 @@ test('handleCreateSubmit function', async () => { //works
   let test = screen.getByTestId('submit_button')
   expect(test).toHaveTextContent('Create')
   userEvent.click(test)
-  expect(testProps.handleClick).toHaveBeenCalled()
+  expect(testProps.handleClose).toHaveBeenCalled()
 });
 
 test('handleUpdateSubmit function', () => { //works
@@ -109,7 +109,7 @@ test('handleUpdateSubmit function', () => { //works
   let test = screen.getByTestId('submit_button')
   expect(test).toHaveTextContent('Update')
   userEvent.click(test)
-  expect(testProps.handleClick).toHaveBeenCalled()
+  expect(testProps.handleClose).toHaveBeenCalled()
 });
 
 describe('Delete Modal functions', () => { //works

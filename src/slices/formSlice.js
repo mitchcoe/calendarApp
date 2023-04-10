@@ -20,7 +20,6 @@ const closedState = {
   editing: false,
   anchorType: null,
   open: false,
-  anchorId: null,
   event_id: null,
   ...defaultFormState,
 }
@@ -31,6 +30,7 @@ export const formSlice = createSlice({
   },
   reducers: {
     toggleEventForm: (state, action) => {
+      // console.log(`i should turn ${action.payload.open === true ? 'on' : 'off'}`, action.payload)
       if(action.payload.open === true) {
         Object.assign(state, action.payload);
       } else {
@@ -38,12 +38,12 @@ export const formSlice = createSlice({
       }
     },
     handleEventChanges: (state, action) => {
-      // console.log('handle event change', action.payload, Object.values(Object.assign(state, action.payload)))
+      // console.log('handle event change', action.payload, Object.entries(Object.assign(state, action.payload)))
       Object.assign(state, action.payload);
     },
     clearEventChanges: (state, action) => {
       // let clear = Object.assign(state, defaultFormState);
-      // console.log(Object.values(clear))
+      // console.log('clearing', Object.values(clear))
       Object.assign(state, defaultFormState);
     },
     toggleEditingState: (state, action) => {

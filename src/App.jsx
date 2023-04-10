@@ -29,40 +29,32 @@ export default function App() {
 
   const handleClose = (event) => {
     setAnchorEl(null);
-    dispatch(toggleEventForm({
-      open: false,
-      anchorType: null,
-      event_id: null,
-    }));
+    dispatch(toggleEventForm({open: false}));
   };
 
   const handleClick = (event, props) => {
     // console.log('props', JSON.stringify(props))
-    if(props && open) {
+    if(open && anchorEl !== event.currentTarget) {
       dispatch(clearEventChanges())
       setAnchorEl(event.currentTarget);
-    } else {
-      setAnchorEl(anchorEl ? null : event.currentTarget);
+    } else if(open && anchorEl === event.currentTarget) {
+        return handleClose()
+    } else if(!open) {
+        setAnchorEl(event.currentTarget);
     }
+
     dispatch(toggleEventForm({
-      open: props && open ? open : !open,
+      open: open ? open : !open,
       anchorType: event.target.localName === 'td' ? 'Create' : 'Update',
       event_id: event.target.localName === 'td' ? null : props?.event_id
-    }))
-    if (props) dispatch(handleEventChanges({...props}));
+    }));
+
+    dispatch(handleEventChanges({...props}));
   };
-  // const open = Boolean(anchorEl)
+
   const id = open ? 'simple-popper' : undefined;
   // console.log('events rendered in app.jsx', events)
   // console.log("current events today", todaysEvents)
-  // const deleteTable = useCallback(async() => {
-  //   await fetch('/', {
-  //     method:'DELETE',
-  //     headers: {
-  //       "Content-Type": "application/json"
-  //     },
-  //   })
-  // }, [])
 
   const getEventsData = useCallback(async () => {
     await fetch('/events')
