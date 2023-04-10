@@ -28,7 +28,14 @@ import {
 import { useSelector, useDispatch } from 'react-redux'
 // eslint-disable-next-line no-unused-vars
 import { getEvents, createEvents, updateEvents, deleteEvents } from '../../slices/eventSlice';
-import { clearEventChanges, handleEventChanges, toggleEditingState, setValidState, getAttachments } from '../../slices/formSlice';
+import {
+  clearEventChanges,
+  handleEventChanges,
+  toggleEditingState,
+  setValidState,
+  getAttachments,
+  clearAttachmentPreviews
+} from '../../slices/formSlice';
 import AttachmentsModal from '../AttachmentsModal/AttachmentsModal'
 import AttachmentsPreview from '../AttachmentsPreview/AttachmentsPreview';
 /** @jsx jsx */
@@ -241,7 +248,10 @@ export default function EventForm(props) {
   };
 
   const handleAttachmentsModalOpen = () => setAttachmentsModalOpen(true)
-  const handleAttachmentsModalClose = () => setAttachmentsModalOpen(false)
+  const handleAttachmentsModalClose = () => {
+    setAttachmentsModalOpen(false);
+    dispatch(clearAttachmentPreviews());
+  }
 
   const cardHeaderStyles = {
     display: 'flex',

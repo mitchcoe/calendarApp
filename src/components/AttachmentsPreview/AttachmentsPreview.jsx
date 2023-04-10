@@ -13,7 +13,6 @@ import {
   getAttachments,
   deleteAttachments,
   deleteAttachmentPreviews,
-  // clearAttachmentPreviews,
 } from '../../slices/formSlice';
 
 export default function AttachmentsPreview(props) {
@@ -51,27 +50,31 @@ export default function AttachmentsPreview(props) {
     dispatch(deleteAttachmentPreviews(file_name))
   };
 
-  // const handleClearPreviews = () => {
-  //   dispatch(clearAttachmentPreviews())
-  // };
+  const imageListStyles = {
+    width: '100%',
+    height: 'auto',
+    maxHeight: 300,
+    maxWidth: mode === 'preview' ? 600 : 500
+  }
 
   return (
-    <ImageList sx={{ width: '100%', height: 'auto', maxHeight: 300, maxWidth: 600 }}>
-      <ImageListItem 
-        key="Subheader"
-        cols={(small && 1) || (medium && 2) || (large && 2) || 3}
-        // cols={3}
-      >
-      <ListSubheader component="div">
-        <Typography>
-          {mode === 'preview' ? 'Selected Files' : ''}
-        </Typography>
-      </ListSubheader>
-      </ImageListItem>
+    <ImageList sx={imageListStyles}>
+      {mode === 'preview' ? (
+        <ImageListItem
+          key="Subheader"
+          cols={(small && 1) || (medium && 2) || (large && 2) || 3}
+        >
+        <ListSubheader component="div">
+          <Typography>
+            Selected Files
+          </Typography>
+        </ListSubheader>
+        </ImageListItem>
+      ) : null}
       {attachmentsList.map((attachment, index) => (
         <ImageListItem
           key={mode === 'preview' ? attachment.file_name + index : attachment.attachment_id}
-          sx={{maxHeight: 200, maxWidth: 200, minWidth: 200}}
+          sx={{maxHeight: 200, maxWidth: mode === 'preview' ? 180 : 200, }}
         >
           {mode === 'preview' ? (
             <img 
