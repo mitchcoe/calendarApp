@@ -402,12 +402,16 @@ export default function EventForm(props) {
                   <IconButton sx={iconButtonStyles} onClick={handleEditToggle} data-testid="edit_button">
                     <EditIcon />
                   </IconButton>
-                  <IconButton sx={iconButtonStyles} onClick={handleAttachmentsModalOpen} data-testid="attachment_button">
-                    <AttachFileIcon />
-                  </IconButton>
-                  <IconButton sx={iconButtonStyles} onClick={handleModalOpen} data-testid="delete_button">
-                    <DeleteIcon />
-                  </IconButton>
+                  {editingEnabled ? (
+                    <React.Fragment>
+                      <IconButton sx={iconButtonStyles} onClick={handleAttachmentsModalOpen} data-testid="attachment_button">
+                        <AttachFileIcon />
+                      </IconButton>
+                      <IconButton sx={iconButtonStyles} onClick={handleModalOpen} data-testid="delete_button">
+                        <DeleteIcon />
+                      </IconButton>
+                    </React.Fragment>
+                  ): null }
                 </React.Fragment>
               )}
               <IconButton sx={iconButtonStyles} onClick={handleClose} data-testid="close_button">

@@ -9,6 +9,9 @@ import Paper from "@mui/material/Paper";
 import Typography from "@mui/material/Typography";
 import {DatePicker, LocalizationProvider} from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import IconButton from '@mui/material/IconButton';
 import '../../App.css';
 import { useSelector, useDispatch } from 'react-redux'
 import { setSelectedDate } from '../../slices/eventSlice';
@@ -90,6 +93,14 @@ export default function Day(props) {
   const handleDateChange = async (date) => {
     await dispatch(setSelectedDate(monthDayYear(date)));
     setDatePickerValue(date)
+  };
+
+  const handleChangeDayByOne = (date, direction ) => {
+    let newDay = new Date(`${date}`)
+    let day = newDay.getUTCDate()
+    newDay.setUTCDate(direction === 'plus' ? day + 1 : day - 1 )
+
+    handleDateChange(dayjs(newDay))
   }
 
   return(
@@ -109,13 +120,21 @@ export default function Day(props) {
               <Typography color="white">
                 {dateFormatter(today)}
               </Typography>
-              <LocalizationProvider dateAdapter={AdapterDayjs}>
-                <DatePicker
-                  slotProps={datePickerSlotProps}
-                  value={datePickerValue || dayjs(new Date(today))}
-                  onChange={handleDateChange}
-                /> 
-              </LocalizationProvider>
+              <div style={{display: 'flex', justifyContent: 'center'}}>
+                <IconButton onClick={() => handleChangeDayByOne(today, 'minus')}>
+                  <ChevronLeftIcon sx={{color: 'white'}}/>
+                </IconButton>
+                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                  <DatePicker
+                    slotProps={datePickerSlotProps}
+                    value={datePickerValue || dayjs(new Date(today))}
+                    onChange={handleDateChange}
+                  /> 
+                </LocalizationProvider>
+                <IconButton onClick={() => handleChangeDayByOne(today, 'plus')}>
+                  <ChevronRightIcon sx={{color: 'white'}}/>
+                </IconButton>
+              </div>
             </TableCell>
           </TableRow>
         </TableHead>
