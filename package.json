@@ -37,7 +37,8 @@
     "migrate": "knex migrate:latest",
     "seed": "knex seed:run",
     "rollback": "knex migrate:down",
-    "data_reset": "knex migrate:rollback --all && knex migrate:up && knex migrate:up && knex seed:run && knex migrate:latest"
+    "seed_before_reminders": "knex seed:run --specific 01_initialize_default_data.js && knex seed:run --specific 02_initialize_attachments_data.js",
+    "data_reset": "knex migrate:rollback --all && knex migrate:up && knex migrate:up && yarn seed_before_reminders && knex migrate:latest && knex seed:run --specific 03_reminders.js"
   },
   "eslintConfig": {
     "extends": [

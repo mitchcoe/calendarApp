@@ -6,6 +6,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import CloseIcon from '@mui/icons-material/Close';
 import AttachFileIcon from '@mui/icons-material/AttachFile';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import NotificationsIcon from '@mui/icons-material/Notifications';
 import {MobileDatePicker, MobileTimePicker, LocalizationProvider} from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import {
@@ -38,6 +39,7 @@ import {
 } from '../../slices/formSlice';
 import AttachmentsModal from '../AttachmentsModal/AttachmentsModal'
 import AttachmentsPreview from '../AttachmentsPreview/AttachmentsPreview';
+import RemindersMenu from '../RemindersMenu/RemindersMenu';
 /** @jsx jsx */
 /** @jsxRuntime classic */
 // eslint-disable-next-line no-unused-vars
@@ -54,6 +56,8 @@ export default function EventForm(props) {
   const [error, setError] = useState(null);
   const [modalOpen, setModalOpen] = useState(false)
   const [attachmentsModalOpen, setAttachmentsModalOpen] = useState(false)
+  const [reminderMenuAnchor, setReminderMenuAnchor] = useState(false)
+  const reminderMenuOpen = Boolean(reminderMenuAnchor);
 
   const errorMessage = useMemo(() => {
     switch (error) {
@@ -251,7 +255,13 @@ export default function EventForm(props) {
   const handleAttachmentsModalClose = () => {
     setAttachmentsModalOpen(false);
     dispatch(clearAttachmentPreviews());
+  };
+
+  const handleReminderClick = (event) => {
+    setReminderMenuAnchor(event.currentTarget)
   }
+
+  const handleReminderMenuClose = () => setReminderMenuAnchor(null)
 
   const cardHeaderStyles = {
     display: 'flex',
@@ -414,6 +424,14 @@ export default function EventForm(props) {
                   ): null }
                 </React.Fragment>
               )}
+              <IconButton sx={iconButtonStyles} onClick={handleReminderClick} data-testid="reminder_button">
+                <NotificationsIcon />
+              </IconButton>
+              <RemindersMenu 
+                open={reminderMenuOpen}
+                anchorEl={reminderMenuAnchor}
+                onClose={handleReminderMenuClose}
+              />
               <IconButton sx={iconButtonStyles} onClick={handleClose} data-testid="close_button">
                 <CloseIcon />
               </IconButton>
