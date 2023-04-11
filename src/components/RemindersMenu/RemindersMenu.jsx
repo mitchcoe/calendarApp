@@ -1,4 +1,4 @@
-import { useState,  useMemo, useCallback, useEffect } from 'react';
+import { useCallback, useEffect } from 'react';
 import FormControl from '@mui/material/FormControl';
 import FormGroup from '@mui/material/FormGroup';
 import FormLabel from '@mui/material/FormLabel';
@@ -10,33 +10,79 @@ import Checkbox from '@mui/material/Checkbox';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 
-export default function RemindersMenu(props) {
-  const { open, anchorEl, onClose } = props
-  const [remindersOn, setRemindersOn] = useState(true)
-  const [reminderType, setReminderType] = useState('email')
-  const [checkedState, setCheckedState] = useState({
-    _15: false,
-    _30: true,
-    _45: false,
-    _60: true
-  });
+import { useSelector, useDispatch } from 'react-redux'
+import {
+  clearReminders,
+  updateTimeBefore,
+  getReminder,
+  updateReminder,
+  handleReminderChanges,
+} from '../../slices/reminderSlice'
 
-  const handleRemindersStatusChange = () => setRemindersOn(!remindersOn)
-  const handleTypeChange = (event) => setReminderType(event.target.value)
-  const handleTimeChange = (event) => {
-    setCheckedState({
-      ...checkedState,
-      [event.target.name]: event.target.checked
+export default function RemindersMenu(props) {
+  const { open, anchorEl, onClose, event_id } = props
+  const { type, reminders_on } = useSelector((state) => state.reminder)
+  const { _0 ,_15, _30, _45, _60 } = useSelector((state) => state.reminder.time_before)
+  const dispatch = useDispatch();
+
+  const getReminderData = useCallback( async () => {
+    await fetch(`/reminders/${event_id}`)
+      .then(response => response.json())
+      .then(response => dispatch(getReminder(response)))
+      .catch(error => console.log(error));
+  }, [dispatch, event_id])
+
+  useEffect(() => {
+    if(open) getReminderData()
+  }, [getReminderData, open]);
+
+  const updateReminderData = async () => {
+    let updatedObject = {
+      type,
+      reminders_on,
+    };
+    let times = ['15','30','45','60']
+    let result = ['0'];
+    [_15, _30, _45, _60].forEach((item, index) => {
+      if(item === true) result.push(times[index])
     })
+    result = result.join(' ')
+    updatedObject.time_before = result
+
+    await fetch(`/reminders/${event_id}`, {
+      method: 'PUT',
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(updatedObject),
+    })
+    .then(response => response.json())
+    .then(response => dispatch(updateReminder(response.updated)))
+    .catch(error => console.log(error));
+  };
+
+  const handleRemindersStatusChange = (event) => {
+    dispatch(handleReminderChanges({reminders_on: !reminders_on}))
   }
-  const { _15, _30, _45, _60 } = checkedState
+  const handleTypeChange = (event) => {
+    dispatch(handleReminderChanges({type: event.target.value}));
+  }
+
+  const handleTimeChange = (event) => {
+    dispatch(updateTimeBefore({[event.target.name]: event.target.checked}));
+  };
+
+  const handleClose = async (event) => {
+    await updateReminderData();
+    dispatch(clearReminders())
+    onClose();
+  }
 
   return(
     <Menu
       open={open}
       anchorEl={anchorEl}
-      onClose={onClose}
-      // onClick={(e) => e.stopPropagation()}
+      onClose={handleClose}
     >
       <FormControl>
         <MenuItem>
@@ -44,12 +90,12 @@ export default function RemindersMenu(props) {
             <FormControlLabel
               control={
                 <Switch
-                  checked={remindersOn}
+                  checked={reminders_on}
                   onChange={handleRemindersStatusChange}
                   inputProps={{ 'aria-label': 'controlled' }}
                 />
               }
-              label={`Reminders are ${remindersOn ? 'On' : "Off"}`}
+              label={`Reminders are ${reminders_on ? 'On' : "Off"}`}
             />
           </FormGroup>
         </MenuItem>
@@ -59,12 +105,12 @@ export default function RemindersMenu(props) {
             aria-labelledby="radio-buttons-group-label"
             defaultValue="email"
             name="radio-buttons-group"
-            value={reminderType}
+            value={type || null}
             onChange={handleTypeChange}
           >
-            <FormControlLabel disabled={!remindersOn} value="email" control={<Radio />} label="Email" />
-            <FormControlLabel disabled={!remindersOn} value="text" control={<Radio />} label="Text" />
-            <FormControlLabel disabled={!remindersOn} value="notification" control={<Radio />} label="Notification" />
+            <FormControlLabel disabled={!reminders_on} value="email" control={<Radio />} label="Email" />
+            <FormControlLabel disabled={!reminders_on} value="text" control={<Radio />} label="Text" />
+            <FormControlLabel disabled={!reminders_on} value="notification" control={<Radio />} label="Notification" />
           </RadioGroup>
         </MenuItem>
         <MenuItem>
@@ -72,31 +118,31 @@ export default function RemindersMenu(props) {
             <FormLabel id="checkbox-buttons-group-label" sx={{pr: 2}}>Time before event:</FormLabel>
             <FormControlLabel
               control={
-                <Checkbox checked={_15} onChange={handleTimeChange} name="_15" />
+                <Checkbox checked={_15 || false} onChange={handleTimeChange} name="_15" />
               }
               label="15 Minutes"
-              disabled={!remindersOn}
+              disabled={!reminders_on}
             />
             <FormControlLabel
               control={
-                <Checkbox checked={_30} onChange={handleTimeChange} name="_30" />
+                <Checkbox checked={_30 || false} onChange={handleTimeChange} name="_30" />
               }
               label="30 Minutes"
-              disabled={!remindersOn}
+              disabled={!reminders_on}
             />
             <FormControlLabel
               control={
-                <Checkbox checked={_45} onChange={handleTimeChange} name="_45" />
+                <Checkbox checked={_45 || false} onChange={handleTimeChange} name="_45" />
               }
               label="45 Minutes"
-              disabled={!remindersOn}
+              disabled={!reminders_on}
             />
             <FormControlLabel
               control={
-                <Checkbox checked={_60} onChange={handleTimeChange} name="_60" />
+                <Checkbox checked={_60 || false} onChange={handleTimeChange} name="_60" />
               }
               label="1 Hour"
-              disabled={!remindersOn}
+              disabled={!reminders_on}
             />
           </FormGroup>
         </MenuItem>

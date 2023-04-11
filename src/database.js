@@ -151,9 +151,27 @@ const deleteAttachments = (request, response) => {
       })
     })
     .catch(e => console.log(e.stack));
-}
+};
 
-//deleteTable,
+const getReminders = (request, response) => {
+  const { event_id } = request.params;
+  knex('reminders').where({event_id: parseInt(event_id)})
+    .then(res => response.status(200).json(res[0]))
+    .catch(e => console.log(e.stack));
+};
+
+const updateReminders = (request, response) => {
+  const { event_id } = request.params;
+  const {...rest} = request.body
+
+  knex('reminders').where({event_id}).update(rest, ['*'])
+    .then(res => response.status(200).send({
+      message: `Reminder with Event ID: ${event_id} updated`,
+      updated: res[0]
+    }))
+    .catch(e => console.log(e.stack));
+};
+
 module.exports = {
   getEvents,
   getEventsByYear,
@@ -164,5 +182,7 @@ module.exports = {
   deleteEvent,
   createAttachment,
   getAttachments,
-  deleteAttachments
+  deleteAttachments,
+  getReminders,
+  updateReminders,
 };

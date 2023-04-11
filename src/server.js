@@ -43,11 +43,13 @@ app.get('/events/:year', db.getEventsByYear);
 app.get('/events/:year/:month', db.getEventsByMonth);
 app.get('/events/:year/:month/:day', db.getEventsByDay);
 app.get('/attachments/:event_id', db.getAttachments);
+app.get('/reminders/:event_id', db.getReminders);
 
 app.post('/events', db.createEvent);
 app.post('/attachments/:event_id', upload.single('file'), db.createAttachment);
 
 app.put('/events', db.updateEvent);
+app.put('/reminders/:event_id', db.updateReminders);
 
 app.delete('/events', db.deleteEvent);
 app.delete('/attachments/:attachment_id', db.deleteAttachments)

@@ -56,7 +56,7 @@ export default function EventForm(props) {
   const [error, setError] = useState(null);
   const [modalOpen, setModalOpen] = useState(false)
   const [attachmentsModalOpen, setAttachmentsModalOpen] = useState(false)
-  const [reminderMenuAnchor, setReminderMenuAnchor] = useState(false)
+  const [reminderMenuAnchor, setReminderMenuAnchor] = useState(null)
   const reminderMenuOpen = Boolean(reminderMenuAnchor);
 
   const errorMessage = useMemo(() => {
@@ -431,6 +431,7 @@ export default function EventForm(props) {
                 open={reminderMenuOpen}
                 anchorEl={reminderMenuAnchor}
                 onClose={handleReminderMenuClose}
+                event_id={event_id}
               />
               <IconButton sx={iconButtonStyles} onClick={handleClose} data-testid="close_button">
                 <CloseIcon />

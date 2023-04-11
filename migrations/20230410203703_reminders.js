@@ -13,7 +13,6 @@ exports.up = async function(knex) {
   });
   await knex.schema.alterTable('events', function (table) {
     table.dropColumn('hasReminders');
-    table.boolean('reminders_on').defaultTo(true).notNullable()
   })
 };
 
