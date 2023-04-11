@@ -22,6 +22,7 @@ import {
 export default function RemindersMenu(props) {
   const { open, anchorEl, onClose, event_id } = props
   const { type, reminders_on } = useSelector((state) => state.reminder)
+  // eslint-disable-next-line no-unused-vars
   const { _0 ,_15, _30, _45, _60 } = useSelector((state) => state.reminder.time_before)
   const dispatch = useDispatch();
 

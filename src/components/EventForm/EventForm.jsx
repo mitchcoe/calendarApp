@@ -407,35 +407,45 @@ export default function EventForm(props) {
           }
           action={
             <ButtonGroup id="app_bar" sx={buttonContainerStyles}>
-              {anchorType && anchorType === 'Update' && (
-                <React.Fragment>
-                  <IconButton sx={iconButtonStyles} onClick={handleEditToggle} data-testid="edit_button">
-                    <EditIcon />
-                  </IconButton>
-                  {editingEnabled ? (
-                    <React.Fragment>
-                      <IconButton sx={iconButtonStyles} onClick={handleAttachmentsModalOpen} data-testid="attachment_button">
-                        <AttachFileIcon />
-                      </IconButton>
-                      <IconButton sx={iconButtonStyles} onClick={handleModalOpen} data-testid="delete_button">
-                        <DeleteIcon />
-                      </IconButton>
-                    </React.Fragment>
-                  ): null }
-                </React.Fragment>
-              )}
-              <IconButton sx={iconButtonStyles} onClick={handleReminderClick} data-testid="reminder_button">
-                <NotificationsIcon />
-              </IconButton>
-              <RemindersMenu 
+              <Tooltip title="Reminders">
+                <IconButton sx={iconButtonStyles} onClick={handleReminderClick} data-testid="reminder_button">
+                  <NotificationsIcon />
+                </IconButton>
+              </Tooltip>
+              <RemindersMenu
                 open={reminderMenuOpen}
                 anchorEl={reminderMenuAnchor}
                 onClose={handleReminderMenuClose}
                 event_id={event_id}
               />
-              <IconButton sx={iconButtonStyles} onClick={handleClose} data-testid="close_button">
-                <CloseIcon />
-              </IconButton>
+              {anchorType && anchorType === 'Update' && (
+                <React.Fragment>
+                  <Tooltip title="Edit Event">
+                    <IconButton sx={iconButtonStyles} onClick={handleEditToggle} data-testid="edit_button">
+                      <EditIcon />
+                    </IconButton>
+                  </Tooltip>
+                  {editingEnabled ? (
+                    <React.Fragment>
+                      <Tooltip title="Add Attachments">
+                        <IconButton sx={iconButtonStyles} onClick={handleAttachmentsModalOpen} data-testid="attachment_button">
+                          <AttachFileIcon />
+                        </IconButton>
+                      </Tooltip>
+                      <Tooltip title="Delete Event">
+                        <IconButton sx={iconButtonStyles} onClick={handleModalOpen} data-testid="delete_button">
+                          <DeleteIcon />
+                        </IconButton>
+                      </Tooltip>
+                    </React.Fragment>
+                  ): null }
+                </React.Fragment>
+              )}
+              <Tooltip title="Close">
+                <IconButton sx={iconButtonStyles} onClick={handleClose} data-testid="close_button">
+                  <CloseIcon />
+                </IconButton>
+              </Tooltip>
             </ButtonGroup>
           }
         />
