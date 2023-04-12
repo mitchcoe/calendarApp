@@ -417,6 +417,7 @@ export default function EventForm(props) {
                 anchorEl={reminderMenuAnchor}
                 onClose={handleReminderMenuClose}
                 event_id={event_id}
+                start_time={start_time}
               />
               {anchorType && anchorType === 'Update' && (
                 <React.Fragment>

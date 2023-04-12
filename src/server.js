@@ -45,6 +45,7 @@ app.get('/events/:year/:month/:day', db.getEventsByDay);
 app.get('/attachments/:event_id', db.getAttachments);
 app.get('/reminders/:event_id', db.getReminders);
 
+app.post('/reminders/today', db.getTodaysReminders)
 app.post('/events', db.createEvent);
 app.post('/attachments/:event_id', upload.single('file'), db.createAttachment);
 

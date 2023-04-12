@@ -7,6 +7,7 @@ import Popper from '@mui/material/Popper';
 import Day from './components/Day/Day';
 import EventsContainer from './components/Event/EventsContainer';
 import EventForm from './components/EventForm/EventForm';
+import RemindersQueue from './components/RemindersQueue/RemindersQueue';
 import { useSelector, useDispatch } from 'react-redux'
 import { getEvents, getEventsByDay, setSelectedDate } from './slices/eventSlice';
 import { toggleEventForm, handleEventChanges, clearEventChanges } from './slices/formSlice'
@@ -147,6 +148,7 @@ export default function App() {
       >
         <EventForm handleClick={handleClick} handleClose={handleClose} />
       </Popper>
+      <RemindersQueue events={todaysEvents}/>
     </Container>
   );
 };

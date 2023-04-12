@@ -12,6 +12,7 @@ const defaultState = {
   },
   reminders_on: false,
   event_id: null,
+  todays_reminders: [],
 }
 
 export const reminderSlice = createSlice({
@@ -59,6 +60,36 @@ export const reminderSlice = createSlice({
       // console.log('updateTimeBefore',action.payload);
       state.time_before = Object.assign(state.time_before, action.payload)
     },
+    getTodaysReminders: (state, action) => {
+      console.log('getTodaysReminders', action.payload)
+      let formattedPayload = []
+      action.payload.forEach((item) => {
+        const {reminder_id, type, reminders_on, event_id, time_before} = item;
+        let times = time_before.split(' ');
+        times.forEach(time => formattedPayload.push({ // not great time complexity but oh well
+          reminder_id,
+          type,
+          reminders_on,
+          event_id,
+          minutes: time,
+          open: false,
+        }))
+      })
+      state.todays_reminders = formattedPayload;
+    },
+    openReminderNotification: (state, action) => {
+      console.log('openReminderNotification', action.payload)
+      let updatedPayload = Object.assign({}, {...action.payload, open: true})
+      console.log(updatedPayload, 'updatedPayload')
+      let reminderToOpen = state.todays_reminders.findIndex( reminder => reminder.minutes === action.payload.minutes && reminder.event_id === action.payload.event_id);
+      if (reminderToOpen !== - 1) state.todays_reminders.splice(reminderToOpen, 1, updatedPayload)
+    },
+    closeReminderNotification: (state, action) => {
+      // console.log('closeReminderNotification', action.payload)
+      let updatedPayload = Object.assign(action.payload, {open: false})
+      let reminderToClose = state.todays_reminders.findIndex( reminder => reminder.minutes === action.payload.minutes && reminder.event_id === action.payload.event_id);
+      if (reminderToClose !== - 1) state.todays_reminders.splice(reminderToClose, 1, updatedPayload)
+    }
   }
 });
 
@@ -68,5 +99,8 @@ export const {
   updateReminder,
   updateTimeBefore,
   handleReminderChanges,
+  getTodaysReminders,
+  openReminderNotification,
+  closeReminderNotification,
 } = reminderSlice.actions;
 export default reminderSlice.reducer;
