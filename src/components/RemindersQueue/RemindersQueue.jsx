@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useState, useCallback, useEffect } from 'react';
+import { useCallback, useEffect } from 'react';
 import Stack from '@mui/material/Stack';
 import ReminderNotification from './ReminderNotification';
 import { useSelector, useDispatch } from 'react-redux'
@@ -7,36 +7,42 @@ import { openReminderNotification, closeReminderNotification, getTodaysReminders
 
 export default function RemindersQueue(props) {
   const { events } = props
-  const [time, setTime] = useState(Date.now());
   const dispatch = useDispatch();
   const { todays_reminders } = useSelector((state) => state.reminder);
-  // console.log(events, todays_reminders)
+
   const handleClose = (payload) => {
     dispatch(closeReminderNotification(payload))
   };
 
-  const checkTime = useCallback(async (events, reminders) => {
-    let start_times = events.map(event => {
+  const checkTime = useCallback((events, reminders) => {
+    let now = Date.now() / 1000 / 60;
+    let start_times = events.filter(event => {
+      let date = new Date(event.start_time)
+      return date.getTime() / 1000 / 60 > now
+    })
+    .map(event => {
       let date = new Date(event.start_time)
       return {
         event_id: event.event_id,
         start_time: date.getTime() / 1000 / 60
       }
-    });
-
-    let now = time / 1000 / 60;
-    start_times.forEach(event => {
-      let filteredReminders = reminders.filter(reminder => reminder.event_id === event.event_id)
-      console.log('filtered reminders', filteredReminders)
-      filteredReminders.forEach(reminder => {
-        console.log(event.start_time - now, 'hello', now, event.start_time);
-        if(event.start_time - now <= parseInt(reminder.minutes)) {
-          console.log('reminder', reminder, 'hell')
-          dispatch(openReminderNotification(reminder))
-        }
-      })
     })
-  },[dispatch, time]);
+    .sort((a, b) => a.start_time - b.start_time);
+
+    if(start_times.length > 0) {
+      start_times.forEach(event => {
+        let filteredReminders = reminders.filter(reminder => reminder.event_id === event.event_id && reminder.reminders_on)
+        if(filteredReminders.length > 0) {
+          filteredReminders.forEach(reminder => {
+            // this function is off by less than a minute, need to make it more precise
+            if(Math.floor(event.start_time - now) === parseInt(reminder.minutes) && Math.floor(event.start_time) >= Math.floor(now)) {
+              dispatch(openReminderNotification(reminder))
+            }
+          });
+        }
+      });
+    }
+  },[dispatch]);
 
   const getReminderData = useCallback( async () => {
     await fetch(`/reminders/today`, {
@@ -48,7 +54,6 @@ export default function RemindersQueue(props) {
     })
       .then(response => response.json())
       .then(response => dispatch(getTodaysReminders(response)))
-      .then(() => checkTime(events, todays_reminders))
       .catch(error => console.log(error));
   }, [dispatch, events]);
 
@@ -58,18 +63,18 @@ export default function RemindersQueue(props) {
     }
   }, [events, getReminderData])
 
-  // useEffect(() => {
-  //   if(todays_reminders.length > 0) {
-  //     checkTime(events, todays_reminders)
-  //   }
-  // },[checkTime, events])
+  useEffect(() => {
+    let date = new Date();
+    let sec = date.getSeconds();
+      
+    const interval = setTimeout(() => {
+      setInterval(() => checkTime(events, todays_reminders), 60000)
+    }, (60 - sec) * 1000);
 
-  // useEffect(() => {
-  //   const interval = setInterval(() => setTime(Date.now()), 1000);
-  //   return () => {
-  //     clearInterval(interval);
-  //   };
-  // },[])
+    return () => {
+      clearTimeout(interval);
+    };
+  },[checkTime, events, todays_reminders])
 
   return (
     <Stack>

@@ -22,7 +22,10 @@ export const reminderSlice = createSlice({
   },
   reducers: {
     clearReminders: (state, action) => {
-       Object.assign(state, defaultState);
+       Object.assign(state, {
+        ...defaultState,
+        todays_reminders: state.todays_reminders
+      });
     },
     getReminder: (state, action) => {
       // console.log('getReminder', action.payload)
@@ -50,7 +53,17 @@ export const reminderSlice = createSlice({
     },
     updateReminder: (state, action) => {
       // console.log('updateReminder', action.payload)
-      Object.assign(state, action.payload);
+      let result = []
+      const {event_id, time_before} = action.payload;
+      let times = time_before.split(' ');
+      state.todays_reminders.forEach((reminder) => {
+        if(times.includes(reminder.minutes) && reminder.event_id === event_id) {
+          result.push(Object.assign(reminder, action.payload))
+        } else {
+          result.push(reminder)
+        }
+      })
+      state.todays_reminders = result
     },
     handleReminderChanges: (state, action) => {
       // console.log('handleReminderChanges', action.payload)
@@ -61,7 +74,7 @@ export const reminderSlice = createSlice({
       state.time_before = Object.assign(state.time_before, action.payload)
     },
     getTodaysReminders: (state, action) => {
-      console.log('getTodaysReminders', action.payload)
+      // console.log('getTodaysReminders', action.payload)
       let formattedPayload = []
       action.payload.forEach((item) => {
         const {reminder_id, type, reminders_on, event_id, time_before} = item;
@@ -78,9 +91,8 @@ export const reminderSlice = createSlice({
       state.todays_reminders = formattedPayload;
     },
     openReminderNotification: (state, action) => {
-      console.log('openReminderNotification', action.payload)
+      // console.log('openReminderNotification', action.payload)
       let updatedPayload = Object.assign({}, {...action.payload, open: true})
-      console.log(updatedPayload, 'updatedPayload')
       let reminderToOpen = state.todays_reminders.findIndex( reminder => reminder.minutes === action.payload.minutes && reminder.event_id === action.payload.event_id);
       if (reminderToOpen !== - 1) state.todays_reminders.splice(reminderToOpen, 1, updatedPayload)
     },

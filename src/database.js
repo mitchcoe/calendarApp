@@ -162,7 +162,6 @@ const getReminders = (request, response) => {
 
 const getTodaysReminders = (request, response) => {
   let { event_ids } = request.body
-  console.log(event_ids, 'event_ids')
   knex('reminders').whereIn('event_id', event_ids)
   .then(res => response.status(200).json(res))
   .catch(e => console.log(e.stack));

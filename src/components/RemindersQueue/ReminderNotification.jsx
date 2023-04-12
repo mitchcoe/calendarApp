@@ -9,7 +9,7 @@ const Alert = React.forwardRef(function Alert(props, ref) {
 export default function ReminderNotification(props) {
   const { open, onClose, title, minutes } = props;
   return (
-    <Snackbar open={open} autoHideDuration={6000} onClose={onClose}>
+    <Snackbar open={open} autoHideDuration={15000} onClose={onClose}>
       <Alert severity="warning">{`${title} is starting in ${minutes} minutes`}</Alert>
     </Snackbar>
   )
