@@ -36,6 +36,20 @@ const getEventsByDay = (request,response) => {
 		.catch(e => console.log(e.stack));
 };
 
+const createReminder = async () => {
+  let reminderId = await knex('events')
+    .whereNotExists(function() {
+      this.select('*').from('reminders').whereRaw('events.event_id = reminders.event_id')
+    });
+
+  await knex('reminders').insert({
+    type: 'email',
+    time_before: '0 30 60',
+    event_id: reminderId[0].event_id,
+    reminders_on: true
+  });
+};
+
 const createEvent = (request, response) => { //this needs some work for dates and stuff probably
 	const { title, description, location, phone, date, start_time, end_time } = request.body;
   knex('events').insert({
@@ -51,6 +65,7 @@ const createEvent = (request, response) => { //this needs some work for dates an
       data: res,
       message: `Event created with event ID ${res[0].event_id}`
 		}))
+    .then(() => createReminder())
 		.catch(e => console.log(e.stack));
   };
 
