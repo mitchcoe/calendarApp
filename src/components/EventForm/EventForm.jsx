@@ -1,4 +1,4 @@
-import { useState,  useMemo, useCallback, useEffect } from 'react';
+import { useState, useMemo, useCallback, useEffect } from 'react';
 import * as React from 'react'
 import dayjs from 'dayjs';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -7,6 +7,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import AttachFileIcon from '@mui/icons-material/AttachFile';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import NotificationsIcon from '@mui/icons-material/Notifications';
+import PaletteIcon from '@mui/icons-material/Palette';
 import {MobileDatePicker, MobileTimePicker, LocalizationProvider} from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import {
@@ -40,6 +41,8 @@ import {
 import AttachmentsModal from '../AttachmentsModal/AttachmentsModal'
 import AttachmentsPreview from '../AttachmentsPreview/AttachmentsPreview';
 import RemindersMenu from '../RemindersMenu/RemindersMenu';
+import ColorPicker from '../ColorPicker/ColorPicker';
+
 /** @jsx jsx */
 /** @jsxRuntime classic */
 // eslint-disable-next-line no-unused-vars
@@ -58,6 +61,9 @@ export default function EventForm(props) {
   const [attachmentsModalOpen, setAttachmentsModalOpen] = useState(false)
   const [reminderMenuAnchor, setReminderMenuAnchor] = useState(null)
   const reminderMenuOpen = Boolean(reminderMenuAnchor);
+  const [colorPickerAnchor, setColorPickerAnchor] = useState(null)
+  const colorPickerOpen = Boolean(colorPickerAnchor)
+  const colorPickerId = colorPickerOpen ? 'colorPicker' : undefined;
 
   const errorMessage = useMemo(() => {
     switch (error) {
@@ -278,11 +284,12 @@ export default function EventForm(props) {
     dispatch(clearAttachmentPreviews());
   };
 
-  const handleReminderClick = (event) => {
-    setReminderMenuAnchor(event.currentTarget)
-  }
+  const handleColorPickerClick = (event) => setColorPickerAnchor(event.currentTarget);
+  const handleColorPickerClose = () => setColorPickerAnchor(null);
 
-  const handleReminderMenuClose = () => setReminderMenuAnchor(null)
+  const handleReminderClick = (event) => setReminderMenuAnchor(event.currentTarget);
+
+  const handleReminderMenuClose = () => setReminderMenuAnchor(null);
 
   const cardHeaderStyles = {
     display: 'flex',
@@ -479,6 +486,17 @@ export default function EventForm(props) {
                   </Tooltip>
                   {editingEnabled ? (
                     <React.Fragment>
+                      <Tooltip title="Change Color">
+                      <IconButton sx={iconButtonStyles} onClick={handleColorPickerClick} data-testid="color_button">
+                        <PaletteIcon />
+                      </IconButton>
+                      </Tooltip>
+                      <ColorPicker 
+                        open={colorPickerOpen}
+                        anchorEl={colorPickerAnchor}
+                        onClose={handleColorPickerClose}
+                        id={colorPickerId}
+                      />
                       <Tooltip title="Add Attachments">
                         <IconButton sx={iconButtonStyles} onClick={handleAttachmentsModalOpen} data-testid="attachment_button">
                           <AttachFileIcon />
