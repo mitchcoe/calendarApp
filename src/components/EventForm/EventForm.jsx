@@ -1,6 +1,7 @@
 import { useState, useMemo, useCallback, useEffect } from 'react';
 import * as React from 'react'
 import dayjs from 'dayjs';
+import { useTheme } from '@mui/material/styles';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import CloseIcon from '@mui/icons-material/Close';
@@ -53,6 +54,7 @@ const sixPM = dayjs().set('hour', 18).startOf('hour')
 const fivePM = dayjs().set('hour', 17).startOf('hour')
 
 export default function EventForm(props) {
+  const theme = useTheme();
   const [startValue, setStartValue] = useState('');
   const [endValue, setEndValue] = useState('');
   const [dateValue, setDateValue] = useState('');
@@ -98,7 +100,7 @@ export default function EventForm(props) {
   const { title, description, location,
           phone, date, start_time,
           end_time, anchorType, valid,
-          hasAttachments, event_id, attachmentsList } = useSelector((state) => state.form)
+          hasAttachments, event_id, attachmentsList, color } = useSelector((state) => state.form)
   // eslint-disable-next-line no-unused-vars
   const { handleClick, handleClose} = props;
   const dispatch = useDispatch();
@@ -121,6 +123,12 @@ export default function EventForm(props) {
   if(blockedTimes.length > 0 && event_id) {
     blockedTimes = blockedTimes.filter((time) => time.event_id !== event_id)
   }
+
+  const background = theme.palette.augmentColor({
+    color: {
+      main: color,
+    },
+  });
 
   // eslint-disable-next-line no-unused-vars
   const defaultEvent = {
@@ -176,6 +184,7 @@ export default function EventForm(props) {
       date,
       start_time,
       end_time,
+      color
     }
 
     for(let key in formChanges) {
@@ -231,32 +240,36 @@ export default function EventForm(props) {
     setStartValue('');
     setEndValue('');
     dispatch(setValidState(false));
-  }
+  };
 
   const handleFieldChange = (event) => {
     dispatch(handleEventChanges({[event.target.id]: event.target.value}))
-  }
+  };
 
   const handeDateFieldChange = (event) => {
     setDateValue(event)
     dispatch(handleEventChanges({date: `${event['$y']}-0${event['$M']+ 1}-${event['$D']}`}))
-  }
+  };
 
   const handleStartTimeFieldChange = (event) => {
     if(event === null) return
     setStartValue(event)
     dispatch(handleEventChanges({start_time: event['$d'].toISOString()}))
-  }
+  };
 
   const handleEndTimeFieldChange = (event) => {
     if(event === null) return
     setEndValue(event)
     dispatch(handleEventChanges({end_time: event['$d'].toISOString()}))
-  }
+  };
+
+  const handleColorChange = (color) => {
+    dispatch(handleEventChanges({color: color}))
+  };
 
   const handleEditToggle = (event) => {
     dispatch(toggleEditingState(!editingEnabled))
-  }
+  };
 
   const handleError = (err) => {
     if(err === null) {
@@ -293,7 +306,7 @@ export default function EventForm(props) {
 
   const cardHeaderStyles = {
     display: 'flex',
-    backgroundColor: 'red'
+    backgroundColor: color
   };
   const cardContentStyles = {
     display: 'flex',
@@ -304,7 +317,8 @@ export default function EventForm(props) {
     justifyContent: 'space-evenly',
   };
   const iconButtonStyles = {
-    ml: '16px'
+    ml: '16px',
+    color: theme.palette.getContrastText(background.main)
   }
   // eslint-disable-next-line no-unused-vars
   const submitButtonStyles = {
@@ -459,7 +473,11 @@ export default function EventForm(props) {
         <CardHeader
           sx={cardHeaderStyles}
           title={
-            <Typography>
+            <Typography
+              style={{
+                color: theme.palette.getContrastText(background.main),
+              }}
+            >
               {anchorType} Event
             </Typography>
           }
@@ -496,6 +514,7 @@ export default function EventForm(props) {
                         anchorEl={colorPickerAnchor}
                         onClose={handleColorPickerClose}
                         id={colorPickerId}
+                        dispatchFunction={handleColorChange}
                       />
                       <Tooltip title="Add Attachments">
                         <IconButton sx={iconButtonStyles} onClick={handleAttachmentsModalOpen} data-testid="attachment_button">

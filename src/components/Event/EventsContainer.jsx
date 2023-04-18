@@ -26,6 +26,7 @@ export default function EventsContainer(props) {
           event={eventItem}
           zIndex={index}
           handleClick={handleClick}
+          color={eventItem.color}
         />
       ))}
     </div>

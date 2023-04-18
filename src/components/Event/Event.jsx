@@ -1,6 +1,7 @@
 import * as React from 'react'
 import Typography from "@mui/material/Typography";
 import Paper from "@mui/material/Paper";
+import { useTheme } from '@mui/material/styles';
 
 /**
  * 
@@ -17,12 +18,8 @@ const calculateHeight = (startTime, endTime) => {
 };
 
 export default function Event(props) {
-  const { event, zIndex, handleClick } = props;
-  // const colors = ['blue', 'red', 'green']
-  // function getRandomColor(max) {
-  //   return colors[Math.floor(Math.random() * max)];
-  // }
-
+  const { event, zIndex, handleClick, color } = props;
+  const theme = useTheme();
   /**
    * 
    * @param {string} startTime 
@@ -41,11 +38,17 @@ export default function Event(props) {
     return pixels;
   };
 
+  const background = theme.palette.augmentColor({
+    color: {
+      main: color,
+    },
+  });
+
   return (
     <Paper 
       sx={{
         // backgroundColor: `${getRandomColor(3)}`,
-        backgroundColor: 'red',
+        backgroundColor: color,
         maxHeight: '800px',
         height: `${calculateHeight(event.start_time, event.end_time)}px`,
         transform: `translateY(${eventStartTime(event.start_time)}px) translateX(96px)`,
@@ -60,7 +63,11 @@ export default function Event(props) {
       data-testid="test_event"
       onClick={(e) => {handleClick(e, event)}}
     >
-      <Typography>
+      <Typography
+        style={{
+          color: theme.palette.getContrastText(background.main),
+        }}
+      >
         {event.title}
         {event.event_id}
         <br />

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { rgbToHex, useTheme } from '@mui/material/styles';
+import { useTheme } from '@mui/material/styles';
 import * as colors from '@mui/material/colors';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
@@ -9,9 +9,6 @@ import Typography from '@mui/material/Typography';
 import CheckIcon from '@mui/icons-material/Check';
 import Slider from '@mui/material/Slider';
 import Popover from '@mui/material/Popover';
-import Modal from '@mui/material/Modal';
-
-import { useSelector, useDispatch } from 'react-redux';
 
 const defaults = {
   primary: '#2196f3',
@@ -58,7 +55,6 @@ const shades = [
  * https://github.com/mui/material-ui/blob/master/docs/data/material/customization/color/ColorTool.js
  */
 export default function ColorPicker(props) {
-  const dispatch = useDispatch();
   const theme = useTheme();
   const [colorState, setColorState] = useState({
     primary: defaults.primary,
@@ -71,11 +67,11 @@ export default function ColorPicker(props) {
     // secondaryShade: 11,
   });
 
-  // const intentInput = colorState['primaryInput'];
-  // const intentShade = colorState['primaryShade'];
+  // eslint-disable-next-line no-unused-vars
   const { primary, primaryInput, primaryHue, primaryShade } = colorState
-  const { open, onClose, id, anchorEl } = props
+  const { open, onClose, id, anchorEl, dispatchFunction } = props
 
+  // eslint-disable-next-line no-unused-vars
   const background = theme.palette.augmentColor({
     color: {
       main: primary,
@@ -113,6 +109,7 @@ export default function ColorPicker(props) {
         ...prevState,
         primary: color,
       }));
+      dispatchFunction(color);
     }
   };
 
@@ -126,18 +123,19 @@ export default function ColorPicker(props) {
       primary: color,
       primaryInput: color,
     });
+    dispatchFunction(color);
   };
 
   const handleChangeShade = (event, shade) => {
-    const color = colors[colorState['primaryHue']][shades[shade]];
+    const color = colors[colorState.primaryHue][shades[shade]];
     setColorState({
       ...colorState,
       primaryShade: shade,
       primary: color,
       primaryInput: color,
     });
+    dispatchFunction(color);
   };
-
 
   return (
     <Popover
@@ -194,6 +192,7 @@ export default function ColorPicker(props) {
               checked={colorState['primary'] === backgroundColor}
               onChange={handleChangeHue}
               value={hue}
+              key={hue}
               name={'primary'}
               icon={
                 <Box

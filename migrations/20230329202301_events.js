@@ -12,6 +12,7 @@ exports.up = function(knex) {
     table.date('date').notNullable();
     table.timestamp('start_time').notNullable();
     table.timestamp('end_time').notNullable();
+    table.string('color').defaultTo('#2196f3');
   });
 };
 
