@@ -74,6 +74,9 @@ export default function EventForm(props) {
       case 'maxTime': {
         return 'Please select a time between 8AM and 6PM'
       }
+      case 'shouldDisableTime-hours': {
+        return 'This time range is blocked by other events, please select another time'
+      }
       case null: {
         return ''
       }
@@ -84,16 +87,34 @@ export default function EventForm(props) {
     }
   }, [error]);
 
-  // eslint-disable-next-line no-unused-vars
-  const events = useSelector((state) => state.events.eventList);
+  const events = useSelector((state) => state.events.currentEventList);
   const editingEnabled = useSelector((state) => state.form.editing);
   const { title, description, location,
           phone, date, start_time,
           end_time, anchorType, valid,
           hasAttachments, event_id, attachmentsList } = useSelector((state) => state.form)
   // eslint-disable-next-line no-unused-vars
-  const { handleClick, eventId, handleClose} = props;
+  const { handleClick, handleClose} = props;
   const dispatch = useDispatch();
+
+  const hourMinuteFormat = (position, hourFunc, minuteFunc) => {
+    return parseInt(`${position[hourFunc]()}${position[minuteFunc]() === 0 ? '00' : (position[minuteFunc]() < 10 ? `0${position[minuteFunc]()}` : position[minuteFunc]())}`)
+  };
+
+  let blockedTimes = events.map((event) => {
+    let start = new Date(event.start_time);
+    let end = new Date(event.end_time);
+    let block = {
+      start: hourMinuteFormat(start, 'getHours', 'getMinutes'),
+      end: hourMinuteFormat(end, 'getHours', 'getMinutes'),
+      event_id: event.event_id
+    }
+    return block
+  });
+
+  if(blockedTimes.length > 0 && event_id) {
+    blockedTimes = blockedTimes.filter((time) => time.event_id !== event_id)
+  }
 
   // eslint-disable-next-line no-unused-vars
   const defaultEvent = {
@@ -357,6 +378,36 @@ export default function EventForm(props) {
           disabled={ (anchorType === 'Create' ? false : !editingEnabled) || !date }
           minTime={minimumTime}
           maxTime={maximumTime}
+          shouldDisableTime={(value, view) => {
+            if(anchorType === 'Update' && !editingEnabled) return false
+            let formattedValue = hourMinuteFormat(value, 'hour', 'minute')
+
+            return view === 'hours' && blockedTimes.some((time) => {
+              if(editingEnabled && formattedValue >= time.start && formattedValue <= time.end && time.event_id === event_id) {
+                return false
+              } 
+              if(timeType === 'start_time' && time.event_id !== event_id) {
+                let end = dayjs(end_time)
+                end = hourMinuteFormat(end, 'hour', 'minute')
+                if(formattedValue > end) return true
+                let blocked = blockedTimes.filter((time) => {
+                  return time.end > formattedValue && time.end < end
+                })
+                return blocked.length >= 1
+              }
+              if(timeType === 'end_time' && time.event_id !== event_id) {
+                let start = dayjs(start_time)
+                start = hourMinuteFormat(start, 'hour', 'minute')
+                if(formattedValue < start) return true
+                let blocked = blockedTimes.filter((time) => {
+                  return time.start < formattedValue && time.start > start
+                })
+                return blocked.length >= 1 
+              }
+              return formattedValue > time.start && formattedValue < time.end
+            })
+            }
+          }
           value={timeTypeValueState || (timeTypeValueRedux && dayjs(timeTypeValueRedux))}
           onChange={onChangeFunc}
           onError={(newError) => handleError(newError)}
