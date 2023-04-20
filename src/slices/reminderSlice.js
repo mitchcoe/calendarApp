@@ -4,7 +4,7 @@ const defaultState = {
   reminder_id: null,
   type: 'email',
   time_before: {
-    _0: false,
+    _0: true,
     _15: false,
     _30: false,
     _45: false,
@@ -22,6 +22,7 @@ export const reminderSlice = createSlice({
   },
   reducers: {
     clearReminders: (state, action) => {
+      // console.log('clearing reminders')
        Object.assign(state, {
         ...defaultState,
         todays_reminders: state.todays_reminders

@@ -7,8 +7,7 @@ import { css, jsx } from '@emotion/react'
 
 export default function EventsContainer(props) {
   const { events, handleClick } = props;
-  // console.log(events)
-  const eventContainerStyles = { //this doesnt seem to do anything
+  const eventContainerStyles = { // going to adjust this later
     // position: 'absolute',
     // display: 'flex',
     // maxWidth: 'calc(100vw - 144px)',

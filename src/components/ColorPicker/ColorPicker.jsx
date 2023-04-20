@@ -12,7 +12,7 @@ import Popover from '@mui/material/Popover';
 
 const defaults = {
   primary: '#2196f3',
-  // secondary: '#f50057',
+  // secondary: '#f50057', //leaving this here in case secondary colors are ever needed
 };
 const hues = [
   'red',

@@ -47,7 +47,6 @@ export default function Event(props) {
   return (
     <Paper 
       sx={{
-        // backgroundColor: `${getRandomColor(3)}`,
         backgroundColor: color,
         maxHeight: '800px',
         height: `${calculateHeight(event.start_time, event.end_time)}px`,
@@ -69,7 +68,6 @@ export default function Event(props) {
         }}
       >
         {event.title}
-        {event.event_id}
         <br />
         {event.location}
       </Typography>

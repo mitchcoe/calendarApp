@@ -29,8 +29,7 @@ import {
   AccordionDetails,
 } from '@mui/material';
 import { useSelector, useDispatch } from 'react-redux'
-// eslint-disable-next-line no-unused-vars
-import { getEvents, createEvents, updateEvents, deleteEvents } from '../../slices/eventSlice';
+import { createEvents, updateEvents, deleteEvents } from '../../slices/eventSlice';
 import {
   clearEventChanges,
   handleEventChanges,
@@ -101,8 +100,8 @@ export default function EventForm(props) {
           phone, date, start_time,
           end_time, anchorType, valid,
           hasAttachments, event_id, attachmentsList, color } = useSelector((state) => state.form)
-  // eslint-disable-next-line no-unused-vars
-  const { handleClick, handleClose} = props;
+  const { type, reminders_on, time_before} = useSelector((state) => state.reminder)
+  const { handleClose } = props;
   const dispatch = useDispatch();
 
   const hourMinuteFormat = (position, hourFunc, minuteFunc) => {
@@ -130,24 +129,6 @@ export default function EventForm(props) {
     },
   });
 
-  // eslint-disable-next-line no-unused-vars
-  const defaultEvent = {
-    title: 'event_placing_test',
-    description: 'testing event creation on the front end',
-    location: 'Austin, TX',
-    date: '2023-03-21',
-    start_time: '2023-03-21 09:45:00',
-    end_time: '2023-03-21 12:30:00'
-  };
-
-  // eslint-disable-next-line no-unused-vars
-  // const getEventsData = useCallback(async () => {
-  //   await fetch('/events')
-  //     .then(response => response.json())
-  //     .then(response => dispatch(getEvents(response)))
-  //     .catch(error => console.log(error));
-  // }, [dispatch]);
-
   const getAttachmentsData = useCallback( async () => {
     await fetch(`/attachments/${event_id}`)
       .then(response => response.json())
@@ -160,17 +141,36 @@ export default function EventForm(props) {
   }, [getAttachmentsData, hasAttachments]);
 
   const createEvent = async () => {
+    let times = []
+    for(let time in time_before) {
+      if(!!time_before[time]) times.push(`${time}`.slice(1))
+    }
+
+    let reminder = {
+      type,
+      reminders_on,
+      time_before: times.join(' '),
+    }
+
     await fetch('/events', {
       method:'POST',
       headers: {
         "Content-Type": "application/json"
       },
-      body: JSON.stringify({title, description, location, phone, date, start_time, end_time}),
+      body: JSON.stringify({
+        title,
+        description,
+        location,
+        phone,
+        date,
+        start_time,
+        end_time,
+        color,
+        reminder
+      }),
     })
       .then(response => response.json())
-      .then(response => {
-        dispatch(createEvents(response.data));
-      })
+      .then(response => dispatch(createEvents(response.data)))
       .catch(error => console.log(error));
   };
 
@@ -192,7 +192,6 @@ export default function EventForm(props) {
         updatedObject[key] = formChanges[key]
       }
     }
-    // console.log('updatedObject',updatedObject)
     
     await fetch('/events', {
       method:'PUT',
@@ -228,11 +227,6 @@ export default function EventForm(props) {
     updateEvent();
     handleClose(event)
   };
-
-  // const handleDelete = (event) => {
-  //   deleteEvent();
-  //   handleClose(event);
-  // }
 
   const handleClear = () => {
     dispatch(clearEventChanges());
@@ -319,10 +313,6 @@ export default function EventForm(props) {
   const iconButtonStyles = {
     ml: '16px',
     color: theme.palette.getContrastText(background.main)
-  }
-  // eslint-disable-next-line no-unused-vars
-  const submitButtonStyles = {
-    // backgroundColor
   }
   const fieldStyles = {
     mb: '16px'
@@ -494,7 +484,24 @@ export default function EventForm(props) {
                 onClose={handleReminderMenuClose}
                 event_id={event_id}
                 start_time={start_time}
+                anchorType={anchorType}
               />
+              {anchorType && anchorType === 'Create' && (
+                <React.Fragment>
+                  <Tooltip title="Change Color">
+                    <IconButton sx={iconButtonStyles} onClick={handleColorPickerClick} data-testid="color_button">
+                      <PaletteIcon />
+                    </IconButton>
+                  </Tooltip>
+                  <ColorPicker 
+                    open={colorPickerOpen}
+                    anchorEl={colorPickerAnchor}
+                    onClose={handleColorPickerClose}
+                    id={colorPickerId}
+                    dispatchFunction={handleColorChange}
+                  />
+                </React.Fragment>
+              )}
               {anchorType && anchorType === 'Update' && (
                 <React.Fragment>
                   <Tooltip title="Edit Event">
@@ -505,9 +512,9 @@ export default function EventForm(props) {
                   {editingEnabled ? (
                     <React.Fragment>
                       <Tooltip title="Change Color">
-                      <IconButton sx={iconButtonStyles} onClick={handleColorPickerClick} data-testid="color_button">
-                        <PaletteIcon />
-                      </IconButton>
+                        <IconButton sx={iconButtonStyles} onClick={handleColorPickerClick} data-testid="color_button">
+                          <PaletteIcon />
+                        </IconButton>
                       </Tooltip>
                       <ColorPicker 
                         open={colorPickerOpen}
@@ -591,7 +598,7 @@ export default function EventForm(props) {
           ) : null}
         </CardContent>
         <CardActions id="submit_buttons" sx={[buttonContainerStyles, {mt: 4}]}>
-          <Button //form needs validation before this should be enabled
+          <Button
             data-testid="submit_button"
             id="submit"
             variant="outlined"

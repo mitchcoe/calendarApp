@@ -20,9 +20,8 @@ import {
 } from '../../slices/reminderSlice'
 
 export default function RemindersMenu(props) {
-  const { open, anchorEl, onClose, event_id } = props
+  const { open, anchorEl, onClose, event_id, anchorType } = props
   const { type, reminders_on } = useSelector((state) => state.reminder)
-  // eslint-disable-next-line no-unused-vars
   const { _0 ,_15, _30, _45, _60 } = useSelector((state) => state.reminder.time_before)
   const dispatch = useDispatch();
 
@@ -34,17 +33,17 @@ export default function RemindersMenu(props) {
   }, [dispatch, event_id])
 
   useEffect(() => {
-    if(open) getReminderData()
-  }, [getReminderData, open]);
+    if(open && anchorType === 'Update') getReminderData()
+  }, [getReminderData, open, anchorType]);
 
   const updateReminderData = async () => {
     let updatedObject = {
       type,
       reminders_on,
     };
-    let times = ['15','30','45','60']
-    let result = ['0'];
-    [_15, _30, _45, _60].forEach((item, index) => {
+    let times = ['0','15','30','45','60']
+    let result = [];
+    [_0, _15, _30, _45, _60].forEach((item, index) => {
       if(item === true) result.push(times[index])
     })
     result = result.join(' ')
@@ -74,8 +73,10 @@ export default function RemindersMenu(props) {
   };
 
   const handleClose = async (event) => {
-    await updateReminderData();
-    dispatch(clearReminders())
+    if(anchorType === 'Update') {
+      await updateReminderData();
+      dispatch(clearReminders())
+    }
     onClose();
   }
 

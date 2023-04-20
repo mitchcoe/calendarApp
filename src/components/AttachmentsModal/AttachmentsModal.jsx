@@ -1,24 +1,9 @@
 import { useEffect, useCallback } from 'react';
-import {
-  Box,
-  // Card,
-  // CardActions,
-  // CardContent,
-  Button,
-  // ButtonGroup,
-  // TextField,
-  // IconButton,
-  // CardHeader,
-  // Typography,
-  Modal,
-  Stack,
-  // Tooltip,
-} from '@mui/material';
+import { Box, Button, Modal, Stack } from '@mui/material';
 import { useSelector, useDispatch } from 'react-redux'
 import {
   getAttachments,
   addAttachments,
-  // deleteAttachments,
   setAttachmentPreviews,
 } from '../../slices/formSlice';
 import AttachmentsPreview from '../AttachmentsPreview/AttachmentsPreview'
@@ -26,7 +11,6 @@ import AttachmentsPreview from '../AttachmentsPreview/AttachmentsPreview'
 export default function AttachmentsModal(props) {
   const { attachmentsModalOpen, handleAttachmentsModalClose, modalStyles, hasAttachments, event_id } = props;
   const attachmentPreviews = useSelector((state) => state.form.attachmentPreviews);
-  // const attachmentsList = useSelector((state) => state.form.attachmentsList);
   const dispatch = useDispatch();
 
   const getAttachmentsData = useCallback( async () => {
@@ -35,20 +19,6 @@ export default function AttachmentsModal(props) {
       .then(response => dispatch(getAttachments(response)))
       .catch(error => console.log(error));
   },[dispatch, event_id]);
-
-  // const deleteAttachmentsData = async (attachment_id, file_path, event_id) => {
-  //   await fetch(`/attachments/${attachment_id}`, {
-  //     method: 'DELETE',
-  //     headers: {
-  //       "Content-Type": "application/json"
-  //     },
-  //     body: JSON.stringify({file_path, event_id})
-  //   })
-  //   .then(response => response.json())
-  //   .then(response => dispatch(deleteAttachments(response.id)))
-  //   .then(() => getAttachmentsData())
-  //   .catch(error => console.log(error));
-  // };
 
   useEffect(() => {
     if(hasAttachments && attachmentsModalOpen) getAttachmentsData()

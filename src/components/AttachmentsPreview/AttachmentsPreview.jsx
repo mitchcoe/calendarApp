@@ -22,7 +22,6 @@ export default function AttachmentsPreview(props) {
   const large = useMediaQuery(theme.breakpoints.down('lg'))
 
   const { attachmentsList, event_id, mode } = props;
-  // console.log('AttachmentsPreview', attachmentsList, event_id)
   const dispatch = useDispatch();
 
   const getAttachmentsData = async () => {
