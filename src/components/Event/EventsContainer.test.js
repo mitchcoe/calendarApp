@@ -4,7 +4,8 @@ import EventsContainer from './EventsContainer';
 
 const mockEvent = [{
   event_id: 1,
-  handleClick : null
+  handleClick : null,
+  color: '#2196f3'
 }]
 
 test('renders the component', () => {

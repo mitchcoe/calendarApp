@@ -9,6 +9,11 @@ const defaultFormState = {
   start_time: '',
   end_time: '',
   valid: true,
+  hasAttachments: false,
+  hasReminders: false,
+  attachmentsList: [],
+  attachmentPreviews: [],
+  color: '#2196f3'
 };
 
 const closedState = {
@@ -16,7 +21,6 @@ const closedState = {
   editing: false,
   anchorType: null,
   open: false,
-  anchorId: null,
   event_id: null,
   ...defaultFormState,
 }
@@ -27,6 +31,7 @@ export const formSlice = createSlice({
   },
   reducers: {
     toggleEventForm: (state, action) => {
+      // console.log(`i should turn ${action.payload.open === true ? 'on' : 'off'}`, action.payload)
       if(action.payload.open === true) {
         Object.assign(state, action.payload);
       } else {
@@ -34,12 +39,12 @@ export const formSlice = createSlice({
       }
     },
     handleEventChanges: (state, action) => {
-      // console.log('handle event change', action.payload, Object.values(Object.assign(state, action.payload)))
+      // console.log('handle event change', action.payload, Object.entries(Object.assign(state, action.payload)))
       Object.assign(state, action.payload);
     },
     clearEventChanges: (state, action) => {
       // let clear = Object.assign(state, defaultFormState);
-      // console.log(Object.values(clear))
+      // console.log('clearing', Object.values(clear))
       Object.assign(state, defaultFormState);
     },
     toggleEditingState: (state, action) => {
@@ -48,9 +53,48 @@ export const formSlice = createSlice({
     },
     setValidState: (state, action) => {
       state.valid = action.payload
-    }
+    },
+    getAttachments: (state, action) => {
+      // console.log('getAttachment', action.payload)
+      let attachments = action.payload
+      state.attachmentsList = attachments
+    },
+    addAttachments: (state, action) => {
+      // console.log('addAttachment', action.payload)
+      let attachment = action.payload
+      state.attachmentsList.push(...attachment)
+    },
+    deleteAttachments: (state, action) => {
+      // console.log('delete attachments', action.payload)
+      const itemToDelete = state.attachmentsList.findIndex(item => item.attachment_id === action.payload)
+      if (itemToDelete !== - 1) state.attachmentsList.splice(itemToDelete, 1)
+    },
+    setAttachmentPreviews: (state, action) => {
+      // console.log('setAttachmentPreviews', action)
+      let preview = action.payload;
+      state.attachmentPreviews.push(preview)
+    },
+    deleteAttachmentPreviews: (state, action) => {
+      const itemToDelete = state.attachmentPreviews.findIndex(item => item.file_name === action.payload)
+      if (itemToDelete !== - 1) state.attachmentPreviews.splice(itemToDelete, 1)
+    },
+    clearAttachmentPreviews: (state, action) => {
+      state.attachmentPreviews = [];
+    },
   },
 });
 
-export const { toggleEventForm, handleEventChanges, clearEventChanges, toggleEditingState, setValidState } = formSlice.actions;
+export const {
+  toggleEventForm,
+  handleEventChanges,
+  clearEventChanges,
+  toggleEditingState,
+  setValidState,
+  getAttachments,
+  addAttachments,
+  deleteAttachments,
+  setAttachmentPreviews,
+  deleteAttachmentPreviews,
+  clearAttachmentPreviews,
+} = formSlice.actions;
 export default formSlice.reducer;

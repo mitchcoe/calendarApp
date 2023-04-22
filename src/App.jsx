@@ -7,13 +7,14 @@ import Popper from '@mui/material/Popper';
 import Day from './components/Day/Day';
 import EventsContainer from './components/Event/EventsContainer';
 import EventForm from './components/EventForm/EventForm';
+import RemindersQueue from './components/RemindersQueue/RemindersQueue';
 import { useSelector, useDispatch } from 'react-redux'
 import { getEvents, getEventsByDay, setSelectedDate } from './slices/eventSlice';
 import { toggleEventForm, handleEventChanges, clearEventChanges } from './slices/formSlice'
+import { clearReminders } from './slices/reminderSlice'
 // const formUtils = require('./components/EventForm/EventForm');
 
 export default function App() {
-  // hooks and useSelector cause re-renders
   // console.log('im rendering')
   const [anchorEl, setAnchorEl] = React.useState(null);
   // const events = useSelector((state) => state.events.eventList);
@@ -29,40 +30,33 @@ export default function App() {
 
   const handleClose = (event) => {
     setAnchorEl(null);
-    dispatch(toggleEventForm({
-      open: false,
-      anchorType: null,
-      event_id: null,
-    }));
+    dispatch(toggleEventForm({open: false}));
+    dispatch(clearReminders())
   };
 
   const handleClick = (event, props) => {
     // console.log('props', JSON.stringify(props))
-    if(props && open) {
+    if(open && anchorEl !== event.currentTarget) {
       dispatch(clearEventChanges())
       setAnchorEl(event.currentTarget);
-    } else {
-      setAnchorEl(anchorEl ? null : event.currentTarget);
+    } else if(open && anchorEl === event.currentTarget) {
+        return handleClose()
+    } else if(!open) {
+        setAnchorEl(event.currentTarget);
     }
+
     dispatch(toggleEventForm({
-      open: props && open ? open : !open,
+      open: open ? open : !open,
       anchorType: event.target.localName === 'td' ? 'Create' : 'Update',
       event_id: event.target.localName === 'td' ? null : props?.event_id
-    }))
-    if (props) dispatch(handleEventChanges({...props}));
+    }));
+
+    dispatch(handleEventChanges({...props}));
   };
-  // const open = Boolean(anchorEl)
+
   const id = open ? 'simple-popper' : undefined;
   // console.log('events rendered in app.jsx', events)
   // console.log("current events today", todaysEvents)
-  // const deleteTable = useCallback(async() => {
-  //   await fetch('/', {
-  //     method:'DELETE',
-  //     headers: {
-  //       "Content-Type": "application/json"
-  //     },
-  //   })
-  // }, [])
 
   const getEventsData = useCallback(async () => {
     await fetch('/events')
@@ -102,8 +96,9 @@ export default function App() {
 
   useEffect(() => {
     getEventsData();
+    // getAttachments()
     if(selectedDate) getEventsByDayData();
-  }, [getEventsData, getEventsByDayData, selectedDate]); // adding todaysEvents causes infinite loop
+  }, [getEventsData, getEventsByDayData, selectedDate]);
 
   const containerStyles = {
     textAlign: 'center',
@@ -116,7 +111,7 @@ export default function App() {
     <Container sx={containerStyles} data-testid="app_container">
       <CssBaseline />
       <React.Fragment>
-        <Day handleClick={handleClick} anchorEl={anchorEl} />
+        <Day handleClick={handleClick} anchorEl={anchorEl} events={todaysEvents} />
         {todaysEvents?.length > 0 ? (
           <EventsContainer
             events={todaysEvents}
@@ -152,8 +147,9 @@ export default function App() {
           },
         ]}
       >
-        <EventForm handleClick={handleClick} handleClose={handleClose} />
+        <EventForm handleClose={handleClose} />
       </Popper>
+      <RemindersQueue events={todaysEvents}/>
     </Container>
   );
 };

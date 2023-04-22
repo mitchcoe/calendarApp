@@ -1,8 +1,10 @@
 const express = require('express');
+const multer = require('multer');
 const bodyParser = require('body-parser');
 const db = require('./database');
 const app = express();
 const port = 8080;
+app.use(express.static('uploads'))
 
 app.use(bodyParser.json())
 app.use(
@@ -11,14 +13,46 @@ app.use(
   })
 );
 
-// app.get('/', (request, response) => response.json({ info: 'Node.js, Express, and Postgres API' }));
+const upload = multer({
+  storage: multer.diskStorage({
+    destination: function(req, file, cb) {
+      cb(null, './uploads');
+    },
+    filename(req, file, cb) {
+      cb(null, `${new Date().getTime()}_${file.originalname}`);
+    }
+  }),
+  limits: {
+    fileSize: 1000000 // max file size 1MB = 1000000 bytes
+  },
+  fileFilter(req, file, cb) {
+    if (!file.originalname.match(/\.(jpeg|jpg|png|pdf|doc|docx|xlsx|xls)$/)) {
+      return cb(
+        new Error(
+          'only upload files with jpg, jpeg, png, pdf, doc, docx, xslx, xls format.'
+        )
+      );
+    }
+    cb(undefined, true); // continue with upload
+  }
+});
+
 app.get('/events', db.getEvents);
 app.get('/events/:year', db.getEventsByYear);
 app.get('/events/:year/:month', db.getEventsByMonth);
 app.get('/events/:year/:month/:day', db.getEventsByDay);
+app.get('/attachments/:event_id', db.getAttachments);
+app.get('/reminders/:event_id', db.getReminders);
+
+app.post('/reminders/today', db.getTodaysReminders)
 app.post('/events', db.createEvent);
+app.post('/attachments/:event_id', upload.single('file'), db.createAttachment);
+
 app.put('/events', db.updateEvent);
+app.put('/reminders/:event_id', db.updateReminders);
+
 app.delete('/events', db.deleteEvent);
+app.delete('/attachments/:attachment_id', db.deleteAttachments)
 
 app.listen(port, () => {
   console.log(`App running on port ${port}.`)

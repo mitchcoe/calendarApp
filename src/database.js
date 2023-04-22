@@ -1,23 +1,6 @@
-// const defaultData = require('./database/defaultData');
-// require('dotenv').config()
+const fs = require('fs');
 const knexConfig = require('../knexfile');
 const knex = require('knex')(knexConfig[process.env.NODE_ENV || 'development'])
-
-// knex.schema.dropTableIfExists('blah');
-
-// knex.schema.createTable('events', function (table) {
-//   table.increments('event_id').primary().notNullable();
-//   table.string('title').notNullable();
-//   table.string('description').notNullable();
-//   table.string('location').notNullable();
-//   table.string('phone').notNullable();
-//   table.timestamp('date').notNullable();
-//   table.timestamp('start_time').notNullable();
-//   table.timestamp('end_time').notNullable();
-// });
-
-// const deleteTable = knex('events').insert(defaultData, ['event_id'])
-// const deleteTable = knex.schema.dropTableIfExists('blah')
 
 const getEvents = (req, response) => {
 	knex.select().from('events')
@@ -53,8 +36,30 @@ const getEventsByDay = (request,response) => {
 		.catch(e => console.log(e.stack));
 };
 
-const createEvent = (request, response) => { //this needs some work for dates and stuff probably
-	const { title, description, location, phone, date, start_time, end_time } = request.body;
+const createReminder = async (reminder = null) => {
+  let reminderId = await knex('events')
+    .whereNotExists(function() {
+      this.select('*').from('reminders').whereRaw('events.event_id = reminders.event_id')
+    });
+
+  if(reminder) {
+    await knex('reminders').insert({
+      ...reminder,
+      event_id: reminderId[0].event_id,
+    });
+  } else {
+    await knex('reminders').insert({
+      type: 'email',
+      time_before: '0 30 60',
+      event_id: reminderId[0].event_id,
+      reminders_on: true
+    });
+  }
+};
+
+const createEvent = (request, response) => {
+	const { title, description, location, phone, date, start_time, end_time, color, reminder } = request.body;
+
   knex('events').insert({
     title: title || '',
     description: description || '',
@@ -62,12 +67,14 @@ const createEvent = (request, response) => { //this needs some work for dates an
     phone: phone || '',
     date,
     start_time,
-    end_time
+    end_time,
+    color
   }, ['*'])
 		.then(res => response.status(200).send({
       data: res,
       message: `Event created with event ID ${res[0].event_id}`
 		}))
+    .then(() => createReminder(reminder))
 		.catch(e => console.log(e.stack));
   };
 
@@ -112,7 +119,7 @@ const updateEvent = (request, response) => {
 
 const deleteEvent = (request, response) => {
 	const { event_id } = request.body
-  knex('events').where({event_id}).del()
+  knex.select().from('events', 'attachments').where({event_id}).del()
 		.then(res => response.status(200).send({
       message: `Event deleted with ID: ${event_id}`,
       id: event_id
@@ -120,7 +127,82 @@ const deleteEvent = (request, response) => {
 		.catch(e => console.log(e.stack));
 };
 
-//deleteTable,
+const createAttachment = (request, response) => {
+  const { event_id } = request.params
+  let eventsToUpdate = knex.raw(`select events.event_id from events, attachments
+                                  where events.event_id = attachments.event_id`)
+  knex('attachments').insert({
+    file_type: request.file.mimetype,
+    file_name: request.file.originalname,
+    file_path: request.file.path,
+    event_id: parseInt(event_id)
+  }, ['*'])
+  .then(res => response.status(200).send({
+    data: res,
+    message: `Attachment created with event ID ${res[0].event_id}`
+  }))
+  .then(() => knex('events').whereIn('event_id', eventsToUpdate).update({hasAttachments: true}))
+  .catch(e => console.log(e.stack));
+};
+
+const getAttachments = (request, response) => {
+  const { event_id } = request.params
+  knex('attachments').where({event_id: parseInt(event_id)})
+    .then(res => response.status(200).json(res))
+    .catch(e => console.log(e.stack));
+};
+
+const deleteAttachments = (request, response) => {
+  const { attachment_id } = request.params;
+  const { file_path, event_id } = request.body;
+
+  knex('attachments').where({attachment_id: parseInt(attachment_id)}).del()
+    .then(res => response.status(200).send({
+      message: `Attachment deleted with ID: ${attachment_id}`,
+      id: attachment_id
+    }))
+    .then(() => knex('attachments').where({event_id}))
+    .then((res) => {
+      if(res.length === 0) {
+        return knex('events').where({event_id}).update({hasAttachments: false})
+      }
+      return;
+    })
+    .then(() => {
+      fs.unlink(file_path, (err) => {
+        if (err) throw err;
+        console.log(`${file_path} was deleted`);
+      })
+    })
+    .catch(e => console.log(e.stack));
+};
+
+const getReminders = (request, response) => {
+  const { event_id } = request.params;
+  knex('reminders').where({event_id: parseInt(event_id)})
+    .then(res => response.status(200).json(res[0]))
+    .catch(e => console.log(e.stack));
+};
+
+const getTodaysReminders = (request, response) => {
+  let { event_ids } = request.body
+  knex('reminders').whereIn('event_id', event_ids)
+  .then(res => response.status(200).json(res))
+  .catch(e => console.log(e.stack));
+}
+
+const updateReminders = (request, response) => {
+  const { event_id } = request.params;
+  const {...rest} = request.body
+
+  knex('reminders').where({event_id}).update(rest, ['*'])
+    .then(res => response.status(200).send({
+      message: `Reminder with Event ID: ${event_id} updated`,
+      updated: res[0]
+    }))
+    .catch(e => console.log(e.stack));
+};
+
 module.exports = {
   getEvents,
   getEventsByYear,
@@ -128,5 +210,11 @@ module.exports = {
 	getEventsByDay,
   createEvent,
   updateEvent,
-  deleteEvent
+  deleteEvent,
+  createAttachment,
+  getAttachments,
+  deleteAttachments,
+  getReminders,
+  updateReminders,
+  getTodaysReminders,
 };
