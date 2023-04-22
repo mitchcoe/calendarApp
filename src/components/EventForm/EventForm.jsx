@@ -84,6 +84,9 @@ export default function EventForm(props) {
       case 'shouldDisableTime-hours': {
         return 'This time range is blocked by other events, please select another time'
       }
+      case 'shouldDisableTime-minutes': {
+        return 'Please select a time at the top or the middle of the hour'
+      }
       case null: {
         return ''
       }
@@ -393,7 +396,8 @@ export default function EventForm(props) {
             if(anchorType === 'Update' && !editingEnabled) return false
             let formattedValue = hourMinuteFormat(value, 'hour', 'minute')
 
-            return view === 'hours' && blockedTimes.some((time) => {
+            if(view === 'hours') {
+              return blockedTimes.some((time) => {
               if(editingEnabled && formattedValue >= time.start && formattedValue <= time.end && time.event_id === event_id) {
                 return false
               } 
@@ -416,9 +420,11 @@ export default function EventForm(props) {
                 return blocked.length >= 1 
               }
               return formattedValue > time.start && formattedValue < time.end
-            })
+            })}
+            if(view === 'minutes') {
+              return value['$m'] !== 0 && value['$m'] !== 30
             }
-          }
+          }}
           value={timeTypeValueState || (timeTypeValueRedux && dayjs(timeTypeValueRedux))}
           onChange={onChangeFunc}
           onError={(newError) => handleError(newError)}

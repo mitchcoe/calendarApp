@@ -2,6 +2,7 @@ import * as React from 'react'
 import Typography from "@mui/material/Typography";
 import Paper from "@mui/material/Paper";
 import { useTheme } from '@mui/material/styles';
+import useMediaQuery from '@mui/material/useMediaQuery';
 
 /**
  * 
@@ -44,15 +45,17 @@ export default function Event(props) {
     },
   });
 
+  const small = useMediaQuery(theme.breakpoints.down('sm'))
+
   return (
     <Paper 
       sx={{
         backgroundColor: color,
         maxHeight: '800px',
         height: `${calculateHeight(event.start_time, event.end_time)}px`,
-        transform: `translateY(${eventStartTime(event.start_time)}px) translateX(96px)`,
+        transform: `translateY(${eventStartTime(event.start_time)}px) translateX(80px)`,
         padding: '16px 0px 16px 16px',
-        maxWidth: 'calc(100vw - 144px)',
+        maxWidth: small ? 'calc(100vw - 112px)' : 'calc(100vw - 126px)',
         width: '100%',
         mr: '8px',
         position: 'absolute',
