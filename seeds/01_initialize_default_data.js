@@ -26,6 +26,7 @@ exports.seed = async function(knex) {
       date: knex.raw(`CURRENT_DATE`),
       start_time: `${timeSetter()}`,
       end_time: `${timeSetter(false)}`,
+      color: '#2196f3',
     },
     {
       title: 'test_event today',
@@ -35,6 +36,7 @@ exports.seed = async function(knex) {
       date: knex.raw(`CURRENT_DATE`),
       start_time: `${timeSetter(true, 15)}`,
       end_time: `${timeSetter(false, 15)}`,
+      color: '#ffc107',
     },
     {
       title: 'test_event tomorrow',
@@ -44,6 +46,7 @@ exports.seed = async function(knex) {
       date: knex.raw(`CURRENT_DATE + INTERVAL '1 day'`),
       start_time: `${timeSetter(true, 13, 'tomorrow')}`,
       end_time: `${timeSetter(false, 13, 'tomorrow')}`,
+      color: '#8bc34a',
     },
     {
       title: 'test_event second tomorrow',
@@ -53,6 +56,7 @@ exports.seed = async function(knex) {
       date: knex.raw(`CURRENT_DATE + INTERVAL '1 day'`),
       start_time: `${timeSetter(true, 17, 'tomorrow')}`,
       end_time: `${timeSetter(false, 17, 'tomorrow')}`,
+      color: '#f44336',
     },
     {
       title: 'test_event yesterday',
@@ -62,6 +66,7 @@ exports.seed = async function(knex) {
       date: knex.raw(`CURRENT_DATE - INTERVAL '1 day'`),
       start_time: `${timeSetter(true, 20, 'yesterday')}`,
       end_time: `${timeSetter(false, 20, 'yesterday')}`,
+      color: '#7986cb',
     },
   ];
   await knex('events').insert(defaultData);

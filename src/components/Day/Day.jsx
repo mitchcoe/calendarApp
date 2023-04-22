@@ -58,23 +58,67 @@ const datePickerSlotProps = {
   },
 };
 
+const hourMinuteFormat = (position, hourFunc, minuteFunc) => { // not great readability
+  return parseInt(`${position[hourFunc]()}${position[minuteFunc]() === 0 ?
+    '00' : (position[minuteFunc]() < 10 ? 
+      `0${position[minuteFunc]()}` : position[minuteFunc]())}`)
+};
+
+const blockedTimeSplit = (blockedTime) => `${blockedTime}`.length === 3 ? // also not great readability
+  [`${blockedTime}`.slice(0, 1),`${blockedTime}`.slice(1)] : [`${blockedTime}`.slice(0, 2),`${blockedTime}`.slice(2)];
+
 export default function Day(props) {
-  const { handleClick } = props;
+  const { handleClick, events } = props;
   const dispatch = useDispatch();
-  const [datePickerValue, setDatePickerValue] = useState(null)
+  const [datePickerValue, setDatePickerValue] = useState(null);
   let today = useSelector((state) => state.events.selectedDate);
-  // const open = useSelector((state) => state.form.open)
-  // const id = open ? 'simple-popper' : undefined;
   const times = ['8AM','9AM','10AM','11AM','12PM','1PM','2PM','3PM','4PM','5PM'];
+
+  const blockingEventsCheck = (events, time, type) => {
+    let result;
+    let formattedTime = hourMinuteFormat(time, 'getHours', 'getMinutes');
+
+    let timesToCheck = events.map((event) => {
+      let startOrEnd = new Date(event[`${type === 'start' ? 'end' : 'start'}_time`])
+      return hourMinuteFormat(startOrEnd, 'getHours', 'getMinutes')
+    });
+
+    let isoStringSplit = (timesToCheck) => {
+      if(timesToCheck.length > 0) {
+        let blockedTime = timesToCheck[0];
+        let split = blockedTimeSplit(blockedTime)
+        split[0] = `${parseInt(split[0]) + 5}`
+        result = `${time.toISOString().split('T')[0]}T${split[0]}:${split[1]}:00.000Z`
+      } else {
+        result = time.toISOString();
+      }
+    }
+
+    if(type === 'start') {
+      timesToCheck = timesToCheck.filter((endTime) => {
+        return endTime > formattedTime && endTime <= formattedTime + 30
+      });
+      isoStringSplit(timesToCheck);
+    }
+
+    if(type === 'end') {
+      timesToCheck = timesToCheck.filter((startTime) => {
+        return startTime <= formattedTime && startTime >= formattedTime - 70
+      });
+      isoStringSplit(timesToCheck);
+    }
+
+    return result;
+  };
 
   const insertTimeProp = (time, date, type) => {
     let hour = parseInt(time.slice(0, time.indexOf('M') - 1));
     hour = hour < 8 ? hour+= 12 : hour;
-    hour+= 5; // need to look up timezone stuff, this works for now (US central time)
+    hour+= 5; // timezone stuff, this works for now (US central time)
     if(type === 'end') hour+= 1
     date = date.split('T');
     date[1] = `${hour}:00:00.000Z`;
-    return date.join('T');
+    return blockingEventsCheck(events, new Date(date.join('T')), type);
   }
 
   const dateFormatter = (day) => {

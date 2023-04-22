@@ -13,6 +13,7 @@ const defaultFormState = {
   hasReminders: false,
   attachmentsList: [],
   attachmentPreviews: [],
+  color: '#2196f3'
 };
 
 const closedState = {

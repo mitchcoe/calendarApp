@@ -37,7 +37,6 @@ const upload = multer({
   }
 });
 
-// app.get('/', (request, response) => response.json({ info: 'Node.js, Express, and Postgres API' }));
 app.get('/events', db.getEvents);
 app.get('/events/:year', db.getEventsByYear);
 app.get('/events/:year/:month', db.getEventsByMonth);
@@ -45,6 +44,7 @@ app.get('/events/:year/:month/:day', db.getEventsByDay);
 app.get('/attachments/:event_id', db.getAttachments);
 app.get('/reminders/:event_id', db.getReminders);
 
+app.post('/reminders/today', db.getTodaysReminders)
 app.post('/events', db.createEvent);
 app.post('/attachments/:event_id', upload.single('file'), db.createAttachment);
 

@@ -7,13 +7,14 @@ import Popper from '@mui/material/Popper';
 import Day from './components/Day/Day';
 import EventsContainer from './components/Event/EventsContainer';
 import EventForm from './components/EventForm/EventForm';
+import RemindersQueue from './components/RemindersQueue/RemindersQueue';
 import { useSelector, useDispatch } from 'react-redux'
 import { getEvents, getEventsByDay, setSelectedDate } from './slices/eventSlice';
 import { toggleEventForm, handleEventChanges, clearEventChanges } from './slices/formSlice'
+import { clearReminders } from './slices/reminderSlice'
 // const formUtils = require('./components/EventForm/EventForm');
 
 export default function App() {
-  // hooks and useSelector cause re-renders
   // console.log('im rendering')
   const [anchorEl, setAnchorEl] = React.useState(null);
   // const events = useSelector((state) => state.events.eventList);
@@ -30,6 +31,7 @@ export default function App() {
   const handleClose = (event) => {
     setAnchorEl(null);
     dispatch(toggleEventForm({open: false}));
+    dispatch(clearReminders())
   };
 
   const handleClick = (event, props) => {
@@ -96,7 +98,7 @@ export default function App() {
     getEventsData();
     // getAttachments()
     if(selectedDate) getEventsByDayData();
-  }, [getEventsData, getEventsByDayData, selectedDate]); // adding todaysEvents causes infinite loop
+  }, [getEventsData, getEventsByDayData, selectedDate]);
 
   const containerStyles = {
     textAlign: 'center',
@@ -109,7 +111,7 @@ export default function App() {
     <Container sx={containerStyles} data-testid="app_container">
       <CssBaseline />
       <React.Fragment>
-        <Day handleClick={handleClick} anchorEl={anchorEl} />
+        <Day handleClick={handleClick} anchorEl={anchorEl} events={todaysEvents} />
         {todaysEvents?.length > 0 ? (
           <EventsContainer
             events={todaysEvents}
@@ -145,8 +147,9 @@ export default function App() {
           },
         ]}
       >
-        <EventForm handleClick={handleClick} handleClose={handleClose} />
+        <EventForm handleClose={handleClose} />
       </Popper>
+      <RemindersQueue events={todaysEvents}/>
     </Container>
   );
 };

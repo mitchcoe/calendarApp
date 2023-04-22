@@ -1,12 +1,14 @@
-import { useState,  useMemo, useCallback, useEffect } from 'react';
+import { useState, useMemo, useCallback, useEffect } from 'react';
 import * as React from 'react'
 import dayjs from 'dayjs';
+import { useTheme } from '@mui/material/styles';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import CloseIcon from '@mui/icons-material/Close';
 import AttachFileIcon from '@mui/icons-material/AttachFile';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import NotificationsIcon from '@mui/icons-material/Notifications';
+import PaletteIcon from '@mui/icons-material/Palette';
 import {MobileDatePicker, MobileTimePicker, LocalizationProvider} from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import {
@@ -27,8 +29,7 @@ import {
   AccordionDetails,
 } from '@mui/material';
 import { useSelector, useDispatch } from 'react-redux'
-// eslint-disable-next-line no-unused-vars
-import { getEvents, createEvents, updateEvents, deleteEvents } from '../../slices/eventSlice';
+import { createEvents, updateEvents, deleteEvents } from '../../slices/eventSlice';
 import {
   clearEventChanges,
   handleEventChanges,
@@ -40,6 +41,8 @@ import {
 import AttachmentsModal from '../AttachmentsModal/AttachmentsModal'
 import AttachmentsPreview from '../AttachmentsPreview/AttachmentsPreview';
 import RemindersMenu from '../RemindersMenu/RemindersMenu';
+import ColorPicker from '../ColorPicker/ColorPicker';
+
 /** @jsx jsx */
 /** @jsxRuntime classic */
 // eslint-disable-next-line no-unused-vars
@@ -50,6 +53,7 @@ const sixPM = dayjs().set('hour', 18).startOf('hour')
 const fivePM = dayjs().set('hour', 17).startOf('hour')
 
 export default function EventForm(props) {
+  const theme = useTheme();
   const [startValue, setStartValue] = useState('');
   const [endValue, setEndValue] = useState('');
   const [dateValue, setDateValue] = useState('');
@@ -58,6 +62,9 @@ export default function EventForm(props) {
   const [attachmentsModalOpen, setAttachmentsModalOpen] = useState(false)
   const [reminderMenuAnchor, setReminderMenuAnchor] = useState(null)
   const reminderMenuOpen = Boolean(reminderMenuAnchor);
+  const [colorPickerAnchor, setColorPickerAnchor] = useState(null)
+  const colorPickerOpen = Boolean(colorPickerAnchor)
+  const colorPickerId = colorPickerOpen ? 'colorPicker' : undefined;
 
   const errorMessage = useMemo(() => {
     switch (error) {
@@ -74,6 +81,12 @@ export default function EventForm(props) {
       case 'maxTime': {
         return 'Please select a time between 8AM and 6PM'
       }
+      case 'shouldDisableTime-hours': {
+        return 'This time range is blocked by other events, please select another time'
+      }
+      case 'shouldDisableTime-minutes': {
+        return 'Please select a time at the top or the middle of the hour'
+      }
       case null: {
         return ''
       }
@@ -84,34 +97,40 @@ export default function EventForm(props) {
     }
   }, [error]);
 
-  // eslint-disable-next-line no-unused-vars
-  const events = useSelector((state) => state.events.eventList);
+  const events = useSelector((state) => state.events.currentEventList);
   const editingEnabled = useSelector((state) => state.form.editing);
   const { title, description, location,
           phone, date, start_time,
           end_time, anchorType, valid,
-          hasAttachments, event_id, attachmentsList } = useSelector((state) => state.form)
-  // eslint-disable-next-line no-unused-vars
-  const { handleClick, eventId, handleClose} = props;
+          hasAttachments, event_id, attachmentsList, color } = useSelector((state) => state.form)
+  const { type, reminders_on, time_before} = useSelector((state) => state.reminder)
+  const { handleClose } = props;
   const dispatch = useDispatch();
 
-  // eslint-disable-next-line no-unused-vars
-  const defaultEvent = {
-    title: 'event_placing_test',
-    description: 'testing event creation on the front end',
-    location: 'Austin, TX',
-    date: '2023-03-21',
-    start_time: '2023-03-21 09:45:00',
-    end_time: '2023-03-21 12:30:00'
+  const hourMinuteFormat = (position, hourFunc, minuteFunc) => {
+    return parseInt(`${position[hourFunc]()}${position[minuteFunc]() === 0 ? '00' : (position[minuteFunc]() < 10 ? `0${position[minuteFunc]()}` : position[minuteFunc]())}`)
   };
 
-  // eslint-disable-next-line no-unused-vars
-  // const getEventsData = useCallback(async () => {
-  //   await fetch('/events')
-  //     .then(response => response.json())
-  //     .then(response => dispatch(getEvents(response)))
-  //     .catch(error => console.log(error));
-  // }, [dispatch]);
+  let blockedTimes = events.map((event) => {
+    let start = new Date(event.start_time);
+    let end = new Date(event.end_time);
+    let block = {
+      start: hourMinuteFormat(start, 'getHours', 'getMinutes'),
+      end: hourMinuteFormat(end, 'getHours', 'getMinutes'),
+      event_id: event.event_id
+    }
+    return block
+  });
+
+  if(blockedTimes.length > 0 && event_id) {
+    blockedTimes = blockedTimes.filter((time) => time.event_id !== event_id)
+  }
+
+  const background = theme.palette.augmentColor({
+    color: {
+      main: color,
+    },
+  });
 
   const getAttachmentsData = useCallback( async () => {
     await fetch(`/attachments/${event_id}`)
@@ -125,17 +144,36 @@ export default function EventForm(props) {
   }, [getAttachmentsData, hasAttachments]);
 
   const createEvent = async () => {
+    let times = []
+    for(let time in time_before) {
+      if(!!time_before[time]) times.push(`${time}`.slice(1))
+    }
+
+    let reminder = {
+      type,
+      reminders_on,
+      time_before: times.join(' '),
+    }
+
     await fetch('/events', {
       method:'POST',
       headers: {
         "Content-Type": "application/json"
       },
-      body: JSON.stringify({title, description, location, phone, date, start_time, end_time}),
+      body: JSON.stringify({
+        title,
+        description,
+        location,
+        phone,
+        date,
+        start_time,
+        end_time,
+        color,
+        reminder
+      }),
     })
       .then(response => response.json())
-      .then(response => {
-        dispatch(createEvents(response.data));
-      })
+      .then(response => dispatch(createEvents(response.data)))
       .catch(error => console.log(error));
   };
 
@@ -149,6 +187,7 @@ export default function EventForm(props) {
       date,
       start_time,
       end_time,
+      color
     }
 
     for(let key in formChanges) {
@@ -156,7 +195,6 @@ export default function EventForm(props) {
         updatedObject[key] = formChanges[key]
       }
     }
-    // console.log('updatedObject',updatedObject)
     
     await fetch('/events', {
       method:'PUT',
@@ -193,43 +231,42 @@ export default function EventForm(props) {
     handleClose(event)
   };
 
-  // const handleDelete = (event) => {
-  //   deleteEvent();
-  //   handleClose(event);
-  // }
-
   const handleClear = () => {
     dispatch(clearEventChanges());
     setDateValue('');
     setStartValue('');
     setEndValue('');
     dispatch(setValidState(false));
-  }
+  };
 
   const handleFieldChange = (event) => {
     dispatch(handleEventChanges({[event.target.id]: event.target.value}))
-  }
+  };
 
   const handeDateFieldChange = (event) => {
     setDateValue(event)
     dispatch(handleEventChanges({date: `${event['$y']}-0${event['$M']+ 1}-${event['$D']}`}))
-  }
+  };
 
   const handleStartTimeFieldChange = (event) => {
     if(event === null) return
     setStartValue(event)
     dispatch(handleEventChanges({start_time: event['$d'].toISOString()}))
-  }
+  };
 
   const handleEndTimeFieldChange = (event) => {
     if(event === null) return
     setEndValue(event)
     dispatch(handleEventChanges({end_time: event['$d'].toISOString()}))
-  }
+  };
+
+  const handleColorChange = (color) => {
+    dispatch(handleEventChanges({color: color}))
+  };
 
   const handleEditToggle = (event) => {
     dispatch(toggleEditingState(!editingEnabled))
-  }
+  };
 
   const handleError = (err) => {
     if(err === null) {
@@ -257,15 +294,16 @@ export default function EventForm(props) {
     dispatch(clearAttachmentPreviews());
   };
 
-  const handleReminderClick = (event) => {
-    setReminderMenuAnchor(event.currentTarget)
-  }
+  const handleColorPickerClick = (event) => setColorPickerAnchor(event.currentTarget);
+  const handleColorPickerClose = () => setColorPickerAnchor(null);
 
-  const handleReminderMenuClose = () => setReminderMenuAnchor(null)
+  const handleReminderClick = (event) => setReminderMenuAnchor(event.currentTarget);
+
+  const handleReminderMenuClose = () => setReminderMenuAnchor(null);
 
   const cardHeaderStyles = {
     display: 'flex',
-    backgroundColor: 'red'
+    backgroundColor: color
   };
   const cardContentStyles = {
     display: 'flex',
@@ -276,11 +314,8 @@ export default function EventForm(props) {
     justifyContent: 'space-evenly',
   };
   const iconButtonStyles = {
-    ml: '16px'
-  }
-  // eslint-disable-next-line no-unused-vars
-  const submitButtonStyles = {
-    // backgroundColor
+    ml: '16px',
+    color: theme.palette.getContrastText(background.main)
   }
   const fieldStyles = {
     mb: '16px'
@@ -357,6 +392,39 @@ export default function EventForm(props) {
           disabled={ (anchorType === 'Create' ? false : !editingEnabled) || !date }
           minTime={minimumTime}
           maxTime={maximumTime}
+          shouldDisableTime={(value, view) => {
+            if(anchorType === 'Update' && !editingEnabled) return false
+            let formattedValue = hourMinuteFormat(value, 'hour', 'minute')
+
+            if(view === 'hours') {
+              return blockedTimes.some((time) => {
+              if(editingEnabled && formattedValue >= time.start && formattedValue <= time.end && time.event_id === event_id) {
+                return false
+              } 
+              if(timeType === 'start_time' && time.event_id !== event_id) {
+                let end = dayjs(end_time)
+                end = hourMinuteFormat(end, 'hour', 'minute')
+                if(formattedValue > end) return true
+                let blocked = blockedTimes.filter((time) => {
+                  return time.end > formattedValue && time.end < end
+                })
+                return blocked.length >= 1
+              }
+              if(timeType === 'end_time' && time.event_id !== event_id) {
+                let start = dayjs(start_time)
+                start = hourMinuteFormat(start, 'hour', 'minute')
+                if(formattedValue < start) return true
+                let blocked = blockedTimes.filter((time) => {
+                  return time.start < formattedValue && time.start > start
+                })
+                return blocked.length >= 1 
+              }
+              return formattedValue > time.start && formattedValue < time.end
+            })}
+            if(view === 'minutes') {
+              return value['$m'] !== 0 && value['$m'] !== 30
+            }
+          }}
           value={timeTypeValueState || (timeTypeValueRedux && dayjs(timeTypeValueRedux))}
           onChange={onChangeFunc}
           onError={(newError) => handleError(newError)}
@@ -401,7 +469,11 @@ export default function EventForm(props) {
         <CardHeader
           sx={cardHeaderStyles}
           title={
-            <Typography>
+            <Typography
+              style={{
+                color: theme.palette.getContrastText(background.main),
+              }}
+            >
               {anchorType} Event
             </Typography>
           }
@@ -417,7 +489,25 @@ export default function EventForm(props) {
                 anchorEl={reminderMenuAnchor}
                 onClose={handleReminderMenuClose}
                 event_id={event_id}
+                start_time={start_time}
+                anchorType={anchorType}
               />
+              {anchorType && anchorType === 'Create' && (
+                <React.Fragment>
+                  <Tooltip title="Change Color">
+                    <IconButton sx={iconButtonStyles} onClick={handleColorPickerClick} data-testid="color_button">
+                      <PaletteIcon />
+                    </IconButton>
+                  </Tooltip>
+                  <ColorPicker 
+                    open={colorPickerOpen}
+                    anchorEl={colorPickerAnchor}
+                    onClose={handleColorPickerClose}
+                    id={colorPickerId}
+                    dispatchFunction={handleColorChange}
+                  />
+                </React.Fragment>
+              )}
               {anchorType && anchorType === 'Update' && (
                 <React.Fragment>
                   <Tooltip title="Edit Event">
@@ -427,6 +517,18 @@ export default function EventForm(props) {
                   </Tooltip>
                   {editingEnabled ? (
                     <React.Fragment>
+                      <Tooltip title="Change Color">
+                        <IconButton sx={iconButtonStyles} onClick={handleColorPickerClick} data-testid="color_button">
+                          <PaletteIcon />
+                        </IconButton>
+                      </Tooltip>
+                      <ColorPicker 
+                        open={colorPickerOpen}
+                        anchorEl={colorPickerAnchor}
+                        onClose={handleColorPickerClose}
+                        id={colorPickerId}
+                        dispatchFunction={handleColorChange}
+                      />
                       <Tooltip title="Add Attachments">
                         <IconButton sx={iconButtonStyles} onClick={handleAttachmentsModalOpen} data-testid="attachment_button">
                           <AttachFileIcon />
@@ -502,7 +604,7 @@ export default function EventForm(props) {
           ) : null}
         </CardContent>
         <CardActions id="submit_buttons" sx={[buttonContainerStyles, {mt: 4}]}>
-          <Button //form needs validation before this should be enabled
+          <Button
             data-testid="submit_button"
             id="submit"
             variant="outlined"

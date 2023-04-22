@@ -36,8 +36,30 @@ const getEventsByDay = (request,response) => {
 		.catch(e => console.log(e.stack));
 };
 
-const createEvent = (request, response) => { //this needs some work for dates and stuff probably
-	const { title, description, location, phone, date, start_time, end_time } = request.body;
+const createReminder = async (reminder = null) => {
+  let reminderId = await knex('events')
+    .whereNotExists(function() {
+      this.select('*').from('reminders').whereRaw('events.event_id = reminders.event_id')
+    });
+
+  if(reminder) {
+    await knex('reminders').insert({
+      ...reminder,
+      event_id: reminderId[0].event_id,
+    });
+  } else {
+    await knex('reminders').insert({
+      type: 'email',
+      time_before: '0 30 60',
+      event_id: reminderId[0].event_id,
+      reminders_on: true
+    });
+  }
+};
+
+const createEvent = (request, response) => {
+	const { title, description, location, phone, date, start_time, end_time, color, reminder } = request.body;
+
   knex('events').insert({
     title: title || '',
     description: description || '',
@@ -45,12 +67,14 @@ const createEvent = (request, response) => { //this needs some work for dates an
     phone: phone || '',
     date,
     start_time,
-    end_time
+    end_time,
+    color
   }, ['*'])
 		.then(res => response.status(200).send({
       data: res,
       message: `Event created with event ID ${res[0].event_id}`
 		}))
+    .then(() => createReminder(reminder))
 		.catch(e => console.log(e.stack));
   };
 
@@ -160,6 +184,13 @@ const getReminders = (request, response) => {
     .catch(e => console.log(e.stack));
 };
 
+const getTodaysReminders = (request, response) => {
+  let { event_ids } = request.body
+  knex('reminders').whereIn('event_id', event_ids)
+  .then(res => response.status(200).json(res))
+  .catch(e => console.log(e.stack));
+}
+
 const updateReminders = (request, response) => {
   const { event_id } = request.params;
   const {...rest} = request.body
@@ -185,4 +216,5 @@ module.exports = {
   deleteAttachments,
   getReminders,
   updateReminders,
+  getTodaysReminders,
 };
