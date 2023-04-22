@@ -2,6 +2,15 @@ import { screen, fireEvent, act } from '@testing-library/react';
 import renderWithProviders from '../../utils/test_utils'
 import Day from './Day';
 
+const defaultEvent = {
+  title: 'event_form_test',
+  description: 'testing event creation on the front end',
+  location: 'Austin, TX',
+  date: '2023-04-21',
+  start_time: '2023-04-21 09:45:00',
+  end_time: '2023-04-21 12:30:00'
+};
+
 let date = new Date();
 date.setUTCHours(13,0,0);
 let formattedDate = date;
@@ -82,7 +91,7 @@ test('should change the date correctly', async () => {
 
 test('should pass the correctly formatted times when clicking an empty cell', () => {
   const handleClick = jest.fn();
-  renderWithProviders(<Day handleClick={handleClick}/>, {
+  renderWithProviders(<Day handleClick={handleClick} events={[defaultEvent]}/>, {
     preloadedState: {
       events: {
         selectedDate: formattedDate
