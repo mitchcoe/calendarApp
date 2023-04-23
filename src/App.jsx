@@ -57,8 +57,6 @@ export default function App() {
   };
 
   const id = open ? 'simple-popper' : undefined;
-  // console.log('events rendered in app.jsx', events)
-  // console.log("current events today", todaysEvents)
 
   const getEventsData = useCallback(async () => {
     await fetch('/events')
