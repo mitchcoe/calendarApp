@@ -6,7 +6,7 @@ module.exports = {
       user: 'me',
       host: 'localhost',
       database: 'calendarapp',
-      password: 'Bobcats#123!',
+      password: 'password',
       port: 5432,
     },
     pool: {
