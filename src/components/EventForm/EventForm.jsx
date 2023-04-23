@@ -510,11 +510,6 @@ export default function EventForm(props) {
               )}
               {anchorType && anchorType === 'Update' && (
                 <React.Fragment>
-                  <Tooltip title="Edit Event">
-                    <IconButton sx={iconButtonStyles} onClick={handleEditToggle} data-testid="edit_button">
-                      <EditIcon />
-                    </IconButton>
-                  </Tooltip>
                   {editingEnabled ? (
                     <React.Fragment>
                       <Tooltip title="Change Color">
@@ -528,6 +523,7 @@ export default function EventForm(props) {
                         onClose={handleColorPickerClose}
                         id={colorPickerId}
                         dispatchFunction={handleColorChange}
+                        colorProp={color}
                       />
                       <Tooltip title="Add Attachments">
                         <IconButton sx={iconButtonStyles} onClick={handleAttachmentsModalOpen} data-testid="attachment_button">
@@ -541,6 +537,11 @@ export default function EventForm(props) {
                       </Tooltip>
                     </React.Fragment>
                   ): null }
+                  <Tooltip title="Edit Event">
+                    <IconButton sx={iconButtonStyles} onClick={handleEditToggle} data-testid="edit_button">
+                      <EditIcon />
+                    </IconButton>
+                  </Tooltip>
                 </React.Fragment>
               )}
               <Tooltip title="Close">

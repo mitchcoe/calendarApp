@@ -114,7 +114,7 @@ export default function Day(props) {
   const insertTimeProp = (time, date, type) => {
     let hour = parseInt(time.slice(0, time.indexOf('M') - 1));
     hour = hour < 8 ? hour+= 12 : hour;
-    hour+= 5; // timezone stuff, this works for now (US central time)
+    hour+= 5; // timezone stuff, this works for now (US central time), should probably be an .env variable
     if(type === 'end') hour+= 1
     date = date.split('T');
     date[1] = `${hour}:00:00.000Z`;

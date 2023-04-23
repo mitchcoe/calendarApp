@@ -38,6 +38,7 @@ export default function App() {
     // console.log('props', JSON.stringify(props))
     if(open && anchorEl !== event.currentTarget) {
       dispatch(clearEventChanges())
+      dispatch(clearReminders())
       setAnchorEl(event.currentTarget);
     } else if(open && anchorEl === event.currentTarget) {
         return handleClose()
@@ -48,7 +49,8 @@ export default function App() {
     dispatch(toggleEventForm({
       open: open ? open : !open,
       anchorType: event.target.localName === 'td' ? 'Create' : 'Update',
-      event_id: event.target.localName === 'td' ? null : props?.event_id
+      event_id: event.target.localName === 'td' ? null : props?.event_id,
+      editing: false,
     }));
 
     dispatch(handleEventChanges({...props}));

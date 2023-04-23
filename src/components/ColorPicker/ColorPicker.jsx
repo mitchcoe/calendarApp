@@ -56,21 +56,34 @@ const shades = [
  */
 export default function ColorPicker(props) {
   const theme = useTheme();
+  const { open, onClose, id, anchorEl, dispatchFunction, colorProp } = props
+
+  const getColorPropHueAndShade = (prop) => {
+    let result;
+    for(let hue in colors) {
+      for(let shade in colors[hue]) {
+        if(colors[hue][shade] === prop) {
+          result = [hue, shade.indexOf('A') === -1 ? parseInt(shade) : shade]
+          return result
+        }
+      }
+    }
+    return false
+  }
+
   const [colorState, setColorState] = useState({
-    primary: defaults.primary,
+    primary: colorProp || defaults.primary,
     // secondary: defaults.secondary,
-    primaryInput: defaults.primary,
+    primaryInput: colorProp || defaults.primary,
     // secondaryInput: defaults.secondary,
-    primaryHue: 'blue',
+    primaryHue: colorProp ? getColorPropHueAndShade(colorProp)[0] : 'blue',
     // secondaryHue: 'pink',
-    primaryShade: 4,
+    primaryShade: colorProp ? shades.indexOf(getColorPropHueAndShade(colorProp)[1]) : 4,
     // secondaryShade: 11,
   });
 
   // eslint-disable-next-line no-unused-vars
   const { primary, primaryInput, primaryHue, primaryShade } = colorState
-  const { open, onClose, id, anchorEl, dispatchFunction } = props
-
   // eslint-disable-next-line no-unused-vars
   const background = theme.palette.augmentColor({
     color: {
