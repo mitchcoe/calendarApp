@@ -16,6 +16,7 @@ import '../../App.css';
 import { useSelector, useDispatch } from 'react-redux'
 import { setSelectedDate } from '../../slices/eventSlice';
 import dayjs from 'dayjs';
+// import { openReminderNotification } from '../../slices/reminderSlice'
 
 const datePickerSlotProps = {
   inputAdornment: {
@@ -71,6 +72,7 @@ export default function Day(props) {
   const { handleClick, events } = props;
   const dispatch = useDispatch();
   const [datePickerValue, setDatePickerValue] = useState(null);
+  // let [count, setCount] = useState(0);
   let today = useSelector((state) => state.events.selectedDate);
   const times = ['8AM','9AM','10AM','11AM','12PM','1PM','2PM','3PM','4PM','5PM'];
 
@@ -145,7 +147,17 @@ export default function Day(props) {
     newDay.setUTCDate(direction === 'plus' ? day + 1 : day - 1 )
 
     handleDateChange(dayjs(newDay))
-  }
+  };
+
+  // const handleIncrement = () => { // helps test notifications queue
+  //   let minArray = ['0', '30', '60']
+  //   let reminder = {
+  //     event_id: 1,
+  //     minutes: minArray[count]
+  //   }
+  //   dispatch(openReminderNotification(reminder))
+  //   setCount(count += 1)
+  // }
 
   return(
     <TableContainer
@@ -178,6 +190,9 @@ export default function Day(props) {
                 <IconButton onClick={() => handleChangeDayByOne(today, 'plus')}>
                   <ChevronRightIcon sx={{color: 'white'}}/>
                 </IconButton>
+                {/* <IconButton onClick={() => handleIncrement()}>
+                  <ChevronRightIcon sx={{color: 'white'}}/>
+                </IconButton> */}
               </div>
             </TableCell>
           </TableRow>

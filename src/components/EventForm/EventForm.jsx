@@ -107,25 +107,6 @@ export default function EventForm(props) {
   const { handleClose } = props;
   const dispatch = useDispatch();
 
-  const hourMinuteFormat = (position, hourFunc, minuteFunc) => {
-    return parseInt(`${position[hourFunc]()}${position[minuteFunc]() === 0 ? '00' : (position[minuteFunc]() < 10 ? `0${position[minuteFunc]()}` : position[minuteFunc]())}`)
-  };
-
-  let blockedTimes = events.map((event) => {
-    let start = new Date(event.start_time);
-    let end = new Date(event.end_time);
-    let block = {
-      start: hourMinuteFormat(start, 'getHours', 'getMinutes'),
-      end: hourMinuteFormat(end, 'getHours', 'getMinutes'),
-      event_id: event.event_id
-    }
-    return block
-  });
-
-  if(blockedTimes.length > 0 && event_id) {
-    blockedTimes = blockedTimes.filter((time) => time.event_id !== event_id)
-  }
-
   const background = theme.palette.augmentColor({
     color: {
       main: color,
@@ -367,6 +348,25 @@ export default function EventForm(props) {
     />
   );
 
+  const hourMinuteFormat = (position, hourFunc, minuteFunc) => {
+    return parseInt(`${position[hourFunc]()}${position[minuteFunc]() === 0 ? '00' : (position[minuteFunc]() < 10 ? `0${position[minuteFunc]()}` : position[minuteFunc]())}`)
+  };
+
+  let blockedTimes = events.map((event) => {
+    let start = new Date(event.start_time);
+    let end = new Date(event.end_time);
+    let block = {
+      start: hourMinuteFormat(start, 'getHours', 'getMinutes'),
+      end: hourMinuteFormat(end, 'getHours', 'getMinutes'),
+      event_id: event.event_id
+    }
+    return block
+  });
+
+  if(blockedTimes.length > 0 && event_id) {
+    blockedTimes = blockedTimes.filter((time) => time.event_id !== event_id)
+  }
+
   const customTimePicker = (props) => {
     const { timeType, timeTypeValueState, timeTypeValueRedux, minimumTime, maximumTime, onChangeFunc} = props
     let formattedLabel = (label) => {
@@ -599,6 +599,7 @@ export default function EventForm(props) {
                 attachmentsList={attachmentsList}
                 event_id={event_id}
                 mode="current"
+                editingEnabled={editingEnabled}
               />
             </AccordionDetails>
           </Accordion>

@@ -1,18 +1,31 @@
 import * as React from 'react';
 import { useCallback, useEffect } from 'react';
+import { useSnackbar } from 'notistack';
 import Stack from '@mui/material/Stack';
 import ReminderNotification from './ReminderNotification';
 import { useSelector, useDispatch } from 'react-redux'
 import { openReminderNotification, closeReminderNotification, getTodaysReminders } from '../../slices/reminderSlice'
 
+let displayed = [];
+
 export default function RemindersQueue(props) {
   const { events } = props
   const dispatch = useDispatch();
   const { todays_reminders } = useSelector((state) => state.reminder);
+  const { enqueueSnackbar, closeSnackbar } = useSnackbar();
 
-  const handleClose = (payload) => {
-    dispatch(closeReminderNotification(payload))
+  const storeDisplayed = (id) => {
+    displayed = [...displayed, id];
   };
+
+  const removeDisplayed = (id) => {
+      displayed = [...displayed.filter(key => id !== key)];
+  };
+
+  const handleClose = useCallback((payload, id) => {
+    dispatch(closeReminderNotification(payload))
+    removeDisplayed(id)
+  }, [dispatch]);
 
   const checkTime = useCallback((events, reminders) => {
     let now = Date.now() / 1000 / 60;
@@ -71,23 +84,51 @@ export default function RemindersQueue(props) {
       setInterval(() => checkTime(events, todays_reminders), 60000)
     }, (60 - sec) * 1000);
 
+    // https://github.com/iamhosseindhv/notistack/tree/master/examples/redux-example
+    if(todays_reminders.length > 0) {
+      todays_reminders.forEach(({options = {}, ...reminder}) => {
+        const key = reminder.notification_id
+        const event = events.filter((event) => event.event_id === reminder.event_id)[0]
+  
+        if(reminder.dismissed) {
+          closeSnackbar(key);
+          return;
+        };
+  
+        if (displayed.includes(key)) return;
+  
+        if(reminder.open) {
+          enqueueSnackbar(`${event.title} is starting in ${reminder.minutes} minutes`, {
+            key,
+            content: (key, message) => (
+              <ReminderNotification
+                key={key}
+                message={message}
+                onClose={() => handleClose({minutes: reminder.minutes, event_id: reminder.event_id}, key)}
+                description={event.description}
+                location={event.location}
+                phone={event.phone}
+              />
+            ),
+            onExited: (event, myKey) => {
+              dispatch(closeReminderNotification({minutes: reminder.minutes, event_id: reminder.event_id}));
+              removeDisplayed(myKey);
+            },
+          })
+        }
+  
+        storeDisplayed(key);
+      })
+    }
+
     return () => {
       clearTimeout(interval);
     };
-  },[checkTime, events, todays_reminders])
+  },[checkTime, events, todays_reminders, closeSnackbar, enqueueSnackbar, dispatch, handleClose])
 
   return (
     <Stack>
-      {todays_reminders?.length > 0 ? todays_reminders.map((reminder, index) => (
-        <ReminderNotification
-          key={`${reminder.title}${index}`} 
-          // open={index === 0 && !reminder.open ? true : false}
-          open={reminder.open}
-          onClose={() => handleClose({minutes: reminder.minutes, event_id: reminder.event_id})}
-          title={events.filter((event) => event.event_id === reminder.event_id ).map((item) => item.title)[0]}
-          minutes={reminder.minutes}
-        />
-      )) : null}
+      {/* need to figure this out */}
     </Stack>
   )
 };

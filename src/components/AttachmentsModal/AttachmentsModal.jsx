@@ -100,6 +100,7 @@ export default function AttachmentsModal(props) {
             attachmentsList={attachmentPreviews}
             event_id={event_id}
             mode="preview"
+            editingEnabled
           />
         ) : null}
       </Box>

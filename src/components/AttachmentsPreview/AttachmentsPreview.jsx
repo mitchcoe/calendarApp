@@ -21,7 +21,7 @@ export default function AttachmentsPreview(props) {
   const medium = useMediaQuery(theme.breakpoints.down('md'))
   const large = useMediaQuery(theme.breakpoints.down('lg'))
 
-  const { attachmentsList, event_id, mode } = props;
+  const { attachmentsList, event_id, mode, editingEnabled } = props;
   const dispatch = useDispatch();
 
   const getAttachmentsData = async () => {
@@ -96,7 +96,7 @@ export default function AttachmentsPreview(props) {
             subtitle={attachment.file_type}
             actionIcon={
               <IconButton
-                sx={{ color: 'rgba(255, 255, 255, 0.54)' }}
+                sx={{ color: 'rgba(255, 255, 255, 0.54)', visibility: editingEnabled ? 'unset' : 'hidden' }}
                 aria-label={`delete attachment ${attachment.file_name}`}
                 onClick={() => mode === 'preview' ? 
                 handleDeletePreview(attachment.file_name) 

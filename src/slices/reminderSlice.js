@@ -87,21 +87,29 @@ export const reminderSlice = createSlice({
           event_id,
           minutes: time,
           open: false,
+          dismissed: false
         }))
       })
       state.todays_reminders = formattedPayload;
     },
     openReminderNotification: (state, action) => {
       // console.log('openReminderNotification', action.payload)
-      let updatedPayload = Object.assign({}, {...action.payload, open: true})
-      let reminderToOpen = state.todays_reminders.findIndex( reminder => reminder.minutes === action.payload.minutes && reminder.event_id === action.payload.event_id);
-      if (reminderToOpen !== - 1) state.todays_reminders.splice(reminderToOpen, 1, updatedPayload)
+      let updatedPayload = Object.assign(action.payload, {
+        open: true,
+        notification_id: Math.random() + action.payload.event_id + action.payload.minutes
+      })
+      let reminderToOpen = state.todays_reminders.findIndex(
+        reminder => reminder.minutes === action.payload.minutes && reminder.event_id === action.payload.event_id
+      );
+      if (reminderToOpen !== - 1) state.todays_reminders.splice(reminderToOpen, 1, Object.assign(state.todays_reminders[reminderToOpen], updatedPayload))
     },
     closeReminderNotification: (state, action) => {
       // console.log('closeReminderNotification', action.payload)
-      let updatedPayload = Object.assign(action.payload, {open: false})
-      let reminderToClose = state.todays_reminders.findIndex( reminder => reminder.minutes === action.payload.minutes && reminder.event_id === action.payload.event_id);
-      if (reminderToClose !== - 1) state.todays_reminders.splice(reminderToClose, 1, updatedPayload)
+      let updatedPayload = Object.assign(action.payload, {open: false, dismissed: true})
+      let reminderToClose = state.todays_reminders.findIndex(
+        reminder => reminder.minutes === action.payload.minutes && reminder.event_id === action.payload.event_id
+      );
+      if (reminderToClose !== - 1) state.todays_reminders.splice(reminderToClose, 1, Object.assign(state.todays_reminders[reminderToClose], updatedPayload))
     }
   }
 });

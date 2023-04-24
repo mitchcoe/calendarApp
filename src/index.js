@@ -1,6 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { Provider } from 'react-redux'
+import { SnackbarProvider } from "notistack";
+import ReminderNotification from './components/RemindersQueue/ReminderNotification';
 import './index.css';
 import App from './App';
 import setupStore from './store'
@@ -10,7 +12,14 @@ const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
     <Provider store={setupStore()}>
-      <App />
+      <SnackbarProvider
+        maxSnack={4}
+        Components={{
+          reminderNotification: ReminderNotification
+        }}
+      >
+        <App />
+      </SnackbarProvider>
     </Provider>
   </React.StrictMode>
 );
