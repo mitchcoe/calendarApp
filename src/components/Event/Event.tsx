@@ -18,16 +18,18 @@ const calculateHeight = (startTime: string, endTime: string) => {
 };
 
 type Event = {
-  start_time: string,
-  end_time: string,
+  event_id: number,
   title: string,
   location: string,
+  start_time: string,
+  end_time: string,
+  color: string,
 }
 
 type EventProps = {
   event: Event,
   zIndex: number,
-  handleClick: (e: object, event: object) => void,
+  handleClick: (e: object, event: Event) => void,
   color: string,
 }
 

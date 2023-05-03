@@ -1,11 +1,26 @@
 import Event from "./Event";
+// import { css } from '@emotion/css'
 
 /** @jsx jsx */
 /** @jsxRuntime classic */
 // eslint-disable-next-line no-unused-vars
 import { css, jsx } from '@emotion/react'
 
-export default function EventsContainer(props) {
+type Event = {
+  event_id: number,
+  title: string,
+  location: string,
+  start_time: string,
+  end_time: string,
+  color: string,
+}
+
+type EventsContainerProps = {
+  events: Event[],
+  handleClick: (e: object, event: Event) => void
+}
+
+export default function EventsContainer(props: EventsContainerProps) {
   const { events, handleClick } = props;
   const eventContainerStyles = { // going to adjust this later
     // position: 'absolute',
