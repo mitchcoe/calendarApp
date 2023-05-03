@@ -1,4 +1,3 @@
-import * as React from 'react'
 import Typography from "@mui/material/Typography";
 import Paper from "@mui/material/Paper";
 import { useTheme } from '@mui/material/styles';
@@ -12,21 +11,31 @@ import useMediaQuery from '@mui/material/useMediaQuery';
  * This calculates the time difference and multiplies the result 
  * by 20 (20px is 1/4th the cell so 15 minutes.)
  */
-const calculateHeight = (startTime, endTime) => {
+const calculateHeight = (startTime: string, endTime: string) => {
   let startTimeMS = new Date(startTime).getTime();
   let endTimeMS = new Date(endTime).getTime();
   return (endTimeMS - startTimeMS) / 1000 / 60 / 15 * 20;
 };
 
-export default function Event(props) {
+type Event = {
+  start_time: string,
+  end_time: string,
+  title: string,
+  location: string,
+}
+
+type EventProps = {
+  event: Event,
+  zIndex: number,
+  handleClick: (e: object, event: object) => void,
+  color: string,
+}
+
+export default function Event(props: EventProps) {
   const { event, zIndex, handleClick, color } = props;
   const theme = useTheme();
-  /**
-   * 
-   * @param {string} startTime 
-   * @returns {number}
-   */
-  const eventStartTime = (startTime) => {
+  
+  const eventStartTime = (startTime: string) => {
     let pixels = -800;
     let time = 'AM';
     let hour = new Date(startTime).getHours();
