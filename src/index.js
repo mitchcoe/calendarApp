@@ -5,7 +5,7 @@ import { SnackbarProvider } from "notistack";
 import ReminderNotification from './components/RemindersQueue/ReminderNotification';
 import './index.css';
 import App from './App';
-import setupStore from './store'
+import { setupStore } from './store'
 import reportWebVitals from './reportWebVitals';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));

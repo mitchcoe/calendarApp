@@ -1,6 +1,32 @@
 import { createSlice } from '@reduxjs/toolkit';
+import type { PayloadAction } from '@reduxjs/toolkit';
+// import type { RootState } from '../store';
+import { Attachment } from '../globalTypes';
 
-const defaultFormState = {
+interface DefaultFormState {
+  title: string,
+  description: string,
+  location: string,
+  phone: string,
+  date: string,
+  start_time: string,
+  end_time: string,
+  valid: boolean,
+  hasAttachments: boolean,
+  hasReminders: boolean,
+  attachmentsList: Attachment[],
+  attachmentPreviews: Attachment[],
+  color: string
+}
+
+interface ClosedState extends DefaultFormState {
+  editing: boolean,
+  anchorType: string | null,
+  open: boolean,
+  event_id: number | null,
+}
+
+const defaultFormState: DefaultFormState = {
   title: '',
   description: '',
   location: '',
@@ -16,19 +42,18 @@ const defaultFormState = {
   color: '#2196f3'
 };
 
-const closedState = {
+const closedState: ClosedState = {
   // anchorEl: null,
   editing: false,
   anchorType: null,
   open: false,
   event_id: null,
   ...defaultFormState,
-}
+};
+
 export const formSlice = createSlice({
   name: 'form',
-  initialState: {
-    ...closedState,
-  },
+  initialState: closedState,
   reducers: {
     toggleEventForm: (state, action) => {
       // console.log(`i should turn ${action.payload.open === true ? 'on' : 'off'}`, action.payload)
@@ -42,7 +67,7 @@ export const formSlice = createSlice({
       // console.log('handle event change', action.payload, Object.entries(Object.assign(state, action.payload)))
       Object.assign(state, action.payload);
     },
-    clearEventChanges: (state, action) => {
+    clearEventChanges: (state, action: PayloadAction<void>) => {
       // let clear = Object.assign(state, defaultFormState);
       // console.log('clearing', Object.values(clear))
       Object.assign(state, defaultFormState);

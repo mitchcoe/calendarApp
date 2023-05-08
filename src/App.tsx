@@ -9,51 +9,53 @@ import EventsContainer from './components/Event/EventsContainer';
 import EventForm from './components/EventForm/EventForm';
 import RemindersQueue from './components/RemindersQueue/RemindersQueue';
 import { useSelector, useDispatch } from 'react-redux'
+import { useAppSelector, useAppDispatch } from './hooks'
 import { getEvents, getEventsByDay, setSelectedDate } from './slices/eventSlice';
 import { toggleEventForm, handleEventChanges, clearEventChanges } from './slices/formSlice'
 import { clearReminders } from './slices/reminderSlice'
+import type { Event, HandleClickType } from './globalTypes'
 // const formUtils = require('./components/EventForm/EventForm');
 
 export default function App() {
   // console.log('im rendering')
-  const [anchorEl, setAnchorEl] = React.useState(null);
+  const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null);
   // const events = useSelector((state) => state.events.eventList);
-  const todaysEvents = useSelector((state) => state.events.currentEventList);
-  const selectedDate = useSelector((state) => state.events.selectedDate);
-  const open = useSelector((state) => state.form.open)
+  const todaysEvents = useAppSelector((state) => state.events.currentEventList);
+  const selectedDate = useAppSelector((state) => state.events.selectedDate);
+  const open = useAppSelector((state) => state.form.open)
   // const formId = useSelector((state) => state.form.event_id);
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   
   let today = new Date(Date.now()).toISOString();
   if(!selectedDate) dispatch(setSelectedDate(today));
   let newSelectedDate = useMemo(() => new Date(selectedDate?.slice(0, selectedDate.indexOf("Z"))), [selectedDate]);
 
-  const handleClose = (event) => {
+  const handleClose = (event?: React.MouseEvent) => {
     setAnchorEl(null);
     dispatch(toggleEventForm({open: false}));
     dispatch(clearReminders())
   };
 
-  const handleClick = (event, props) => {
+  const handleClick: HandleClickType = (e, event) => {
     // console.log('props', JSON.stringify(props))
-    if(open && anchorEl !== event.currentTarget) {
+    if(open && anchorEl !== e.currentTarget) {
       dispatch(clearEventChanges())
       dispatch(clearReminders())
-      setAnchorEl(event.currentTarget);
-    } else if(open && anchorEl === event.currentTarget) {
+      setAnchorEl(e.currentTarget);
+    } else if(open && anchorEl === e.currentTarget) {
         return handleClose()
     } else if(!open) {
-        setAnchorEl(event.currentTarget);
+        setAnchorEl(e.currentTarget);
     }
 
     dispatch(toggleEventForm({
       open: open ? open : !open,
-      anchorType: event.target.localName === 'td' ? 'Create' : 'Update',
-      event_id: event.target.localName === 'td' ? null : props?.event_id,
+      anchorType: (e.target as HTMLElement).localName === 'td' ? 'Create' : 'Update',
+      event_id: (e.target as HTMLElement).localName === 'td' ? null : event?.event_id,
       editing: false,
     }));
 
-    dispatch(handleEventChanges({...props}));
+    dispatch(handleEventChanges({...event}));
   };
 
   const id = open ? 'simple-popper' : undefined;

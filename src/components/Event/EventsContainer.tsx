@@ -1,4 +1,5 @@
 import Event from "./Event";
+import type { Event as EventItem, HandleClickType } from '../../globalTypes'
 // import { css } from '@emotion/css'
 
 /** @jsx jsx */
@@ -6,18 +7,9 @@ import Event from "./Event";
 // eslint-disable-next-line no-unused-vars
 import { css, jsx } from '@emotion/react'
 
-type Event = {
-  event_id: number,
-  title: string,
-  location: string,
-  start_time: string,
-  end_time: string,
-  color: string,
-}
-
 type EventsContainerProps = {
-  events: Event[],
-  handleClick: (e: object, event: Event) => void
+  events: EventItem[],
+  handleClick: HandleClickType
 }
 
 export default function EventsContainer(props: EventsContainerProps) {
@@ -34,7 +26,7 @@ export default function EventsContainer(props: EventsContainerProps) {
   };
   return (
     <div css={eventContainerStyles} data-testid="event_container">
-      {events.map((eventItem, index) => (
+      {events.map((eventItem: EventItem, index) => (
         <Event
           key={eventItem.event_id}
           event={eventItem}

@@ -1,6 +1,33 @@
 import { createSlice } from '@reduxjs/toolkit';
+import type { PayloadAction } from '@reduxjs/toolkit';
+import type { Reminder } from '../globalTypes';
 
-const defaultState = {
+type FormattedReminder = {
+  reminder_id: number
+  type: string
+  reminders_on: boolean
+  event_id: number
+  minutes: string,
+  open: boolean,
+  dismissed: boolean
+};
+
+interface ReminderState {
+  reminder_id: number | null,
+  type: string,
+  time_before: {
+    _0: boolean,
+    _15: boolean,
+    _30: boolean,
+    _45: boolean,
+    _60: boolean,
+  },
+  reminders_on: boolean,
+  event_id: number | null,
+  todays_reminders: FormattedReminder[],
+}
+
+const initialState: ReminderState = {
   reminder_id: null,
   type: 'email',
   time_before: {
@@ -17,25 +44,23 @@ const defaultState = {
 
 export const reminderSlice = createSlice({
   name: 'reminder',
-  initialState: {
-    ...defaultState,
-  },
+  initialState,
   reducers: {
-    clearReminders: (state, action) => {
+    clearReminders: (state, action: PayloadAction<void>) => {
       // console.log('clearing reminders')
        Object.assign(state, {
-        ...defaultState,
+        ...initialState,
         todays_reminders: state.todays_reminders
       });
     },
-    getReminder: (state, action) => {
+    getReminder: (state, action: PayloadAction<Reminder>) => {
       // console.log('getReminder', action.payload)
-      let updatedTimes = {}
+      let updatedTimes: {[index: string]: boolean} = {}
       let times = ['0','15','30','45','60'];
       let { time_before } = action.payload;
-      time_before = time_before.split(' ');
+      // time_before = time_before.split(' ');
       
-      time_before.forEach((time) => {
+      time_before.split(' ').forEach((time: string) => {
         if(times.includes(time)) {
           updatedTimes[`_${time}`] = true
         } else {
@@ -54,7 +79,7 @@ export const reminderSlice = createSlice({
     },
     updateReminder: (state, action) => {
       // console.log('updateReminder', action.payload)
-      let result = []
+      let result: FormattedReminder[] = []
       const {event_id, time_before} = action.payload;
       let times = time_before.split(' ');
       state.todays_reminders.forEach((reminder) => {
@@ -74,9 +99,9 @@ export const reminderSlice = createSlice({
       // console.log('updateTimeBefore',action.payload);
       state.time_before = Object.assign(state.time_before, action.payload)
     },
-    getTodaysReminders: (state, action) => {
+    getTodaysReminders: (state, action: PayloadAction<Array<Reminder>>) => {
       // console.log('getTodaysReminders', action.payload)
-      let formattedPayload = []
+      let formattedPayload: FormattedReminder[] = []
       action.payload.forEach((item) => {
         const {reminder_id, type, reminders_on, event_id, time_before} = item;
         let times = time_before.split(' ');

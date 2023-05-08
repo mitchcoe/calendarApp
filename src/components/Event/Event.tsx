@@ -2,6 +2,7 @@ import Typography from "@mui/material/Typography";
 import Paper from "@mui/material/Paper";
 import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
+import type { Event, HandleClickType } from '../../globalTypes'
 
 /**
  * 
@@ -17,19 +18,10 @@ const calculateHeight = (startTime: string, endTime: string) => {
   return (endTimeMS - startTimeMS) / 1000 / 60 / 15 * 20;
 };
 
-type Event = {
-  event_id: number,
-  title: string,
-  location: string,
-  start_time: string,
-  end_time: string,
-  color: string,
-}
-
 type EventProps = {
   event: Event,
   zIndex: number,
-  handleClick: (e: object, event: Event) => void,
+  handleClick: HandleClickType,
   color: string,
 }
 
@@ -74,7 +66,7 @@ export default function Event(props: EventProps) {
         border: '1px solid black'
       }}
       data-testid="test_event"
-      onClick={(e) => {handleClick(e, event)}}
+      onClick={(e) => handleClick(e, event)}
     >
       <Typography
         style={{
