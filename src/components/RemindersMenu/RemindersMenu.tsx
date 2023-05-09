@@ -10,7 +10,7 @@ import Checkbox from '@mui/material/Checkbox';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 
-import { useSelector, useDispatch } from 'react-redux'
+import { useAppSelector, useAppDispatch } from '../../hooks';
 import {
   clearReminders,
   updateTimeBefore,
@@ -19,11 +19,19 @@ import {
   handleReminderChanges,
 } from '../../slices/reminderSlice'
 
-export default function RemindersMenu(props) {
+type RemindersMenuProps = {
+  open: boolean,
+  anchorEl: HTMLAnchorElement,
+  onClose: () => void,
+  event_id: number,
+  anchorType: string,
+}
+
+export default function RemindersMenu(props: RemindersMenuProps) {
   const { open, anchorEl, onClose, event_id, anchorType } = props
-  const { type, reminders_on } = useSelector((state) => state.reminder)
-  const { _0 ,_15, _30, _45, _60 } = useSelector((state) => state.reminder.time_before)
-  const dispatch = useDispatch();
+  const { type, reminders_on } = useAppSelector((state) => state.reminder)
+  const { _0 ,_15, _30, _45, _60 } = useAppSelector((state) => state.reminder.time_before)
+  const dispatch = useAppDispatch();
 
   const getReminderData = useCallback( async () => {
     await fetch(`/reminders/${event_id}`)
@@ -40,14 +48,15 @@ export default function RemindersMenu(props) {
     let updatedObject = {
       type,
       reminders_on,
+      time_before: '',
     };
     let times = ['0','15','30','45','60']
-    let result = [];
+    let result: string[] = [];
     [_0, _15, _30, _45, _60].forEach((item, index) => {
       if(item === true) result.push(times[index])
     })
-    result = result.join(' ')
-    updatedObject.time_before = result
+
+    updatedObject.time_before = result.join(' ')
 
     await fetch(`/reminders/${event_id}`, {
       method: 'PUT',
@@ -61,18 +70,18 @@ export default function RemindersMenu(props) {
     .catch(error => console.log(error));
   };
 
-  const handleRemindersStatusChange = (event) => {
+  const handleRemindersStatusChange = () => {
     dispatch(handleReminderChanges({reminders_on: !reminders_on}))
   }
-  const handleTypeChange = (event) => {
+  const handleTypeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     dispatch(handleReminderChanges({type: event.target.value}));
   }
 
-  const handleTimeChange = (event) => {
+  const handleTimeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     dispatch(updateTimeBefore({[event.target.name]: event.target.checked}));
   };
 
-  const handleClose = async (event) => {
+  const handleClose = async () => {
     if(anchorType === 'Update') {
       await updateReminderData();
       dispatch(clearReminders())
@@ -116,7 +125,7 @@ export default function RemindersMenu(props) {
           </RadioGroup>
         </MenuItem>
         <MenuItem>
-          <FormGroup column="true">
+          <FormGroup>
             <FormLabel id="checkbox-buttons-group-label" sx={{pr: 2}}>Time before event:</FormLabel>
             <FormControlLabel
               control={
