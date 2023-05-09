@@ -10,7 +10,15 @@ import CloseIcon from '@mui/icons-material/Close';
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { SnackbarContent } from "notistack";
 
-const ReminderNotification = forwardRef((props, ref) => {
+type ReminderNotificationProps = {
+  onClose: () => void,
+  message: string,
+  location: string,
+  phone: string,
+  description: string,
+}
+
+const ReminderNotification = forwardRef((props: ReminderNotificationProps, ref: React.Ref<HTMLDivElement>) => {
   const { onClose, message, location, phone, description } = props;
   const [expanded, setExpanded] = useState(false);
 
@@ -19,10 +27,15 @@ const ReminderNotification = forwardRef((props, ref) => {
   }, []);
 
   return(
-    <SnackbarContent ref={ref} sx={{"@media (min-width:600px)": {minWidth: "344px !important"}}}>
+    <SnackbarContent
+      ref={ref}
+      // @ts-ignore
+      sx={{"@media (min-width:600px)": {minWidth: "344px !important"}}}
+    >
       <Card sx={{backgroundColor: "#ff9800", width: "100%"}}>
         <CardActions
-          classes={{ 
+          classes={{
+            // @ts-ignore
             root: {
               padding: "8px 8px 8px 16px",
               justifyContent: "space-between"
@@ -32,6 +45,7 @@ const ReminderNotification = forwardRef((props, ref) => {
           <Typography variant="subtitle2" sx={{fontWeight: "bold"}}>
             {message}
           </Typography>
+          {/* @ts-ignore */}
           <div sx={{marginLeft: 'auto'}}>
             <IconButton
               aria-label="Show more"
@@ -40,6 +54,7 @@ const ReminderNotification = forwardRef((props, ref) => {
                 transform: "rotate(0deg)",
                 transition: "all .2s"
               }}
+              // @ts-ignore
               style={expanded ? { transform: "rotate(180deg)" } : null}
               onClick={handleExpandClick}
             >
