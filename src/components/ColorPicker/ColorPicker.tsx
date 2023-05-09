@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useTheme } from '@mui/material/styles';
-import * as colors from '@mui/material/colors';
+import * as colorsObject from '@mui/material/colors';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import Input from '@mui/material/Input';
@@ -34,41 +34,51 @@ const hues = [
 ];
 
 const shades = [
-  900,
-  800,
-  700,
-  600,
-  500,
-  400,
-  300,
-  200,
-  100,
-  50,
+  '900',
+  '800',
+  '700',
+  '600',
+  '500',
+  '400',
+  '300',
+  '200',
+  '100',
+  '50',
   'A700',
   'A400',
   'A200',
   'A100',
 ];
 
+const colors:{[key: string]: {[key: string]: string}} = {...colorsObject}
+
+type ColorPickerProps = {
+  open: boolean,
+  onClose: () => void,
+  id: string | undefined,
+  anchorEl: HTMLAnchorElement | null,
+  dispatchFunction: (color: string) => void,
+  colorProp?: string,
+}
+
+type ChangeEvent = React.ChangeEvent<HTMLInputElement>
+
 /**
  * This component is based off of this one from MUI:
  * https://github.com/mui/material-ui/blob/master/docs/data/material/customization/color/ColorTool.js
  */
-export default function ColorPicker(props) {
+export default function ColorPicker(props: ColorPickerProps) {
   const theme = useTheme();
   const { open, onClose, id, anchorEl, dispatchFunction, colorProp } = props
 
-  const getColorPropHueAndShade = (prop) => {
-    let result;
+  const getColorPropHueAndShade = (prop: string) => {
     for(let hue in colors) {
       for(let shade in colors[hue]) {
         if(colors[hue][shade] === prop) {
-          result = [hue, shade.indexOf('A') === -1 ? parseInt(shade) : shade]
-          return result
+          return [hue, shade]
         }
       }
     }
-    return false
   }
 
   const [colorState, setColorState] = useState({
@@ -76,9 +86,9 @@ export default function ColorPicker(props) {
     // secondary: defaults.secondary,
     primaryInput: colorProp || defaults.primary,
     // secondaryInput: defaults.secondary,
-    primaryHue: colorProp ? getColorPropHueAndShade(colorProp)[0] : 'blue',
+    primaryHue: colorProp ? getColorPropHueAndShade(colorProp)![0] : 'blue',
     // secondaryHue: 'pink',
-    primaryShade: colorProp ? shades.indexOf(getColorPropHueAndShade(colorProp)[1]) : 4,
+    primaryShade: colorProp ? shades.indexOf(getColorPropHueAndShade(colorProp)![1]) : 4,
     // secondaryShade: 11,
   });
 
@@ -91,11 +101,11 @@ export default function ColorPicker(props) {
     },
   });
 
-  const handleChangeColor = (event) => {
-    const isRgb = (string) =>
+  const handleChangeColor = (event: ChangeEvent) => {
+    const isRgb = (string: string) =>
       /rgb\([0-9]{1,3}\s*,\s*[0-9]{1,3}\s*,\s*[0-9]{1,3}\)/i.test(string);
 
-    const isHex = (string) => /^#?([0-9a-f]{3})$|^#?([0-9a-f]){6}$/i.test(string);
+    const isHex = (string: string) => /^#?([0-9a-f]{3})$|^#?([0-9a-f]){6}$/i.test(string);
 
     let {
       target: { value: color },
@@ -126,7 +136,7 @@ export default function ColorPicker(props) {
     }
   };
 
-  const handleChangeHue = (event) => {
+  const handleChangeHue = (event: ChangeEvent) => {
     const hue = event.target.value;
     const color = colors[hue][shades[colorState['primaryShade']]];
 
@@ -139,11 +149,11 @@ export default function ColorPicker(props) {
     dispatchFunction(color);
   };
 
-  const handleChangeShade = (event, shade) => {
-    const color = colors[colorState.primaryHue][shades[shade]];
+  function handleChangeShade (event: Event, value: number | number[]): void {
+    const color = colors[colorState.primaryHue][shades[value as number]];
     setColorState({
       ...colorState,
-      primaryShade: shade,
+      primaryShade: value as number,
       primary: color,
       primaryInput: color,
     });
