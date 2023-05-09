@@ -1,14 +1,14 @@
 export type Event = {
-  event_id: number,
-  title: string,
-  description: string,
-  location: string,
-  phone: string,
+  event_id?: number,
+  title?: string,
+  description?: string,
+  location?: string,
+  phone?: string,
   date: string,
   start_time: string,
   end_time: string,
-  color: string,
-  hasAttachments: boolean,
+  color?: string,
+  hasAttachments?: boolean,
 };
 
 export type CreateEvent = {

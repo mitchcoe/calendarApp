@@ -32,7 +32,7 @@ export default function EventsContainer(props: EventsContainerProps) {
           event={eventItem}
           zIndex={index}
           handleClick={handleClick}
-          color={eventItem.color}
+          color={eventItem.color!}
         />
       ))}
     </div>

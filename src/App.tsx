@@ -112,7 +112,7 @@ export default function App() {
     <Container sx={containerStyles} data-testid="app_container">
       <CssBaseline />
       <React.Fragment>
-        <Day handleClick={handleClick} anchorEl={anchorEl} events={todaysEvents} />
+        <Day handleClick={handleClick} events={todaysEvents} />
         {todaysEvents?.length > 0 ? (
           <EventsContainer
             events={todaysEvents}

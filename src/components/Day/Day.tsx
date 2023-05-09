@@ -13,7 +13,8 @@ import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import IconButton from '@mui/material/IconButton';
 import '../../App.css';
-import { useSelector, useDispatch } from 'react-redux'
+import type { Event, HandleClickType } from '../../globalTypes'
+import { useAppSelector, useAppDispatch } from '../../hooks'
 import { setSelectedDate } from '../../slices/eventSlice';
 import dayjs from 'dayjs';
 // import { openReminderNotification } from '../../slices/reminderSlice'
@@ -59,40 +60,48 @@ const datePickerSlotProps = {
   },
 };
 
-const hourMinuteFormat = (position, hourFunc, minuteFunc) => { // not great readability
-  return parseInt(`${position[hourFunc]()}${position[minuteFunc]() === 0 ?
-    '00' : (position[minuteFunc]() < 10 ? 
-      `0${position[minuteFunc]()}` : position[minuteFunc]())}`)
+  const hourMinuteFormat = (position: Date) => { // not great readability
+  return parseInt(`${position.getHours()}${position.getMinutes() === 0 ?
+    '00' : (position.getMinutes() < 10 ? 
+      `0${position.getMinutes()}` : position.getMinutes())}`)
 };
 
-const blockedTimeSplit = (blockedTime) => `${blockedTime}`.length === 3 ? // also not great readability
+const blockedTimeSplit = (blockedTime: number) => `${blockedTime}`.length === 3 ? // also not great readability
   [`${blockedTime}`.slice(0, 1),`${blockedTime}`.slice(1)] : [`${blockedTime}`.slice(0, 2),`${blockedTime}`.slice(2)];
 
-export default function Day(props) {
+type HandleClickObject = {
+  date: string,
+  start_time: string,
+  end_time: string,
+}
+type DayProps = {
+  handleClick: HandleClickType,
+  events: Event[],
+}
+
+export default function Day(props: DayProps) {
   const { handleClick, events } = props;
-  const dispatch = useDispatch();
-  const [datePickerValue, setDatePickerValue] = useState(null);
-  // let [count, setCount] = useState(0);
-  let today = useSelector((state) => state.events.selectedDate);
+  const dispatch = useAppDispatch();
+  const [datePickerValue, setDatePickerValue] = useState<object | null>(null);
+  let today = useAppSelector((state) => state.events.selectedDate);
   const times = ['8AM','9AM','10AM','11AM','12PM','1PM','2PM','3PM','4PM','5PM'];
 
-  const blockingEventsCheck = (events, time, type) => {
-    let result;
-    let formattedTime = hourMinuteFormat(time, 'getHours', 'getMinutes');
+  const blockingEventsCheck = (events: Event[], time: Date, type: string): string => {
+    let formattedTime = hourMinuteFormat(time);
 
-    let timesToCheck = events.map((event) => {
+    let timesToCheck = events.map((event: Event) => {
       let startOrEnd = new Date(event[`${type === 'start' ? 'end' : 'start'}_time`])
-      return hourMinuteFormat(startOrEnd, 'getHours', 'getMinutes')
+      return hourMinuteFormat(startOrEnd)
     });
 
-    let isoStringSplit = (timesToCheck) => {
+    let isoStringSplit = (timesToCheck: number[]) => {
       if(timesToCheck.length > 0) {
         let blockedTime = timesToCheck[0];
         let split = blockedTimeSplit(blockedTime)
         split[0] = `${parseInt(split[0]) + 5}`
-        result = `${time.toISOString().split('T')[0]}T${split[0]}:${split[1]}:00.000Z`
+        return `${time.toISOString().split('T')[0]}T${split[0]}:${split[1]}:00.000Z`
       } else {
-        result = time.toISOString();
+        return time.toISOString();
       }
     }
 
@@ -100,30 +109,26 @@ export default function Day(props) {
       timesToCheck = timesToCheck.filter((endTime) => {
         return endTime > formattedTime && endTime <= formattedTime + 30
       });
-      isoStringSplit(timesToCheck);
-    }
-
-    if(type === 'end') {
+      return isoStringSplit(timesToCheck);
+    } else {
       timesToCheck = timesToCheck.filter((startTime) => {
         return startTime <= formattedTime && startTime >= formattedTime - 70
       });
-      isoStringSplit(timesToCheck);
+      return isoStringSplit(timesToCheck);
     }
-
-    return result;
   };
 
-  const insertTimeProp = (time, date, type) => {
+  const insertTimeProp = (time: string, date: string, type: string) => {
     let hour = parseInt(time.slice(0, time.indexOf('M') - 1));
     hour = hour < 8 ? hour+= 12 : hour;
     hour+= 5; // timezone stuff, this works for now (US central time), should probably be an .env variable
     if(type === 'end') hour+= 1
-    date = date.split('T');
-    date[1] = `${hour}:00:00.000Z`;
-    return blockingEventsCheck(events, new Date(date.join('T')), type);
+    let splitDate = date.split('T');
+    splitDate[1] = `${hour}:00:00.000Z`;
+    return blockingEventsCheck(events, new Date(splitDate.join('T')), type);
   }
 
-  const dateFormatter = (day) => {
+  const dateFormatter = (day: string) => {
     return new Intl.DateTimeFormat("en-US", {
       weekday: "long",
       year: "numeric",
@@ -132,21 +137,21 @@ export default function Day(props) {
     }).format( new Date(day.slice(0, day.indexOf("Z"))))
   };
 
-  const monthDayYear = (val) => {
+  const monthDayYear = (val: {[key: string]: any}) => {
     return val['$d'].toISOString()
   };
 
-  const handleDateChange = async (date) => {
+  const handleDateChange = async (e: null | React.ChangeEvent<HTMLInputElement>, date: object) => {
     await dispatch(setSelectedDate(monthDayYear(date)));
     setDatePickerValue(date)
   };
 
-  const handleChangeDayByOne = (date, direction ) => {
+  const handleChangeDayByOne = (date: string, direction: string ) => {
     let newDay = new Date(`${date}`)
     let day = newDay.getUTCDate()
     newDay.setUTCDate(direction === 'plus' ? day + 1 : day - 1 )
 
-    handleDateChange(dayjs(newDay))
+    handleDateChange(null, dayjs(newDay))
   };
 
   // const handleIncrement = () => { // helps test notifications queue
@@ -182,7 +187,9 @@ export default function Day(props) {
                 </IconButton>
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                   <DatePicker
+                    // @ts-ignore
                     slotProps={datePickerSlotProps}
+                    // @ts-ignore
                     value={datePickerValue || dayjs(new Date(today))}
                     onChange={handleDateChange}
                   /> 
