@@ -7,22 +7,29 @@ import IconButton from '@mui/material/IconButton';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
-
-import { useDispatch } from 'react-redux'
+import { useAppDispatch } from '../../hooks'
+import { Attachment } from '../../globalTypes';
 import {
   getAttachments,
   deleteAttachments,
   deleteAttachmentPreviews,
 } from '../../slices/formSlice';
 
-export default function AttachmentsPreview(props) {
+type AttachmentsPreviewProps = {
+  attachmentsList: Attachment[],
+  event_id: number,
+  mode: string,
+  editingEnabled: boolean,
+}
+
+export default function AttachmentsPreview(props: AttachmentsPreviewProps) {
   const theme = useTheme();
   const small = useMediaQuery(theme.breakpoints.down('sm'))
   const medium = useMediaQuery(theme.breakpoints.down('md'))
   const large = useMediaQuery(theme.breakpoints.down('lg'))
 
   const { attachmentsList, event_id, mode, editingEnabled } = props;
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   const getAttachmentsData = async () => {
     await fetch(`/attachments/${event_id}`)
@@ -31,7 +38,7 @@ export default function AttachmentsPreview(props) {
       .catch(error => console.log(error));
   };
 
-  const deleteAttachmentsData = async (attachment_id, file_path, event_id) => {
+  const deleteAttachmentsData = async (attachment_id: number, file_path: string, event_id: number) => {
     await fetch(`/attachments/${attachment_id}`, {
       method: 'DELETE',
       headers: {
@@ -45,7 +52,7 @@ export default function AttachmentsPreview(props) {
     .catch(error => console.log(error));
   };
 
-  const handleDeletePreview = (file_name) => {
+  const handleDeletePreview = (file_name: string) => {
     dispatch(deleteAttachmentPreviews(file_name))
   };
 
@@ -70,7 +77,7 @@ export default function AttachmentsPreview(props) {
         </ListSubheader>
         </ImageListItem>
       ) : null}
-      {attachmentsList.map((attachment, index) => (
+      {attachmentsList.map((attachment: Attachment, index) => (
         <ImageListItem
           key={mode === 'preview' ? attachment.file_name + index : attachment.attachment_id}
           sx={{maxHeight: 200, maxWidth: mode === 'preview' ? 180 : 200, }}
@@ -100,7 +107,7 @@ export default function AttachmentsPreview(props) {
                 aria-label={`delete attachment ${attachment.file_name}`}
                 onClick={() => mode === 'preview' ? 
                 handleDeletePreview(attachment.file_name) 
-                : deleteAttachmentsData(attachment.attachment_id, attachment.file_path, event_id)}
+                : deleteAttachmentsData(attachment.attachment_id!, attachment.file_path, event_id)}
               >
                 <DeleteIcon />
               </IconButton>

@@ -1,6 +1,6 @@
 import { useEffect, useCallback } from 'react';
 import { Box, Button, Modal, Stack } from '@mui/material';
-import { useSelector, useDispatch } from 'react-redux'
+import { useAppSelector, useAppDispatch } from '../../hooks'
 import {
   getAttachments,
   addAttachments,
@@ -8,10 +8,17 @@ import {
 } from '../../slices/formSlice';
 import AttachmentsPreview from '../AttachmentsPreview/AttachmentsPreview'
 
-export default function AttachmentsModal(props) {
+type AttachmentsModalProps = {
+  attachmentsModalOpen: boolean,
+  handleAttachmentsModalClose: () => void,
+  modalStyles: object, 
+  hasAttachments: boolean, 
+  event_id: number,
+}
+export default function AttachmentsModal(props: AttachmentsModalProps) {
   const { attachmentsModalOpen, handleAttachmentsModalClose, modalStyles, hasAttachments, event_id } = props;
-  const attachmentPreviews = useSelector((state) => state.form.attachmentPreviews);
-  const dispatch = useDispatch();
+  const attachmentPreviews = useAppSelector((state) => state.form.attachmentPreviews);
+  const dispatch = useAppDispatch();
 
   const getAttachmentsData = useCallback( async () => {
     await fetch(`/attachments/${event_id}`)
@@ -24,9 +31,9 @@ export default function AttachmentsModal(props) {
     if(hasAttachments && attachmentsModalOpen) getAttachmentsData()
   }, [getAttachmentsData, hasAttachments, attachmentsModalOpen]);
 
-  const fileUpload = async (event) => {
+  const fileUpload = async (event: React.MouseEvent<HTMLElement>) => {
     event.preventDefault()
-    let form = document.getElementById('fileUploadForm')
+    let form = document.getElementById('fileUploadForm') as HTMLFormElement
     let formData = new FormData(form)
 
     await fetch(`/attachments/${event_id}`, {
@@ -39,8 +46,8 @@ export default function AttachmentsModal(props) {
     .catch(error => console.log(error));
   };
 
-  const handleAddPreview = (e) => {
-    const files = [...e.target.files];
+  const handleAddPreview = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files as ArrayLike<File>);
 
     files.forEach(async (file) => {
       let filereader = new FileReader();
