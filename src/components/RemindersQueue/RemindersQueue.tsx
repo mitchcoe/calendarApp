@@ -3,31 +3,39 @@ import { useCallback, useEffect } from 'react';
 import { useSnackbar } from 'notistack';
 import Stack from '@mui/material/Stack';
 import ReminderNotification from './ReminderNotification';
-import { useSelector, useDispatch } from 'react-redux'
+import { useAppSelector, useAppDispatch } from '../../hooks';
+import type { Event } from '../../globalTypes'
+import type { FormattedReminder } from '../../slices/reminderSlice'
 import { openReminderNotification, closeReminderNotification, getTodaysReminders } from '../../slices/reminderSlice'
 
-let displayed = [];
+let displayed: any[] = [];
 
-export default function RemindersQueue(props) {
-  const { events } = props
-  const dispatch = useDispatch();
-  const { todays_reminders } = useSelector((state) => state.reminder);
+type ReminderQueueProps = {
+  events: Event[]
+}
+
+type SnackbarKey = string | number;
+
+export default function RemindersQueue(props: ReminderQueueProps) {
+  const { events } = props;
+  const dispatch = useAppDispatch();
+  const { todays_reminders } = useAppSelector((state) => state.reminder);
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
 
-  const storeDisplayed = (id) => {
+  const storeDisplayed = (id: number) => {
     displayed = [...displayed, id];
   };
 
-  const removeDisplayed = (id) => {
+  const removeDisplayed = (id: SnackbarKey) => {
       displayed = [...displayed.filter(key => id !== key)];
   };
 
-  const handleClose = useCallback((payload, id) => {
+  const handleClose = useCallback((payload: object, id: SnackbarKey) => {
     dispatch(closeReminderNotification(payload))
     removeDisplayed(id)
   }, [dispatch]);
 
-  const checkTime = useCallback((events, reminders) => {
+  const checkTime = useCallback((events: Event[], reminders: FormattedReminder[]) => {
     let now = Date.now() / 1000 / 60;
     let start_times = events.filter(event => {
       let date = new Date(event.start_time)
@@ -86,7 +94,7 @@ export default function RemindersQueue(props) {
 
     // https://github.com/iamhosseindhv/notistack/tree/master/examples/redux-example
     if(todays_reminders.length > 0) {
-      todays_reminders.forEach(({options = {}, ...reminder}) => {
+      todays_reminders.forEach(({...reminder}) => {
         const key = reminder.notification_id
         const event = events.filter((event) => event.event_id === reminder.event_id)[0]
   
@@ -103,11 +111,11 @@ export default function RemindersQueue(props) {
             content: (key, message) => (
               <ReminderNotification
                 key={key}
-                message={message}
+                message={message as string}
                 onClose={() => handleClose({minutes: reminder.minutes, event_id: reminder.event_id}, key)}
-                description={event.description}
-                location={event.location}
-                phone={event.phone}
+                description={event.description!}
+                location={event.location!}
+                phone={event.phone!}
               />
             ),
             onExited: (event, myKey) => {
@@ -117,7 +125,7 @@ export default function RemindersQueue(props) {
           })
         }
   
-        storeDisplayed(key);
+        storeDisplayed(key!);
       })
     }
 

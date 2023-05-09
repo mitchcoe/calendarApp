@@ -2,14 +2,15 @@ import { createSlice } from '@reduxjs/toolkit';
 import type { PayloadAction } from '@reduxjs/toolkit';
 import type { Reminder } from '../globalTypes';
 
-type FormattedReminder = {
+export type FormattedReminder = {
   reminder_id: number
   type: string
   reminders_on: boolean
   event_id: number
   minutes: string,
   open: boolean,
-  dismissed: boolean
+  dismissed: boolean,
+  notification_id?: number
 };
 
 interface ReminderState {
