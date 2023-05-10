@@ -29,7 +29,7 @@ export default function App() {
   if(!selectedDate) dispatch(setSelectedDate(today));
   let newSelectedDate = useMemo(() => new Date(selectedDate?.slice(0, selectedDate.indexOf("Z"))), [selectedDate]);
 
-  const handleClose = (event?: React.MouseEvent) => {
+  const handleClose = () => {
     setAnchorEl(null);
     dispatch(toggleEventForm({open: false}));
     dispatch(clearReminders())

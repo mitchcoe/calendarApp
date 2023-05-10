@@ -56,7 +56,7 @@ type ColorPickerProps = {
   open: boolean,
   onClose: () => void,
   id: string | undefined,
-  anchorEl: HTMLAnchorElement | null,
+  anchorEl: HTMLElement | null,
   dispatchFunction: (color: string) => void,
   colorProp?: string,
 }

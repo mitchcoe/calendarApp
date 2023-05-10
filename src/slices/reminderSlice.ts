@@ -13,15 +13,13 @@ export type FormattedReminder = {
   notification_id?: number
 };
 
+// type TimeBefore = {[key: string]: boolean}
+
 interface ReminderState {
   reminder_id: number | null,
   type: string,
   time_before: {
-    _0: boolean,
-    _15: boolean,
-    _30: boolean,
-    _45: boolean,
-    _60: boolean,
+    [key: string]: boolean,
   },
   reminders_on: boolean,
   event_id: number | null,

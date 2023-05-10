@@ -1,6 +1,6 @@
 import { useState, useMemo, useCallback, useEffect } from 'react';
 import * as React from 'react'
-import dayjs from 'dayjs';
+import dayjs, { Dayjs } from 'dayjs';
 import { useTheme } from '@mui/material/styles';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
@@ -28,7 +28,7 @@ import {
   AccordionSummary,
   AccordionDetails,
 } from '@mui/material';
-import { useSelector, useDispatch } from 'react-redux'
+import { useAppSelector, useAppDispatch } from '../../hooks';
 import { createEvents, updateEvents, deleteEvents } from '../../slices/eventSlice';
 import {
   clearEventChanges,
@@ -52,17 +52,21 @@ const eightAM = dayjs().set('hour', 8).startOf('hour');
 const sixPM = dayjs().set('hour', 18).startOf('hour')
 const fivePM = dayjs().set('hour', 17).startOf('hour')
 
-export default function EventForm(props) {
+type EventFormProps = {
+  handleClose: () => void
+}
+
+export default function EventForm(props: EventFormProps) {
   const theme = useTheme();
-  const [startValue, setStartValue] = useState('');
-  const [endValue, setEndValue] = useState('');
-  const [dateValue, setDateValue] = useState('');
-  const [error, setError] = useState(null);
+  const [startValue, setStartValue] = useState<string | Dayjs>('');
+  const [endValue, setEndValue] = useState<string | Dayjs>('');
+  const [dateValue, setDateValue] = useState<string | Dayjs>('');
+  const [error, setError] = useState<string | null>(null);
   const [modalOpen, setModalOpen] = useState(false)
   const [attachmentsModalOpen, setAttachmentsModalOpen] = useState(false)
-  const [reminderMenuAnchor, setReminderMenuAnchor] = useState(null)
+  const [reminderMenuAnchor, setReminderMenuAnchor] = useState<null| HTMLElement>(null)
   const reminderMenuOpen = Boolean(reminderMenuAnchor);
-  const [colorPickerAnchor, setColorPickerAnchor] = useState(null)
+  const [colorPickerAnchor, setColorPickerAnchor] = useState<null | HTMLElement>(null)
   const colorPickerOpen = Boolean(colorPickerAnchor)
   const colorPickerId = colorPickerOpen ? 'colorPicker' : undefined;
 
@@ -97,15 +101,15 @@ export default function EventForm(props) {
     }
   }, [error]);
 
-  const events = useSelector((state) => state.events.currentEventList);
-  const editingEnabled = useSelector((state) => state.form.editing);
+  const events = useAppSelector((state) => state.events.currentEventList);
+  const editingEnabled = useAppSelector((state) => state.form.editing);
   const { title, description, location,
           phone, date, start_time,
           end_time, anchorType, valid,
-          hasAttachments, event_id, attachmentsList, color } = useSelector((state) => state.form)
-  const { type, reminders_on, time_before} = useSelector((state) => state.reminder)
+          hasAttachments, event_id, attachmentsList, color } = useAppSelector((state) => state.form)
+  const { type, reminders_on, time_before} = useAppSelector((state) => state.reminder)
   const { handleClose } = props;
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   const background = theme.palette.augmentColor({
     color: {
@@ -125,7 +129,7 @@ export default function EventForm(props) {
   }, [getAttachmentsData, hasAttachments]);
 
   const createEvent = async () => {
-    let times = []
+    let times: string[] = []
     for(let time in time_before) {
       if(!!time_before[time]) times.push(`${time}`.slice(1))
     }
@@ -159,8 +163,8 @@ export default function EventForm(props) {
   };
 
   const updateEvent = async () => {
-    let updatedObject = { event_id };
-    let formChanges = {
+    let updatedObject: {[key: string]: number | string | null} = { event_id };
+    let formChanges: {[key: string]: string} = {
       title,
       description,
       location,
@@ -202,14 +206,14 @@ export default function EventForm(props) {
       .catch(error => console.log(error));
   };
 
-  const handleCreateSubmit = (event) => {
+  const handleCreateSubmit = () => {
     createEvent();
-    handleClose(event);
+    handleClose();
   };
 
-  const handleUpdateSubmit = (event) => {
+  const handleUpdateSubmit = () => {
     updateEvent();
-    handleClose(event)
+    handleClose()
   };
 
   const handleClear = () => {
@@ -220,36 +224,38 @@ export default function EventForm(props) {
     dispatch(setValidState(false));
   };
 
-  const handleFieldChange = (event) => {
+  const handleFieldChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     dispatch(handleEventChanges({[event.target.id]: event.target.value}))
   };
 
-  const handeDateFieldChange = (event) => {
+  const handeDateFieldChange = (event: Dayjs | null) => {
+    if(event === null) return
     setDateValue(event)
-    dispatch(handleEventChanges({date: `${event['$y']}-0${event['$M']+ 1}-${event['$D']}`}))
+    // dispatch(handleEventChanges({date: event.format('YYYY-MM-DD')}))
+    dispatch(handleEventChanges({date: `${event.year()}-${event.month() < 10 ? '0' + event.month()+ 1 : event.month()+ 1}-${event.date()}`}))
   };
 
-  const handleStartTimeFieldChange = (event) => {
+  const handleStartTimeFieldChange = (event: Dayjs | null) => {
     if(event === null) return
     setStartValue(event)
-    dispatch(handleEventChanges({start_time: event['$d'].toISOString()}))
+    dispatch(handleEventChanges({start_time: event.toISOString()}))
   };
 
-  const handleEndTimeFieldChange = (event) => {
+  const handleEndTimeFieldChange = (event: Dayjs | null) => {
     if(event === null) return
     setEndValue(event)
-    dispatch(handleEventChanges({end_time: event['$d'].toISOString()}))
+    dispatch(handleEventChanges({end_time: event.toISOString()}))
   };
 
-  const handleColorChange = (color) => {
+  const handleColorChange = (color: string) => {
     dispatch(handleEventChanges({color: color}))
   };
 
-  const handleEditToggle = (event) => {
+  const handleEditToggle = () => {
     dispatch(toggleEditingState(!editingEnabled))
   };
 
-  const handleError = (err) => {
+  const handleError = (err: string | null) => {
     if(err === null) {
       dispatch(setValidState(true));
       setError(null);
@@ -263,8 +269,8 @@ export default function EventForm(props) {
 
   const handleModalClose = () => setModalOpen(false);
 
-  const handleModalCloseAndDelete = (event) => {
-    handleClose(event);
+  const handleModalCloseAndDelete = () => {
+    handleClose();
     setModalOpen(false);
     deleteEvent();
   };
@@ -275,10 +281,10 @@ export default function EventForm(props) {
     dispatch(clearAttachmentPreviews());
   };
 
-  const handleColorPickerClick = (event) => setColorPickerAnchor(event.currentTarget);
+  const handleColorPickerClick = (event: React.MouseEvent<HTMLElement>) => setColorPickerAnchor(event.currentTarget);
   const handleColorPickerClose = () => setColorPickerAnchor(null);
 
-  const handleReminderClick = (event) => setReminderMenuAnchor(event.currentTarget);
+  const handleReminderClick = (event: React.MouseEvent<HTMLElement> | React.MouseEvent<HTMLButtonElement, MouseEvent>) => setReminderMenuAnchor(event.currentTarget);
 
   const handleReminderMenuClose = () => setReminderMenuAnchor(null);
 
@@ -337,7 +343,7 @@ export default function EventForm(props) {
     </Modal>
   );
 
-  const customTextField = (label, value) => (
+  const customTextField = (label: string, value: string) => (
     <TextField
       id={label.toLowerCase()}
       label={label}
@@ -347,17 +353,25 @@ export default function EventForm(props) {
       disabled={ anchorType === 'Create' ? false : !editingEnabled }
     />
   );
-
-  const hourMinuteFormat = (position, hourFunc, minuteFunc) => {
-    return parseInt(`${position[hourFunc]()}${position[minuteFunc]() === 0 ? '00' : (position[minuteFunc]() < 10 ? `0${position[minuteFunc]()}` : position[minuteFunc]())}`)
+  const hourMinuteFormat = (position: Date | Dayjs) => {
+    let hour,
+        minute;
+    if('hour' in position) {
+      hour = position.hour();
+      minute = position.minute()
+    } else {
+      hour = position.getHours();
+      minute = position.getMinutes()
+    }
+    return parseInt(`${hour}${minute === 0 ? '00' : (minute < 10 ? `0${minute}` : minute)}`)
   };
 
   let blockedTimes = events.map((event) => {
     let start = new Date(event.start_time);
     let end = new Date(event.end_time);
     let block = {
-      start: hourMinuteFormat(start, 'getHours', 'getMinutes'),
-      end: hourMinuteFormat(end, 'getHours', 'getMinutes'),
+      start: hourMinuteFormat(start),
+      end: hourMinuteFormat(end),
       event_id: event.event_id
     }
     return block
@@ -367,9 +381,18 @@ export default function EventForm(props) {
     blockedTimes = blockedTimes.filter((time) => time.event_id !== event_id)
   }
 
-  const customTimePicker = (props) => {
+  type customTimePickerProps = {
+    timeType: string,
+    timeTypeValueState: string | Dayjs,
+    timeTypeValueRedux: string,
+    minimumTime: Dayjs,
+    maximumTime: Dayjs,
+    onChangeFunc: (event: Dayjs | null) => void,
+  }
+
+  const customTimePicker = (props: customTimePickerProps) => {
     const { timeType, timeTypeValueState, timeTypeValueRedux, minimumTime, maximumTime, onChangeFunc} = props
-    let formattedLabel = (label) => {
+    let formattedLabel = (label: string) => {
       return label.split('_')
         .map((item) => item = item.charAt(0).toUpperCase() + item.slice(1))
         .join(' ');
@@ -386,6 +409,9 @@ export default function EventForm(props) {
       <div css={{display: 'inline-flex', width: '100%'}}> 
         <MobileTimePicker
           data-testid={"error_message"}
+          // @ts-ignore
+          controlled
+          // @ts-ignore
           id={timeType}
           label={formattedLabel(timeType)}
           sx={[fieldStyles, {width: '100%'}]}
@@ -394,7 +420,7 @@ export default function EventForm(props) {
           maxTime={maximumTime}
           shouldDisableTime={(value, view) => {
             if(anchorType === 'Update' && !editingEnabled) return false
-            let formattedValue = hourMinuteFormat(value, 'hour', 'minute')
+            let formattedValue = hourMinuteFormat(value)
 
             if(view === 'hours') {
               return blockedTimes.some((time) => {
@@ -402,8 +428,7 @@ export default function EventForm(props) {
                 return false
               } 
               if(timeType === 'start_time' && time.event_id !== event_id) {
-                let end = dayjs(end_time)
-                end = hourMinuteFormat(end, 'hour', 'minute')
+                let end = hourMinuteFormat(dayjs(end_time))
                 if(formattedValue > end) return true
                 let blocked = blockedTimes.filter((time) => {
                   return time.end > formattedValue && time.end < end
@@ -411,8 +436,7 @@ export default function EventForm(props) {
                 return blocked.length >= 1
               }
               if(timeType === 'end_time' && time.event_id !== event_id) {
-                let start = dayjs(start_time)
-                start = hourMinuteFormat(start, 'hour', 'minute')
+                let start = hourMinuteFormat(dayjs(start_time))
                 if(formattedValue < start) return true
                 let blocked = blockedTimes.filter((time) => {
                   return time.start < formattedValue && time.start > start
@@ -422,10 +446,11 @@ export default function EventForm(props) {
               return formattedValue > time.start && formattedValue < time.end
             })}
             if(view === 'minutes') {
-              return value['$m'] !== 0 && value['$m'] !== 30
+              return value.minute() !== 0 && value.minute() !== 30 // <-- this is causing issues, needs more checks
             }
+            return false
           }}
-          value={timeTypeValueState || (timeTypeValueRedux && dayjs(timeTypeValueRedux))}
+          value={timeTypeValueState as Dayjs || (timeTypeValueRedux && dayjs(timeTypeValueRedux)) || undefined}
           onChange={onChangeFunc}
           onError={(newError) => handleError(newError)}
           slotProps={{
@@ -489,7 +514,6 @@ export default function EventForm(props) {
                 anchorEl={reminderMenuAnchor}
                 onClose={handleReminderMenuClose}
                 event_id={event_id}
-                start_time={start_time}
                 anchorType={anchorType}
               />
               {anchorType && anchorType === 'Create' && (
@@ -560,13 +584,15 @@ export default function EventForm(props) {
           <LocalizationProvider dateAdapter={AdapterDayjs}>
             <MobileDatePicker
               data-testid="date_picker"
+              // @ts-ignore
               controlled
+              // @ts-ignore
               id="date"
               label="Date"
               disablePast
               required
               sx={fieldStyles}
-              value={dateValue || (date && dayjs(date))}
+              value={dateValue as Dayjs || (date && dayjs(date)) || undefined}
               onChange={handeDateFieldChange}
               disabled={ anchorType === 'Create' ? false : !editingEnabled }
             />

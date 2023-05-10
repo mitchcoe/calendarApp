@@ -17,7 +17,7 @@ import {
 
 type AttachmentsPreviewProps = {
   attachmentsList: Attachment[],
-  event_id: number,
+  event_id: number | null,
   mode: string,
   editingEnabled: boolean,
 }
@@ -107,7 +107,7 @@ export default function AttachmentsPreview(props: AttachmentsPreviewProps) {
                 aria-label={`delete attachment ${attachment.file_name}`}
                 onClick={() => mode === 'preview' ? 
                 handleDeletePreview(attachment.file_name) 
-                : deleteAttachmentsData(attachment.attachment_id!, attachment.file_path, event_id)}
+                : deleteAttachmentsData(attachment.attachment_id!, attachment.file_path, event_id!)}
               >
                 <DeleteIcon />
               </IconButton>

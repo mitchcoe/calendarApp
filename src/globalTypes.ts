@@ -39,4 +39,4 @@ export type Reminder = {
   event_id: number,
 };
 
-export type HandleClickType = (e: React.MouseEvent<HTMLElement>, event: Event) => void
+export type HandleClickType = (e: React.MouseEvent<HTMLElement>, event: Event) => void;

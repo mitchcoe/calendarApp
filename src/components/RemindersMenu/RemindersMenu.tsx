@@ -21,10 +21,10 @@ import {
 
 type RemindersMenuProps = {
   open: boolean,
-  anchorEl: HTMLAnchorElement,
+  anchorEl: HTMLElement | null,
   onClose: () => void,
-  event_id: number,
-  anchorType: string,
+  event_id: number | null,
+  anchorType: string | null,
 }
 
 export default function RemindersMenu(props: RemindersMenuProps) {

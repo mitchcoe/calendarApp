@@ -103,7 +103,7 @@ export const formSlice = createSlice({
       const itemToDelete = state.attachmentPreviews.findIndex(item => item.file_name === action.payload)
       if (itemToDelete !== - 1) state.attachmentPreviews.splice(itemToDelete, 1)
     },
-    clearAttachmentPreviews: (state, action) => {
+    clearAttachmentPreviews: (state, action: PayloadAction<void>) => {
       state.attachmentPreviews = [];
     },
   },
