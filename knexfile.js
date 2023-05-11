@@ -1,4 +1,4 @@
-module.exports = {
+export const knexConfig = {
 
   development: {
     client: 'pg',

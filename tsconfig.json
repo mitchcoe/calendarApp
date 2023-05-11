@@ -1,12 +1,14 @@
 {
   "compilerOptions": {
-    // "outDir": "dist",
+    "outDir": "./dist",
     "allowJs": true,
     "target": "es6",
+    "module": "esnext",
     "noEmit": true,
     "strict": true,
-    "jsx": "preserve",
+    "jsx": "react-jsx",
     "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
     "moduleResolution": "node",
     "forceConsistentCasingInFileNames": true,
     "useUnknownInCatchVariables": true,
@@ -17,7 +19,8 @@
         "es6",
         "dom"
     ],
+    "allowImportingTsExtensions": true,
   },
   "include": ["src/**/*"],
-  "exclude": ["node_modules", "build", "scripts"]
+  "exclude": ["node_modules", "dist/", "scripts", "coverage"]
 }

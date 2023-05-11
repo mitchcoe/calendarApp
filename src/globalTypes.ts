@@ -11,7 +11,7 @@ export type Event = {
   hasAttachments?: boolean,
 };
 
-export type CreateEvent = {
+export type EventToCreate = {
   title?: string,
   description?: string,
   location?: string,

@@ -2,11 +2,11 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { Provider } from 'react-redux'
 import { SnackbarProvider } from "notistack";
-import ReminderNotification from './components/RemindersQueue/ReminderNotification';
+import ReminderNotification from './components/RemindersQueue/ReminderNotification.tsx';
 import './index.css';
-import App from './App';
-import { setupStore } from './store'
-import reportWebVitals from './reportWebVitals';
+import App from './App.tsx';
+import { setupStore } from './store.ts'
+import reportWebVitals from './reportWebVitals.js';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
