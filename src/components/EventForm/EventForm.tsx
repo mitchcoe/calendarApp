@@ -181,7 +181,7 @@ export default function EventForm(props: EventFormProps) {
   };
 
   const handleClear = () => {
-    dispatch(clearEventChanges());
+    dispatch(clearEventChanges(anchorType === 'Create' ? null : {color}));
     setDateValue('');
     setStartValue('');
     setEndValue('');

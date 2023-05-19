@@ -38,7 +38,7 @@ export default function App() {
   const handleClick: HandleClickType = (e, event) => {
     // console.log('props', JSON.stringify(props))
     if(open && anchorEl !== e.currentTarget) {
-      dispatch(clearEventChanges())
+      dispatch(clearEventChanges(null))
       dispatch(clearReminders())
       setAnchorEl(e.currentTarget);
     } else if(open && anchorEl === e.currentTarget) {

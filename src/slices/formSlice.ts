@@ -67,10 +67,15 @@ export const formSlice = createSlice({
       // console.log('handle event change', action.payload, Object.entries(Object.assign(state, action.payload)))
       Object.assign(state, action.payload);
     },
-    clearEventChanges: (state, action: PayloadAction<void>) => {
+    clearEventChanges: (state, action: PayloadAction<object | null>) => {
+      if(action.payload && 'color' in action.payload) {
+        Object.assign(state, {...defaultFormState, color: action.payload.color});
+      } else {
+        Object.assign(state, defaultFormState);
+      }
       // let clear = Object.assign(state, defaultFormState);
       // console.log('clearing', Object.values(clear))
-      Object.assign(state, defaultFormState);
+      // Object.assign(state, defaultFormState);
     },
     toggleEditingState: (state, action) => {
       // console.log('editing',state.editing)
