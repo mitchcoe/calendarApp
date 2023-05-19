@@ -13,7 +13,7 @@ type AttachmentsModalProps = {
   handleAttachmentsModalClose: () => void,
   modalStyles: object, 
   hasAttachments: boolean, 
-  event_id: number | null,
+  event_id: number,
 }
 export default function AttachmentsModal(props: AttachmentsModalProps) {
   const { attachmentsModalOpen, handleAttachmentsModalClose, modalStyles, hasAttachments, event_id } = props;

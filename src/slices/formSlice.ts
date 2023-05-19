@@ -51,11 +51,31 @@ const closedState: ClosedState = {
   ...defaultFormState,
 };
 
+type ToggleEventFormPayloadType = {
+  open?: boolean,
+  anchorType?: string,
+  event_id?: number | null,
+  editing? : boolean,
+};
+
+type HandleEventChangesPayloadType = {
+  event_id?: number,
+  title?: string,
+  description?: string,
+  location?: string,
+  phone?: string,
+  date?: string,
+  start_time?: string,
+  end_time?: string,
+  color?: string,
+  hasAttachments?: boolean,
+};
+
 export const formSlice = createSlice({
   name: 'form',
   initialState: closedState,
   reducers: {
-    toggleEventForm: (state, action) => {
+    toggleEventForm: (state, action: PayloadAction<ToggleEventFormPayloadType>) => {
       // console.log(`i should turn ${action.payload.open === true ? 'on' : 'off'}`, action.payload)
       if(action.payload.open === true) {
         Object.assign(state, action.payload);
@@ -63,7 +83,7 @@ export const formSlice = createSlice({
         Object.assign(state, closedState);
       }
     },
-    handleEventChanges: (state, action) => {
+    handleEventChanges: (state, action: PayloadAction<HandleEventChangesPayloadType>) => {
       // console.log('handle event change', action.payload, Object.entries(Object.assign(state, action.payload)))
       Object.assign(state, action.payload);
     },
@@ -75,36 +95,35 @@ export const formSlice = createSlice({
       }
       // let clear = Object.assign(state, defaultFormState);
       // console.log('clearing', Object.values(clear))
-      // Object.assign(state, defaultFormState);
     },
     toggleEditingState: (state, action) => {
       // console.log('editing',state.editing)
       state.editing = !state.editing
     },
-    setValidState: (state, action) => {
+    setValidState: (state, action: PayloadAction<boolean>) => {
       state.valid = action.payload
     },
-    getAttachments: (state, action) => {
+    getAttachments: (state, action: PayloadAction<Array<Attachment>>) => {
       // console.log('getAttachment', action.payload)
       let attachments = action.payload
       state.attachmentsList = attachments
     },
-    addAttachments: (state, action) => {
+    addAttachments: (state, action: PayloadAction<Array<Attachment>>) => {
       // console.log('addAttachment', action.payload)
       let attachment = action.payload
       state.attachmentsList.push(...attachment)
     },
-    deleteAttachments: (state, action) => {
+    deleteAttachments: (state, action: PayloadAction<number>) => {
       // console.log('delete attachments', action.payload)
-      const itemToDelete = state.attachmentsList.findIndex(item => item.attachment_id === action.payload)
+      const itemToDelete = state.attachmentsList.findIndex(item => item.attachment_id! === action.payload)
       if (itemToDelete !== - 1) state.attachmentsList.splice(itemToDelete, 1)
     },
-    setAttachmentPreviews: (state, action) => {
+    setAttachmentPreviews: (state, action: PayloadAction<Attachment>) => {
       // console.log('setAttachmentPreviews', action)
       let preview = action.payload;
       state.attachmentPreviews.push(preview)
     },
-    deleteAttachmentPreviews: (state, action) => {
+    deleteAttachmentPreviews: (state, action: PayloadAction<string>) => {
       const itemToDelete = state.attachmentPreviews.findIndex(item => item.file_name === action.payload)
       if (itemToDelete !== - 1) state.attachmentPreviews.splice(itemToDelete, 1)
     },

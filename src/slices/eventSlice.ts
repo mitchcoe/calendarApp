@@ -1,7 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 import type { PayloadAction } from '@reduxjs/toolkit';
 // import type { RootState } from '../store'
-import type { Event, EventToCreate } from '../globalTypes';
+import type { Event } from '../globalTypes';
 
 interface EventState {
   eventList: Event[],
@@ -29,8 +29,7 @@ export const eventsSlice = createSlice({
       const eventsByDay = action.payload;
       state.currentEventList = eventsByDay;
     },
-    // createEvents: (state, action: PayloadAction<EventToCreate>) => {
-    createEvents: (state, action) => {
+    createEvents: (state, action: PayloadAction<Array<Event>>) => {
       // console.log('create payload', action.payload)
       const event = action.payload;
       state.currentEventList.push(...event);

@@ -16,6 +16,11 @@ type ReminderQueueProps = {
 
 type SnackbarKey = string | number;
 
+type CloseReminder = {
+  minutes: string,
+  event_id: number
+}
+
 export default function RemindersQueue(props: ReminderQueueProps) {
   const { events } = props;
   const dispatch = useAppDispatch();
@@ -30,7 +35,7 @@ export default function RemindersQueue(props: ReminderQueueProps) {
       displayed = [...displayed.filter(key => id !== key)];
   };
 
-  const handleClose = useCallback((payload: object, id: SnackbarKey) => {
+  const handleClose = useCallback((payload: CloseReminder, id: SnackbarKey) => {
     dispatch(closeReminderNotification(payload))
     removeDisplayed(id)
   }, [dispatch]);

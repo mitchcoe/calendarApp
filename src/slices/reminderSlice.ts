@@ -39,6 +39,20 @@ const initialState: ReminderState = {
   reminders_on: false,
   event_id: null,
   todays_reminders: [],
+};
+
+type HandleReminderChangesPayloadType = {
+  reminder_id?: number,
+  type?: string,
+  time_before?: string,
+  reminders_on?: boolean,
+  event_id?: number,
+};
+
+type CloseReminderPayloadType = {
+  minutes: string,
+  event_id: number,
+
 }
 
 export const reminderSlice = createSlice({
@@ -76,7 +90,7 @@ export const reminderSlice = createSlice({
 
       Object.assign(state, formattedPayload);
     },
-    updateReminder: (state, action) => {
+    updateReminder: (state, action: PayloadAction<Reminder>) => {
       // console.log('updateReminder', action.payload)
       let result: FormattedReminder[] = []
       const {event_id, time_before} = action.payload;
@@ -90,11 +104,11 @@ export const reminderSlice = createSlice({
       })
       state.todays_reminders = result
     },
-    handleReminderChanges: (state, action) => {
+    handleReminderChanges: (state, action: PayloadAction<HandleReminderChangesPayloadType>) => {
       // console.log('handleReminderChanges', action.payload)
       Object.assign(state, action.payload);
     },
-    updateTimeBefore: (state, action) => {
+    updateTimeBefore: (state, action: PayloadAction<{[key: string]: boolean}>) => {
       // console.log('updateTimeBefore',action.payload);
       state.time_before = Object.assign(state.time_before, action.payload)
     },
@@ -116,7 +130,7 @@ export const reminderSlice = createSlice({
       })
       state.todays_reminders = formattedPayload;
     },
-    openReminderNotification: (state, action) => {
+    openReminderNotification: (state, action: PayloadAction<FormattedReminder>) => {
       // console.log('openReminderNotification', action.payload)
       let updatedPayload = Object.assign(action.payload, {
         open: true,
@@ -127,7 +141,7 @@ export const reminderSlice = createSlice({
       );
       if (reminderToOpen !== - 1) state.todays_reminders.splice(reminderToOpen, 1, Object.assign(state.todays_reminders[reminderToOpen], updatedPayload))
     },
-    closeReminderNotification: (state, action) => {
+    closeReminderNotification: (state, action: PayloadAction<CloseReminderPayloadType>) => {
       // console.log('closeReminderNotification', action.payload)
       let updatedPayload = Object.assign(action.payload, {open: false, dismissed: true})
       let reminderToClose = state.todays_reminders.findIndex(

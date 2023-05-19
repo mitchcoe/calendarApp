@@ -499,7 +499,7 @@ export default function EventForm(props: EventFormProps) {
         handleAttachmentsModalClose={handleAttachmentsModalClose}
         modalStyles={modalStyles}
         hasAttachments={hasAttachments}
-        event_id={event_id}
+        event_id={event_id!}
       />
     </Box>
   )

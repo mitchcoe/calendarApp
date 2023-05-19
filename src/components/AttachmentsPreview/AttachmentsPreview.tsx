@@ -38,7 +38,7 @@ export default function AttachmentsPreview(props: AttachmentsPreviewProps) {
       .catch(error => console.log(error));
   };
 
-  const deleteAttachmentsData = async (attachment_id: number, file_path: string, event_id: number) => {
+  const deleteAttachmentsData = async (attachment_id: number, file_path: string | ArrayBuffer, event_id: number) => {
     await fetch(`/attachments/${attachment_id}`, {
       method: 'DELETE',
       headers: {
@@ -92,8 +92,8 @@ export default function AttachmentsPreview(props: AttachmentsPreviewProps) {
             />
           ) : (
             <img
-              src={`${attachment.file_path.slice(8)}?w=248&fit=crop&auto=format`}
-              srcSet={`${attachment.file_path.slice(8)}?w=248&fit=crop&auto=format&dpr=2 2x`}
+              src={`${attachment.file_path?.slice(8)}?w=248&fit=crop&auto=format`}
+              srcSet={`${attachment.file_path?.slice(8)}?w=248&fit=crop&auto=format&dpr=2 2x`}
               alt={`${attachment.file_type} attachment`}
               loading="lazy"
             />
@@ -107,7 +107,7 @@ export default function AttachmentsPreview(props: AttachmentsPreviewProps) {
                 aria-label={`delete attachment ${attachment.file_name}`}
                 onClick={() => mode === 'preview' ? 
                 handleDeletePreview(attachment.file_name) 
-                : deleteAttachmentsData(attachment.attachment_id!, attachment.file_path, event_id!)}
+                : deleteAttachmentsData(attachment.attachment_id!, attachment.file_path!, event_id!)}
               >
                 <DeleteIcon />
               </IconButton>

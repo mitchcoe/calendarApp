@@ -27,8 +27,8 @@ export type Attachment = {
   attachment_id?: number,
   file_type: string,
   file_name: string,
-  file_path: string,
-  event_id?: number,
+  file_path: string | ArrayBuffer | null,
+  event_id: number,
 };
 
 export type Reminder = {
