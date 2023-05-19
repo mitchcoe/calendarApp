@@ -192,7 +192,7 @@ export const getReminders = async (request: Request, response: Response) => {
 export const getTodaysReminders = async (request: Request, response: Response) => {
   try {
     const { event_ids } = request.body
-    const query = knex('reminders').whereIn('event_id', event_ids)
+    const query = await knex('reminders').whereIn('event_id', event_ids)
     response.status(200).json(query)
   } catch(e: unknown) {
     console.log((e as Error).stack)
