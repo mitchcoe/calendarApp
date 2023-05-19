@@ -2,7 +2,7 @@
  * @param { import("knex").Knex } knex
  * @returns { Promise<void> }
  */
-exports.up = function(knex) {
+export async function up(knex) {
   return knex.schema.alterTable('attachments', (table) => {
     table.dropForeign('event_id');
 
@@ -17,7 +17,7 @@ exports.up = function(knex) {
  * @param { import("knex").Knex } knex
  * @returns { Promise<void> }
  */
-exports.down = function(knex) {
+export async function down(knex) {
   return knex.schema.alterTable('attachments', (table) => {
     table.dropForeign('event_id');
 

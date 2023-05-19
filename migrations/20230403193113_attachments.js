@@ -2,7 +2,7 @@
  * @param { import("knex").Knex } knex
  * @returns { Promise<void> }
  */
-exports.up = function(knex) {
+export async function up(knex) {
   return knex.schema.createTable('attachments', function (table) {
     table.increments('attachment_id').primary().notNullable();
     table.string('file_type').notNullable();
@@ -17,6 +17,6 @@ exports.up = function(knex) {
  * @param { import("knex").Knex } knex
  * @returns { Promise<void> }
  */
-exports.down = function(knex) {
+export async function down(knex) {
   return knex.schema.dropTableIfExists('attachments')
 };

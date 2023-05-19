@@ -1,5 +1,4 @@
-export const knexConfig = {
-
+const knexConfig = {
   development: {
     client: 'pg',
     connection: {
@@ -49,5 +48,6 @@ export const knexConfig = {
       tableName: 'knex_migrations'
     }
   }
-
 };
+
+export default knexConfig;

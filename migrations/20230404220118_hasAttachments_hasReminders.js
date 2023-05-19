@@ -2,7 +2,7 @@
  * @param { import("knex").Knex } knex
  * @returns { Promise<void> }
  */
-exports.up = async function(knex) {
+export async function up(knex) {
   let eventsToUpdate = await knex.raw(`select events.event_id from events, attachments
                                         where events.event_id = attachments.event_id`);
 
@@ -20,7 +20,7 @@ exports.up = async function(knex) {
  * @param { import("knex").Knex } knex
  * @returns { Promise<void> }
  */
-exports.down = function(knex) {
+export async function down(knex) {
   return knex.schema.alterTable('events', function (table) {
     table.dropColumn('hasAttachments');
   })

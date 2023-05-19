@@ -2,7 +2,7 @@
  * @param { import("knex").Knex } knex
  * @returns { Promise<void> }
  */
-exports.up = async function(knex) {
+export async function up(knex) {
   await knex.schema.createTable('reminders', function (table) {
     table.increments('reminder_id').primary().notNullable();
     table.string('type').notNullable();
@@ -20,6 +20,6 @@ exports.up = async function(knex) {
  * @param { import("knex").Knex } knex
  * @returns { Promise<void> }
  */
-exports.down = function(knex) {
+export async function down(knex) {
   return knex.schema.dropTableIfExists('reminders')
 };
