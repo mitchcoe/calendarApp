@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import knexPackage from 'knex';
 import fs from 'fs';
-import { knexConfig } from '../knexfile.js'
+import knexConfig from '../knexfile.js'
 const knex = knexPackage(knexConfig['development']);
 
  export const getEvents = async (req = null, response: Response) => {
