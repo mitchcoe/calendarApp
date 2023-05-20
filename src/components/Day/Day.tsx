@@ -13,7 +13,7 @@ import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import IconButton from '@mui/material/IconButton';
 import '../../App.css';
-import type { Event, HandleClickType } from '../../globalTypes'
+import type { EventType, HandleClickType } from '../../globalTypes'
 import { useAppSelector, useAppDispatch } from '../../hooks'
 import { setSelectedDate } from '../../slices/eventSlice';
 import dayjs from 'dayjs';
@@ -69,14 +69,14 @@ const datePickerSlotProps = {
 const blockedTimeSplit = (blockedTime: number) => `${blockedTime}`.length === 3 ? // also not great readability
   [`${blockedTime}`.slice(0, 1),`${blockedTime}`.slice(1)] : [`${blockedTime}`.slice(0, 2),`${blockedTime}`.slice(2)];
 
-type HandleClickObject = {
-  date: string,
-  start_time: string,
-  end_time: string,
-}
+// type HandleClickObject = {
+//   date: string,
+//   start_time: string,
+//   end_time: string,
+// }
 type DayProps = {
   handleClick: HandleClickType,
-  events: Event[],
+  events: EventType[],
 }
 
 export default function Day(props: DayProps) {
@@ -86,10 +86,10 @@ export default function Day(props: DayProps) {
   let today = useAppSelector((state) => state.events.selectedDate);
   const times = ['8AM','9AM','10AM','11AM','12PM','1PM','2PM','3PM','4PM','5PM'];
 
-  const blockingEventsCheck = (events: Event[], time: Date, type: string): string => {
+  const blockingEventsCheck = (events: EventType[], time: Date, type: string): string => {
     let formattedTime = hourMinuteFormat(time);
 
-    let timesToCheck = events.map((event: Event) => {
+    let timesToCheck = events.map((event: EventType) => {
       let startOrEnd = new Date(event[`${type === 'start' ? 'end' : 'start'}_time`])
       return hourMinuteFormat(startOrEnd)
     });

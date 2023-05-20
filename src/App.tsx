@@ -12,7 +12,7 @@ import { useAppSelector, useAppDispatch } from './hooks'
 import { getEvents, getEventsByDay, setSelectedDate } from './slices/eventSlice';
 import { toggleEventForm, handleEventChanges, clearEventChanges } from './slices/formSlice'
 import { clearReminders } from './slices/reminderSlice'
-import type { Event, HandleClickType } from './globalTypes'
+import type { HandleClickType } from './globalTypes'
 // const formUtils = require('./components/EventForm/EventForm');
 
 export default function App() {

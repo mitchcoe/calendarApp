@@ -4,14 +4,14 @@ import { useSnackbar } from 'notistack';
 import Stack from '@mui/material/Stack';
 import ReminderNotification from './ReminderNotification';
 import { useAppSelector, useAppDispatch } from '../../hooks';
-import type { Event } from '../../globalTypes'
+import type { EventType } from '../../globalTypes'
 import type { FormattedReminder } from '../../slices/reminderSlice'
 import { openReminderNotification, closeReminderNotification, getTodaysReminders } from '../../slices/reminderSlice'
 
 let displayed: any[] = [];
 
 type ReminderQueueProps = {
-  events: Event[]
+  events: EventType[]
 }
 
 type SnackbarKey = string | number;
@@ -40,7 +40,7 @@ export default function RemindersQueue(props: ReminderQueueProps) {
     removeDisplayed(id)
   }, [dispatch]);
 
-  const checkTime = useCallback((events: Event[], reminders: FormattedReminder[]) => {
+  const checkTime = useCallback((events: EventType[], reminders: FormattedReminder[]) => {
     let now = Date.now() / 1000 / 60;
     let start_times = events.filter(event => {
       let date = new Date(event.start_time)

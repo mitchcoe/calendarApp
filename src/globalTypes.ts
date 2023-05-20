@@ -1,4 +1,4 @@
-export type Event = {
+export type EventType = {
   event_id?: number,
   title?: string,
   description?: string,
@@ -11,7 +11,7 @@ export type Event = {
   hasAttachments?: boolean,
 };
 
-export type EventToCreate = {
+export type EventToCreateType = {
   title?: string,
   description?: string,
   location?: string,
@@ -23,7 +23,7 @@ export type EventToCreate = {
   hasAttachments: boolean,
 };
 
-export type Attachment = {
+export type AttachmentType = {
   attachment_id?: number,
   file_type: string,
   file_name: string,
@@ -31,7 +31,7 @@ export type Attachment = {
   event_id: number,
 };
 
-export type Reminder = {
+export type ReminderType = {
   reminder_id: number,
   type: string,
   time_before: string,
@@ -39,4 +39,4 @@ export type Reminder = {
   event_id: number,
 };
 
-export type HandleClickType = (e: React.MouseEvent<HTMLElement>, event: Event) => void;
+export type HandleClickType = (e: React.MouseEvent<HTMLElement>, event: EventType) => void;

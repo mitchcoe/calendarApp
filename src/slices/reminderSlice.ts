@@ -1,6 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
 import type { PayloadAction } from '@reduxjs/toolkit';
-import type { Reminder } from '../globalTypes';
+import type { ReminderType } from '../globalTypes';
 
 export type FormattedReminder = {
   reminder_id: number
@@ -24,7 +24,7 @@ interface ReminderState {
   reminders_on: boolean,
   event_id: number | null,
   todays_reminders: FormattedReminder[],
-}
+};
 
 const initialState: ReminderState = {
   reminder_id: null,
@@ -66,7 +66,7 @@ export const reminderSlice = createSlice({
         todays_reminders: state.todays_reminders
       });
     },
-    getReminder: (state, action: PayloadAction<Reminder>) => {
+    getReminder: (state, action: PayloadAction<ReminderType>) => {
       // console.log('getReminder', action.payload)
       let updatedTimes: {[index: string]: boolean} = {}
       let times = ['0','15','30','45','60'];
@@ -90,7 +90,7 @@ export const reminderSlice = createSlice({
 
       Object.assign(state, formattedPayload);
     },
-    updateReminder: (state, action: PayloadAction<Reminder>) => {
+    updateReminder: (state, action: PayloadAction<ReminderType>) => {
       // console.log('updateReminder', action.payload)
       let result: FormattedReminder[] = []
       const {event_id, time_before} = action.payload;
@@ -112,7 +112,7 @@ export const reminderSlice = createSlice({
       // console.log('updateTimeBefore',action.payload);
       state.time_before = Object.assign(state.time_before, action.payload)
     },
-    getTodaysReminders: (state, action: PayloadAction<Array<Reminder>>) => {
+    getTodaysReminders: (state, action: PayloadAction<ReminderType[]>) => {
       // console.log('getTodaysReminders', action.payload)
       let formattedPayload: FormattedReminder[] = []
       action.payload.forEach((item) => {

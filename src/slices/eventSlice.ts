@@ -1,11 +1,11 @@
 import { createSlice } from '@reduxjs/toolkit';
 import type { PayloadAction } from '@reduxjs/toolkit';
 // import type { RootState } from '../store'
-import type { Event } from '../globalTypes';
+import type { EventType } from '../globalTypes';
 
 interface EventState {
-  eventList: Event[],
-  currentEventList: Event[],
+  eventList: EventType[],
+  currentEventList: EventType[],
   selectedDate: string,
 }
 
@@ -19,22 +19,22 @@ export const eventsSlice = createSlice({
   name: 'events',
   initialState,
   reducers: {
-    getEvents: (state, action: PayloadAction<Array<Event>>) => {
+    getEvents: (state, action: PayloadAction<EventType[]>) => {
       // console.log('all events payload',action.payload)
       const events = action.payload;
       state.eventList = events;
     },
-    getEventsByDay: (state, action: PayloadAction<Array<Event>>) => {
+    getEventsByDay: (state, action: PayloadAction<EventType[]>) => {
       // console.log('events by day payload', action.payload)
       const eventsByDay = action.payload;
       state.currentEventList = eventsByDay;
     },
-    createEvents: (state, action: PayloadAction<Array<Event>>) => {
+    createEvents: (state, action: PayloadAction<EventType[]>) => {
       // console.log('create payload', action.payload)
       const event = action.payload;
       state.currentEventList.push(...event);
     },
-    updateEvents: (state, action: PayloadAction<Event>) => {
+    updateEvents: (state, action: PayloadAction<EventType>) => {
       // console.log('update payload', action.payload)
       let updatedEventIndex = state.currentEventList.findIndex( event => event.event_id === action.payload.event_id);
       if (updatedEventIndex !== - 1) state.currentEventList.splice(updatedEventIndex, 1, action.payload)

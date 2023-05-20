@@ -1,5 +1,5 @@
 import type { Knex } from 'knex';
-import type { Event } from '../src/globalTypes'
+import type { EventType } from '../src/globalTypes'
 
 export async function up(knex: Knex) {
   let eventsToUpdate = await knex.raw(`select events.event_id from events, attachments
@@ -11,7 +11,7 @@ export async function up(knex: Knex) {
   });
 
   await knex('events').whereIn('event_id', eventsToUpdate.rows
-    .map((event: Event) => event.event_id))
+    .map((event: EventType) => event.event_id))
     .update({hasAttachments: true});
 };
 

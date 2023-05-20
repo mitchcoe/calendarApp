@@ -1,4 +1,4 @@
-import { configureStore, combineReducers, StateFromReducersMapObject, PreloadedState } from '@reduxjs/toolkit';
+import { configureStore, combineReducers, PreloadedState } from '@reduxjs/toolkit';
 import eventsReducer from './slices/eventSlice';
 import formReducer from './slices/formSlice';
 import reminderReducer from './slices/reminderSlice';

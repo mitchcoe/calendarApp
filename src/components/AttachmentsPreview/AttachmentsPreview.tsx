@@ -8,7 +8,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useAppDispatch } from '../../hooks'
-import { Attachment } from '../../globalTypes';
+import { AttachmentType } from '../../globalTypes';
 import {
   getAttachments,
   deleteAttachments,
@@ -16,7 +16,7 @@ import {
 } from '../../slices/formSlice';
 
 type AttachmentsPreviewProps = {
-  attachmentsList: Attachment[],
+  attachmentsList: AttachmentType[],
   event_id: number | null,
   mode: string,
   editingEnabled: boolean,
@@ -77,7 +77,7 @@ export default function AttachmentsPreview(props: AttachmentsPreviewProps) {
         </ListSubheader>
         </ImageListItem>
       ) : null}
-      {attachmentsList.map((attachment: Attachment, index) => (
+      {attachmentsList.map((attachment: AttachmentType, index) => (
         <ImageListItem
           key={mode === 'preview' ? attachment.file_name + index : attachment.attachment_id}
           sx={{maxHeight: 200, maxWidth: mode === 'preview' ? 180 : 200, }}

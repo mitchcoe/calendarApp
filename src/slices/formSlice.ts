@@ -1,7 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 import type { PayloadAction } from '@reduxjs/toolkit';
 // import type { RootState } from '../store';
-import { Attachment } from '../globalTypes';
+import { AttachmentType } from '../globalTypes';
 
 interface DefaultFormState {
   title: string,
@@ -14,17 +14,17 @@ interface DefaultFormState {
   valid: boolean,
   hasAttachments: boolean,
   hasReminders: boolean,
-  attachmentsList: Attachment[],
-  attachmentPreviews: Attachment[],
+  attachmentsList: AttachmentType[],
+  attachmentPreviews: AttachmentType[],
   color: string
-}
+};
 
 interface ClosedState extends DefaultFormState {
   editing: boolean,
   anchorType: string | null,
   open: boolean,
   event_id: number | null,
-}
+};
 
 const defaultFormState: DefaultFormState = {
   title: '',
@@ -103,12 +103,12 @@ export const formSlice = createSlice({
     setValidState: (state, action: PayloadAction<boolean>) => {
       state.valid = action.payload
     },
-    getAttachments: (state, action: PayloadAction<Array<Attachment>>) => {
+    getAttachments: (state, action: PayloadAction<AttachmentType[]>) => {
       // console.log('getAttachment', action.payload)
       let attachments = action.payload
       state.attachmentsList = attachments
     },
-    addAttachments: (state, action: PayloadAction<Array<Attachment>>) => {
+    addAttachments: (state, action: PayloadAction<AttachmentType[]>) => {
       // console.log('addAttachment', action.payload)
       let attachment = action.payload
       state.attachmentsList.push(...attachment)
@@ -118,7 +118,7 @@ export const formSlice = createSlice({
       const itemToDelete = state.attachmentsList.findIndex(item => item.attachment_id! === action.payload)
       if (itemToDelete !== - 1) state.attachmentsList.splice(itemToDelete, 1)
     },
-    setAttachmentPreviews: (state, action: PayloadAction<Attachment>) => {
+    setAttachmentPreviews: (state, action: PayloadAction<AttachmentType>) => {
       // console.log('setAttachmentPreviews', action)
       let preview = action.payload;
       state.attachmentPreviews.push(preview)

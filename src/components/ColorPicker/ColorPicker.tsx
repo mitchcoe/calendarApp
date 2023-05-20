@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useTheme } from '@mui/material/styles';
+// import { useTheme } from '@mui/material/styles';
 import * as colorsObject from '@mui/material/colors';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
@@ -68,7 +68,7 @@ type ChangeEvent = React.ChangeEvent<HTMLInputElement>
  * https://github.com/mui/material-ui/blob/master/docs/data/material/customization/color/ColorTool.js
  */
 export default function ColorPicker(props: ColorPickerProps) {
-  const theme = useTheme();
+  // const theme = useTheme();
   const { open, onClose, id, anchorEl, dispatchFunction, colorProp } = props
 
   const getColorPropHueAndShade = (prop: string) => {
@@ -92,14 +92,19 @@ export default function ColorPicker(props: ColorPickerProps) {
     // secondaryShade: 11,
   });
 
+  const {
+    primaryInput,
+    primaryShade,
+    // primaryHue,
+    // primary, 
+  } = colorState;
+
   // eslint-disable-next-line no-unused-vars
-  const { primary, primaryInput, primaryHue, primaryShade } = colorState
-  // eslint-disable-next-line no-unused-vars
-  const background = theme.palette.augmentColor({
-    color: {
-      main: primary,
-    },
-  });
+  // const background = theme.palette.augmentColor({
+  //   color: {
+  //     main: primary,
+  //   },
+  // });
 
   const handleChangeColor = (event: ChangeEvent) => {
     const isRgb = (string: string) =>

@@ -1,10 +1,10 @@
 import Event from "./Event";
-import type { Event as EventItem, HandleClickType } from '../../globalTypes'
+import type { EventType as EventItem, HandleClickType } from '../../globalTypes'
 // import { css } from '@emotion/css'
 
 /** @jsx jsx */
 /** @jsxRuntime classic */
-// eslint-disable-next-line no-unused-vars
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { css, jsx } from '@emotion/react'
 
 type EventsContainerProps = {

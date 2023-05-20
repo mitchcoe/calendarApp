@@ -2,7 +2,7 @@ import Typography from "@mui/material/Typography";
 import Paper from "@mui/material/Paper";
 import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
-import type { Event, HandleClickType } from '../../globalTypes'
+import type { EventType, HandleClickType } from '../../globalTypes'
 
 /**
  * 
@@ -19,7 +19,7 @@ const calculateHeight = (startTime: string, endTime: string) => {
 };
 
 type EventProps = {
-  event: Event,
+  event: EventType,
   zIndex: number,
   handleClick: HandleClickType,
   color: string,

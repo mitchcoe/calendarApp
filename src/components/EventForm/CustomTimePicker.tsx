@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 import { useAppSelector, useAppDispatch } from '../../hooks';
-import type { Event } from '../../globalTypes';
+import type { EventType } from '../../globalTypes';
 import { setValidState } from '../../slices/formSlice';
 import dayjs, { Dayjs } from 'dayjs';
 import { MobileTimePicker } from '@mui/x-date-pickers';
@@ -27,7 +27,7 @@ const sixPM = dayjs().set('hour', 18).startOf('hour');
 const fivePM = dayjs().set('hour', 17).startOf('hour');
 
 type CustomTimePickerProps = {
-  events: Event[],
+  events: EventType[],
   timeType: 'start_time' | 'end_time',
   timeTypeValueState: string | Dayjs,
   timeTypeValueRedux: string,
