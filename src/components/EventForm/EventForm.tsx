@@ -412,7 +412,6 @@ export default function EventForm(props: EventFormProps) {
               data-testid="date_picker"
               // @ts-ignore
               controlled
-              // @ts-ignore
               id="date"
               label="Date"
               disablePast

@@ -155,7 +155,6 @@ export default function CustomTimePicker(props: CustomTimePickerProps) {
           data-testid={"error_message"}
           // @ts-ignore
           controlled
-          // @ts-ignore
           id={timeType}
           label={formattedLabel(timeType)}
           sx={{width: '100%', mb: '16px'}}
