@@ -13,7 +13,11 @@ const knexConfig = {
       max: 10
     },
     migrations: {
+      extension: 'ts',
       tableName: 'knex_migrations'
+    },
+    seeds: {
+      extension: 'ts',
     }
   },
 

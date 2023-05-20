@@ -43,11 +43,13 @@
     "eject": "react-scripts eject",
     "server": "ts-node --esm src/server.ts",
     "dev": "yarn server & yarn start",
-    "migrate": "knex migrate:latest",
-    "seed": "knex seed:run",
-    "rollback": "knex migrate:down",
-    "seed_before_reminders": "knex seed:run --specific 01_initialize_default_data.js && knex seed:run --specific 02_initialize_attachments_data.js",
-    "data_reset": "knex migrate:rollback --all && knex migrate:up && knex migrate:up && yarn seed_before_reminders && knex migrate:latest && knex seed:run --specific 03_reminders.js"
+    "migrate_latest": "NODE_OPTIONS='--loader ts-node/esm' knex migrate:latest",
+    "migrate_one": "NODE_OPTIONS='--loader ts-node/esm' knex migrate:up",
+    "seed": "NODE_OPTIONS='--loader ts-node/esm' knex seed:run",
+    "seed_before_reminders": "knex seed:run --specific 01_initialize_default_data.ts && knex seed:run --specific 02_initialize_attachments_data.ts",
+    "rollback": "NODE_OPTIONS='--loader ts-node/esm' knex migrate:down",
+    "rollback_all": "NODE_OPTIONS='--loader ts-node/esm' knex migrate:rollback --all",
+    "data_reset": "yarn rollback_all && yarn migrate_one && yarn migrate_one && NODE_OPTIONS='--loader ts-node/esm' yarn seed_before_reminders && yarn migrate_latest && NODE_OPTIONS='--loader ts-node/esm' knex seed:run --specific 03_reminders.ts"
   },
   "eslintConfig": {
     "extends": [

@@ -1,9 +1,7 @@
-/**
- * @param { import("knex").Knex } knex
- * @returns { Promise<void> }
- */
-export async function up(knex) {
-  return knex.schema.createTable('events', function (table) {
+import type { Knex } from 'knex';
+
+export async function up(knex: Knex) {
+  return knex.schema.createTable('events', (table) => {
     table.increments('event_id').primary().notNullable();
     table.string('title').notNullable();
     table.string('description').notNullable();
@@ -16,10 +14,6 @@ export async function up(knex) {
   });
 };
 
-/**
- * @param { import("knex").Knex } knex
- * @returns { Promise<void> }
- */
-export async function down(knex) {
+export async function down(knex: Knex) {
   return knex.schema.dropTableIfExists('events')
 };

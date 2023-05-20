@@ -1,12 +1,10 @@
-/**
- * @param { import("knex").Knex } knex
- * @returns { Promise<void> } 
- */
-export async function seed(knex) {
+import type { Knex } from 'knex';
+
+export async function seed(knex: Knex) {
   // Deletes ALL existing entries
   await knex('events').del()
 
-  let timeSetter = (start = true, startTime = 13, day) => {
+  let timeSetter = (start = true, startTime: number | undefined = 13, day?: string) => {
     let currentDay = new Date();
     currentDay.setUTCHours(start ? startTime : startTime + 1, 0, 0) //13 is for GMT-0500 (Central Daylight Time)
     if(day === 'tomorrow') {

@@ -21,6 +21,6 @@
     ],
     "allowImportingTsExtensions": true,
   },
-  "include": ["src/**/*"],
+  "include": ["src/**/*", "migrations/**/*", "seeds/**/*"],
   "exclude": ["node_modules", "dist/", "scripts", "coverage"]
 }

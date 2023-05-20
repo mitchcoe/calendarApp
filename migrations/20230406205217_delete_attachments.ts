@@ -1,28 +1,22 @@
-/**
- * @param { import("knex").Knex } knex
- * @returns { Promise<void> }
- */
-export async function up(knex) {
+import type { Knex } from 'knex';
+
+export async function up(knex: Knex) {
   return knex.schema.alterTable('attachments', (table) => {
     table.dropForeign('event_id');
 
     table.foreign('event_id')
       .references('event_id')
       .inTable('events')
-      .onDelete('CASCADE')
+      .onDelete('CASCADE');
   })
 };
 
-/**
- * @param { import("knex").Knex } knex
- * @returns { Promise<void> }
- */
-export async function down(knex) {
+export async function down(knex: Knex) {
   return knex.schema.alterTable('attachments', (table) => {
     table.dropForeign('event_id');
 
     table.foreign('event_id')
       .references('event_id')
-      .inTable('events')
+      .inTable('events');
   })
 };
