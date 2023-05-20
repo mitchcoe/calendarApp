@@ -1,6 +1,6 @@
 # Simple Calendar App
 
-Very simple calendar app. This project was created with Create React App, Redux Toolkit, MUI, Express and Postgres. I tried to use as few libraries/frameworks as possible.
+Very simple (probably over-engineered) calendar app. This project was created mainly with Create React App, Typescript, Redux Toolkit, MUI, Express and Postgres. I tried to use as few libraries/frameworks as possible.
 
 # Getting Started
 There are a few things you will need to do outside this app to make it work
@@ -15,9 +15,9 @@ After that, run `\conninfo` to get the username and port you are connected to, w
 
 Lastly create a databse with this: `CREATE DATABASE database` where `database` is whatever you choose. If you need to manually connect to the database to look at things, run this: `\c database`. `\q` lets you quit back to the terminal.
 
-Now we need to update the `knexfile.js`. In the `development` object inside the `connection` key, update the `user`, `database`, `password`, and `port` if necessary to reflect the values you chose earlier.
+Now we need to update the `knexfile.ts`. In the `development` object inside the `connection` key, update the `user`, `database`, `password`, and `port` if necessary to reflect the values you chose earlier.
 
-The other thing you need to be aware of is if you delete the 2 default attachments for the events with `event_id` equal to `1` or `2`, this will remove them from the `uploads` folder. This is expected, but due to the way the uploads work via `multer`, you wont be able to recreate the exact filename even if you upload the same exact image or file. The default image I used for convenience was the React logo, specifically the `logo192.png` in the `public` directory. You can copy this image to your desktop, attach it via the attachments modal when editing the first or second event, and then find it in the uploads folder. Get the filename, and update the corresponding `file_path` in this file: `02_initialize_attachments_data.js`, which is in the `seeds` directory. This will ensure if you do any migrations or seed commands, or especially `yarn data_reset`, the attachments will show up in the app correctly. Adding or deleting attachments to other events will not cause any issues.
+The other thing you need to be aware of is if you delete the 2 default attachments for the events with `event_id` equal to `1` or `2`, this will remove them from the `uploads` folder. This is expected, but due to the way the uploads work via `multer`, you wont be able to recreate the exact filename even if you upload the same exact image or file. The default image I used for convenience was the React logo, specifically the `logo192.png` in the `public` directory. You can copy this image to your desktop, attach it via the attachments modal when editing the first or second event, and then find it in the uploads folder. Get the filename, and update the corresponding `file_path` in this file: `02_initialize_attachments_data.ts`, which is in the `seeds` directory. This will ensure if you do any migrations or seed commands, or especially `yarn data_reset`, the attachments will show up in the app correctly. Adding or deleting attachments to other events will not cause any issues.
 
 ## Available Scripts
 
