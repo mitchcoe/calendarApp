@@ -152,7 +152,7 @@ export default function CustomTimePicker(props: CustomTimePickerProps) {
     >
       <div css={{display: 'inline-flex', width: '100%'}}>
         <MobileTimePicker
-          data-testid={"error_message"}
+          data-testid={"timepicker"}
           // @ts-ignore
           controlled
           id={timeType}
