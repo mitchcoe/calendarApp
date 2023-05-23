@@ -70,6 +70,7 @@ export default function AttachmentsModal(props: AttachmentsModalProps) {
       onClose={handleAttachmentsModalClose}
       aria-labelledby="modal-modal-title"
       aria-describedby="modal-modal-description"
+      data-testid="attachments_modal"
     >
       <Box sx={[modalStyles, {width: 700, maxHeight: 700}]}>
         <form
