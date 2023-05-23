@@ -1,6 +1,5 @@
-import { screen, fireEvent, debug, render, waitForElementToBeRemoved, act } from '@testing-library/react';
+import { screen, fireEvent, render, waitForElementToBeRemoved, act, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event'
-import renderer from 'react-test-renderer';
 import renderWithProviders from '../../utils/test_utils'
 import EventForm from './EventForm';
 
@@ -11,13 +10,19 @@ const testProps = {
 };
 
 const defaultEvent = {
+  event_id: 1,
   title: 'event_form_test',
   description: 'testing event creation on the front end',
   location: 'Austin, TX',
+  phone: '12345',
   date: '2023-04-21',
   start_time: '2023-04-21 09:45:00',
   end_time: '2023-04-21 12:30:00',
   color: '#2196f3',
+  hasAttachments: false,
+  hasReminders: false,
+  attachmentsList: [],
+  attachmentPreviews: [],
 };
 
 const defaultFormState = {
@@ -28,7 +33,7 @@ const defaultFormState = {
   ...defaultEvent,
 };
 
-const editReduxState = (state) => {
+const editReduxState = (state: object) => {
   let newState = Object.assign(defaultFormState, {...state})
   return newState;
 }
@@ -97,7 +102,7 @@ xtest('deleteEvent function', () => {
 
 });
 
-xtest('handleCreateSubmit function', async () => { //works
+xtest('handleCreateSubmit function', async () => { // does not work
   createCustomComponent();
   let test = screen.getByTestId('submit_button')
   expect(test).toHaveTextContent('Create')
@@ -105,38 +110,38 @@ xtest('handleCreateSubmit function', async () => { //works
   expect(testProps.handleClose).toHaveBeenCalled()
 });
 
-xtest('handleUpdateSubmit function', () => { //works
+xtest('handleUpdateSubmit function', async () => { // does not work
   createCustomComponent(editReduxState({anchorType: 'Update'}));
   let test = screen.getByTestId('submit_button')
   expect(test).toHaveTextContent('Update')
-  userEvent.click(test)
+  // await waitFor(() => userEvent.click(test))
+  // userEvent.click(test)
   expect(testProps.handleClose).toHaveBeenCalled()
 });
 
-describe('Delete Modal functions', () => { //works
-  let modalArgs = ['presentation', {name: 'Are You Sure You Want To Delete This Event?'}];
-  let modal;
-  let deleteButton
-  let closeModalButton;
-  let deleteModalButton;
+describe('Delete Modal functions', () => {
+  // let modalArgs = ['presentation', {name: 'Are You Sure You Want To Delete This Event?'}];
+  let modal: HTMLElement;
+  let closeModalButton: HTMLElement;
+  let deleteModalButton: HTMLElement;
 
   const setupModal = () => {
     createCustomComponent(editReduxState({anchorType: 'Update'}));
-    deleteButton = screen.getByTestId('delete_button')
-    userEvent.click(deleteButton)
-    modal = screen.getByRole(...modalArgs)
-    closeModalButton = screen.getByTestId('modal_close_button')
-    deleteModalButton = screen.getByTestId('modal_delete_button')
-  }
+    const deleteButton = screen.getByTestId('delete_button');
+    userEvent.click(deleteButton);
+    modal = screen.getByTestId('delete_modal');
+    closeModalButton = screen.getByTestId('modal_close_button');
+    deleteModalButton = screen.getByTestId('modal_delete_button');
+  };
 
   const closeModal = () => {
     userEvent.click(closeModalButton)
     // expect(testProps.handleClose).toHaveBeenCalled()
   }
 
-  test('opening the modal', () => { //works
+  test('opening the modal', () => {
     setupModal()
-    expect(deleteButton).toBeInTheDocument()
+    expect(deleteModalButton).toBeInTheDocument()
     expect(closeModalButton).toBeInTheDocument()
     expect(deleteModalButton).toBeInTheDocument()
     expect(modal).toBeInTheDocument()
@@ -144,7 +149,7 @@ describe('Delete Modal functions', () => { //works
     closeModal()
   });
 
-  test('closing the modal', () => { //works
+  test('closing the modal', () => {
     setupModal();
     closeModal();
     // expect(testProps.handleClose).toHaveBeenCalled() //does not work
@@ -153,7 +158,7 @@ describe('Delete Modal functions', () => { //works
     expect(deleteModalButton).not.toBeInTheDocument();
   });
 
-  test('modal delete button', () => { //works
+  test('modal delete button', () => {
     setupModal()
     expect(deleteModalButton).toBeInTheDocument()
     userEvent.click(deleteModalButton)
@@ -167,7 +172,7 @@ xtest('handleModalCloseAndDelete function', () => {
 
 });
 
-xtest('handleClose function', () => {
+test('handleClose function', () => {
   createCustomComponent(editReduxState({anchorType: 'Update'}));
   let test = screen.getByTestId('close_button')
   expect(test).toBeInTheDocument()
@@ -198,6 +203,7 @@ xtest('handeDateFieldChange function', async () => { // lol, lmao even
   createCustomComponent(editReduxState({anchorType: 'Update'}));
   Object.defineProperty(window, "matchMedia", {
     writable: true,
+    // @ts-ignore
     value: (query) => ({
       media: query,
       // this is the media query that @material-ui/pickers uses to determine if a device is a desktop device
@@ -234,6 +240,7 @@ xtest('handeDateFieldChange function', async () => { // lol, lmao even
   // expect(textbox).toBeNull()
   const startDateInput  = screen.getByRole('textbox', { name: 'Choose date, selected date is Apr 15, 2023'})
   expect(startDateInput).toBeInTheDocument();
+  // @ts-ignore
   delete window.matchMedia;
 });
 
@@ -261,7 +268,7 @@ xtest('handleEndTimeFieldChange function', () => { // no idea
 });
 // "⁦⁨12⁩:⁨30⁩⁩ ⁦⁨PM⁩⁩"
 
-test('handleEditToggle function', () => { //works
+test('handleEditToggle function', () => {
   createCustomComponent(editReduxState({anchorType: 'Update', editing: false}));
   // console.log(screen.debug(null, Infinity));
 

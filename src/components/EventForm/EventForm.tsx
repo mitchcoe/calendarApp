@@ -280,6 +280,7 @@ export default function EventForm(props: EventFormProps) {
       onClose={handleModalClose}
       aria-labelledby="modal-modal-title"
       aria-describedby="modal-modal-description"
+      data-testid="delete_modal"
     >
       <Box sx={modalStyles}>
       <Typography id="modal-modal-title" variant="h6" component="h2">
