@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import Table from "@mui/material/Table";
@@ -16,7 +15,7 @@ import '../../App.css';
 import type { EventType, HandleClickType } from '../../globalTypes'
 import { useAppSelector, useAppDispatch } from '../../hooks'
 import { setSelectedDate } from '../../slices/eventSlice';
-import dayjs from 'dayjs';
+import dayjs, { Dayjs } from 'dayjs';
 // import { openReminderNotification } from '../../slices/reminderSlice'
 
 const datePickerSlotProps = {
@@ -69,11 +68,6 @@ const datePickerSlotProps = {
 const blockedTimeSplit = (blockedTime: number) => `${blockedTime}`.length === 3 ? // also not great readability
   [`${blockedTime}`.slice(0, 1),`${blockedTime}`.slice(1)] : [`${blockedTime}`.slice(0, 2),`${blockedTime}`.slice(2)];
 
-// type HandleClickObject = {
-//   date: string,
-//   start_time: string,
-//   end_time: string,
-// }
 type DayProps = {
   handleClick: HandleClickType,
   events: EventType[],
@@ -82,7 +76,6 @@ type DayProps = {
 export default function Day(props: DayProps) {
   const { handleClick, events } = props;
   const dispatch = useAppDispatch();
-  const [datePickerValue, setDatePickerValue] = useState<object | null>(null);
   let today = useAppSelector((state) => state.events.selectedDate);
   const times = ['8AM','9AM','10AM','11AM','12PM','1PM','2PM','3PM','4PM','5PM'];
 
@@ -137,13 +130,12 @@ export default function Day(props: DayProps) {
     }).format( new Date(day.slice(0, day.indexOf("Z"))))
   };
 
-  const monthDayYear = (val: {[key: string]: any}) => {
-    return val['$d'].toISOString()
+  const monthDayYear = (val: Dayjs | null) => {
+    return (val as Dayjs).toDate().toISOString()
   };
 
-  const handleDateChange = async (e: null | React.ChangeEvent<HTMLInputElement>, date: object) => {
+  const handleDateChange = async (date: Dayjs | null) => {
     await dispatch(setSelectedDate(monthDayYear(date)));
-    setDatePickerValue(date)
   };
 
   const handleChangeDayByOne = (date: string, direction: string ) => {
@@ -151,7 +143,7 @@ export default function Day(props: DayProps) {
     let day = newDay.getUTCDate()
     newDay.setUTCDate(direction === 'plus' ? day + 1 : day - 1 )
 
-    handleDateChange(null, dayjs(newDay))
+    handleDateChange(dayjs(newDay))
   };
 
   // const handleIncrement = () => { // helps test notifications queue
@@ -182,19 +174,18 @@ export default function Day(props: DayProps) {
                 {dateFormatter(today)}
               </Typography>
               <div style={{display: 'flex', justifyContent: 'center'}}>
-                <IconButton onClick={() => handleChangeDayByOne(today, 'minus')}>
+                <IconButton onClick={() => handleChangeDayByOne(today, 'minus')} data-testid="decrement_day">
                   <ChevronLeftIcon sx={{color: 'white'}}/>
                 </IconButton>
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                   <DatePicker
                     // @ts-ignore
                     slotProps={datePickerSlotProps}
-                    // @ts-ignore
-                    value={datePickerValue || dayjs(new Date(today))}
+                    value={dayjs(new Date(today))}
                     onChange={handleDateChange}
                   /> 
                 </LocalizationProvider>
-                <IconButton onClick={() => handleChangeDayByOne(today, 'plus')}>
+                <IconButton onClick={() => handleChangeDayByOne(today, 'plus')} data-testid="increment_day">
                   <ChevronRightIcon sx={{color: 'white'}}/>
                 </IconButton>
                 {/* <IconButton onClick={() => handleIncrement()}>
