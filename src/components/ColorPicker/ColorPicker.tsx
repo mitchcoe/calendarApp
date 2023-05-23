@@ -175,6 +175,7 @@ export default function ColorPicker(props: ColorPickerProps) {
         vertical: 'bottom',
         horizontal: 'left',
       }}
+      data-testid="colorpicker"
     >
       <Grid item xs={12} sm={6} md={4} p={4}>
         <Typography
