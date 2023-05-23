@@ -64,7 +64,7 @@ export default function AttachmentsPreview(props: AttachmentsPreviewProps) {
   }
 
   return (
-    <ImageList sx={imageListStyles}>
+    <ImageList sx={imageListStyles} data-testid="attachments_preview">
       {mode === 'preview' ? (
         <ImageListItem
           key="Subheader"

@@ -1,4 +1,4 @@
-import { screen, fireEvent, render, waitForElementToBeRemoved, act, waitFor } from '@testing-library/react';
+import { screen } from '@testing-library/react';
 import renderWithProviders from '../../utils/test_utils';
 import AttachmentsModal from './AttachmentsModal';
 
