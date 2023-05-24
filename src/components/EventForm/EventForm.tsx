@@ -356,6 +356,7 @@ export default function EventForm(props: EventFormProps) {
                     onClose={handleColorPickerClose}
                     id={colorPickerId}
                     dispatchFunction={handleColorChange}
+                    colorProp={color}
                   />
                 </React.Fragment>
               )}

@@ -10,10 +10,10 @@ import CheckIcon from '@mui/icons-material/Check';
 import Slider from '@mui/material/Slider';
 import Popover from '@mui/material/Popover';
 
-const defaults = {
-  primary: '#2196f3',
-  // secondary: '#f50057', //leaving this here in case secondary colors are ever needed
-};
+// const defaults = {
+//   primary: '#2196f3',
+//   // secondary: '#f50057', //leaving this here in case secondary colors are ever needed
+// };
 const hues = [
   'red',
   'pink',
@@ -58,7 +58,7 @@ type ColorPickerProps = {
   id: string | undefined,
   anchorEl: HTMLElement | null,
   dispatchFunction: (color: string) => void,
-  colorProp?: string,
+  colorProp: string,
 }
 
 type ChangeEvent = React.ChangeEvent<HTMLInputElement>
@@ -82,13 +82,13 @@ export default function ColorPicker(props: ColorPickerProps) {
   }
 
   const [colorState, setColorState] = useState({
-    primary: colorProp || defaults.primary,
+    primary: colorProp,
     // secondary: defaults.secondary,
-    primaryInput: colorProp || defaults.primary,
+    primaryInput: colorProp,
     // secondaryInput: defaults.secondary,
-    primaryHue: colorProp ? getColorPropHueAndShade(colorProp)![0] : 'blue',
+    primaryHue: getColorPropHueAndShade(colorProp)![0] ,
     // secondaryHue: 'pink',
-    primaryShade: colorProp ? shades.indexOf(getColorPropHueAndShade(colorProp)![1]) : 4,
+    primaryShade: shades.indexOf(getColorPropHueAndShade(colorProp)![1]),
     // secondaryShade: 11,
   });
 
@@ -106,40 +106,40 @@ export default function ColorPicker(props: ColorPickerProps) {
   //   },
   // });
 
-  const handleChangeColor = (event: ChangeEvent) => {
-    const isRgb = (string: string) =>
-      /rgb\([0-9]{1,3}\s*,\s*[0-9]{1,3}\s*,\s*[0-9]{1,3}\)/i.test(string);
+  // const handleChangeColor = (event: ChangeEvent) => {
+  //   const isRgb = (string: string) =>
+  //     /rgb\([0-9]{1,3}\s*,\s*[0-9]{1,3}\s*,\s*[0-9]{1,3}\)/i.test(string);
 
-    const isHex = (string: string) => /^#?([0-9a-f]{3})$|^#?([0-9a-f]){6}$/i.test(string);
+  //   const isHex = (string: string) => /^#?([0-9a-f]{3})$|^#?([0-9a-f]){6}$/i.test(string);
 
-    let {
-      target: { value: color },
-    } = event;
+  //   let {
+  //     target: { value: color },
+  //   } = event;
 
-    setColorState((prevState) => ({
-      ...prevState,
-      primaryInput: color,
-    }));
+  //   setColorState((prevState) => ({
+  //     ...prevState,
+  //     primaryInput: color,
+  //   }));
 
-    let isValidColor = false;
+  //   let isValidColor = false;
 
-    if (isRgb(color)) {
-      isValidColor = true;
-    } else if (isHex(color)) {
-      isValidColor = true;
-      if (color.indexOf('#') === -1) {
-        color = `#${color}`;
-      }
-    }
+  //   if (isRgb(color)) {
+  //     isValidColor = true;
+  //   } else if (isHex(color)) {
+  //     isValidColor = true;
+  //     if (color.indexOf('#') === -1) {
+  //       color = `#${color}`;
+  //     }
+  //   }
 
-    if (isValidColor) {
-      setColorState((prevState) => ({
-        ...prevState,
-        primary: color,
-      }));
-      dispatchFunction(color);
-    }
-  };
+  //   if (isValidColor) {
+  //     setColorState((prevState) => ({
+  //       ...prevState,
+  //       primary: color,
+  //     }));
+  //     dispatchFunction(color);
+  //   }
+  // };
 
   const handleChangeHue = (event: ChangeEvent) => {
     const hue = event.target.value;
@@ -187,8 +187,10 @@ export default function ColorPicker(props: ColorPickerProps) {
         <Input
           id={'primary'}
           value={primaryInput}
-          onChange={handleChangeColor}
+          // onChange={handleChangeColor}
           fullWidth
+          disabled
+          data-testid="colorInput"
         />
         <Box sx={{ display: 'flex', alignItems: 'center', mt: 2, mb: 2 }}>
           <Typography
@@ -207,8 +209,9 @@ export default function ColorPicker(props: ColorPickerProps) {
             step={1}
             onChange={handleChangeShade}
             aria-labelledby={'primaryShadeSliderLabel'}
+            data-testid="shadeSlider"
           />
-          <Typography>{shades[primaryShade]}</Typography>
+          <Typography data-testid="shadeSliderText">{shades[primaryShade]}</Typography>
         </Box>
         <Box sx={{ width: 192 }}>
         {hues.map((hue) => {
