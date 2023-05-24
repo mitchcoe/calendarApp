@@ -94,6 +94,7 @@ export default function RemindersMenu(props: RemindersMenuProps) {
       open={open}
       anchorEl={anchorEl}
       onClose={handleClose}
+      data-testid="reminders_menu"
     >
       <FormControl>
         <MenuItem>
