@@ -57,6 +57,7 @@ const ReminderNotification = forwardRef((props: ReminderNotificationProps, ref: 
               // @ts-ignore
               style={expanded ? { transform: "rotate(180deg)" } : null}
               onClick={handleExpandClick}
+              data-testid="expandIcon"
             >
               <ExpandMoreIcon />
             </IconButton>
