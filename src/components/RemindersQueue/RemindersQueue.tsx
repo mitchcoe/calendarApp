@@ -140,7 +140,7 @@ export default function RemindersQueue(props: ReminderQueueProps) {
   },[checkTime, events, todays_reminders, closeSnackbar, enqueueSnackbar, dispatch, handleClose])
 
   return (
-    <Stack>
+    <Stack data-testid="reminders_queue">
       {/* need to figure this out */}
     </Stack>
   )

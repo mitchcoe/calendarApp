@@ -155,14 +155,14 @@ test('should block times correctly', () => {
       }
     }
   });
-
+  
   const tableElements = screen.getAllByTestId('empty_cell');
   fireEvent.click(tableElements[1]);
   expect(handleClick).toHaveBeenCalledTimes(1);
   expect(handleClick.mock.calls[0][1]).toEqual({
     date: formattedDate,
-    start_time: '2023-05-23T14:00:00.000Z',
-    end_time: '2023-05-23T14:30:00.000Z',
+    start_time: `${YYYYMMDD}T14:00:00.000Z`,
+    end_time: `${YYYYMMDD}T14:30:00.000Z`,
   });
 });
 
