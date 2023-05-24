@@ -12,6 +12,6 @@ const testProps = {
 
 xtest('renders the component', () => { // needs localization provider
   renderWithProviders(<CustomTimePicker {...testProps}/>);
-  const dayElement = screen.getByTestId('timepicker');
-  expect(dayElement).toBeInTheDocument();
+  const element = screen.getByTestId('timepicker');
+  expect(element).toBeInTheDocument();
 });

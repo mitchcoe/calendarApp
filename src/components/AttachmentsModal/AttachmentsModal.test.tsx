@@ -25,6 +25,6 @@ const testProps = {
 
 test('renders the component', () => {
   renderWithProviders(<AttachmentsModal {...testProps}/>);
-  const dayElement = screen.getByTestId('attachments_modal');
-  expect(dayElement).toBeInTheDocument();
+  const element = screen.getByTestId('attachments_modal');
+  expect(element).toBeInTheDocument();
 });

@@ -15,6 +15,6 @@ const testProps = {
 
 test('renders the component', () => {
   renderWithProviders(<ColorPicker {...testProps}/>);
-  const dayElement = screen.getByTestId('colorpicker');
-  expect(dayElement).toBeInTheDocument();
+  const element = screen.getByTestId('colorpicker');
+  expect(element).toBeInTheDocument();
 });

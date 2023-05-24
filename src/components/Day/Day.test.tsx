@@ -52,8 +52,8 @@ const testProps = {
 
 test('renders the component', () => {
   renderWithProviders(<Day {...testProps}/>);
-  const dayElement = screen.getByText(/8AM/i);
-  expect(dayElement).toBeInTheDocument();
+  const element = screen.getByText(/8AM/i);
+  expect(element).toBeInTheDocument();
 });
 
 test('should render 10 table rows', () => {

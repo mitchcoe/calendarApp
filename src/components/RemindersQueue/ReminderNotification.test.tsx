@@ -12,6 +12,6 @@ const testProps = {
 
 test('renders the component', () => {
   renderWithProviders(<ReminderNotification {...testProps}/>);
-  const dayElement = screen.getByTestId('reminder_notification');
-  expect(dayElement).toBeInTheDocument();
+  const element = screen.getByTestId('reminder_notification');
+  expect(element).toBeInTheDocument();
 });

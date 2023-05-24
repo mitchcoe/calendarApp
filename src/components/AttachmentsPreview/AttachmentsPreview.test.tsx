@@ -11,6 +11,6 @@ const testProps = {
 
 test('renders the component', () => {
   renderWithProviders(<AttachmentsPreview {...testProps}/>);
-  const dayElement = screen.getByTestId('attachments_preview');
-  expect(dayElement).toBeInTheDocument();
+  const element = screen.getByTestId('attachments_preview');
+  expect(element).toBeInTheDocument();
 });

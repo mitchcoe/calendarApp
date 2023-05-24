@@ -47,8 +47,8 @@ afterAll(() => server.close());
 
 test('renders the component', () => {
   renderWithProviders(<RemindersMenu {...testProps}/>);
-  const dayElement = screen.getByTestId('reminders_menu');
-  expect(dayElement).toBeInTheDocument();
+  const element = screen.getByTestId('reminders_menu');
+  expect(element).toBeInTheDocument();
 });
 
 test('fetches reminder and recieves reminder data when updating an event', async () => {
