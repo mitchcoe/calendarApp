@@ -32,7 +32,7 @@ const ReminderNotification = forwardRef((props: ReminderNotificationProps, ref: 
       // @ts-ignore
       sx={{"@media (min-width:600px)": {minWidth: "344px !important"}}}
     >
-      <Card sx={{backgroundColor: "#ff9800", width: "100%"}}>
+      <Card sx={{backgroundColor: "#ff9800", width: "100%"}} data-testid="reminder_notification">
         <CardActions
           classes={{
             // @ts-ignore
