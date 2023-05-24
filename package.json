@@ -40,6 +40,7 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
+    "testcov": "yarn test --coverage --watchAll",
     "eject": "react-scripts eject",
     "server": "ts-node --esm src/server.ts",
     "dev": "yarn server & yarn start",

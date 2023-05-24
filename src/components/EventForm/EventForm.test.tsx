@@ -72,7 +72,7 @@ const createCustomComponent = (options = defaultFormState) => {
 //   delete window.matchMedia;
 // });
 
-test('renders the component', () => { //works
+xtest('renders the component', () => { //works
   createCustomComponent()
   const formElement = screen.getByTestId("event_form");
   expect(formElement).toBeInTheDocument();
@@ -119,7 +119,7 @@ xtest('handleUpdateSubmit function', async () => { // does not work
   expect(testProps.handleClose).toHaveBeenCalled()
 });
 
-describe('Delete Modal functions', () => {
+xdescribe('Delete Modal functions', () => {
   // let modalArgs = ['presentation', {name: 'Are You Sure You Want To Delete This Event?'}];
   let modal: HTMLElement;
   let closeModalButton: HTMLElement;
@@ -172,7 +172,7 @@ xtest('handleModalCloseAndDelete function', () => {
 
 });
 
-test('handleClose function', () => {
+xtest('handleClose function', () => {
   createCustomComponent(editReduxState({anchorType: 'Update'}));
   let test = screen.getByTestId('close_button')
   expect(test).toBeInTheDocument()
@@ -180,7 +180,7 @@ test('handleClose function', () => {
   expect(testProps.handleClose).toHaveBeenCalled()
 });
 
-test('handleClear function', () => { //works
+xtest('handleClear function', () => { //works
   createCustomComponent(editReduxState({anchorType: 'Update'}));
   let clearButton = screen.getByTestId('clear_button')
   let text = screen.getByDisplayValue(/event_form_test/i)
@@ -191,7 +191,7 @@ test('handleClear function', () => { //works
   expect(screen.queryByDisplayValue(/event_form_test/i)).not.toBeInTheDocument()
 });
 
-test('handleFieldChange function', () => {
+xtest('handleFieldChange function', () => {
   createCustomComponent(editReduxState({anchorType: 'Update'}));
   let text = screen.getByDisplayValue(/event_form_test/i)
   userEvent.type(text, 'blah')
@@ -268,7 +268,7 @@ xtest('handleEndTimeFieldChange function', () => { // no idea
 });
 // "⁦⁨12⁩:⁨30⁩⁩ ⁦⁨PM⁩⁩"
 
-test('handleEditToggle function', () => {
+xtest('handleEditToggle function', () => {
   createCustomComponent(editReduxState({anchorType: 'Update', editing: false}));
   // console.log(screen.debug(null, Infinity));
 

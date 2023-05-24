@@ -44,7 +44,7 @@ export default function RemindersMenu(props: RemindersMenuProps) {
     if(open && anchorType === 'Update') getReminderData()
   }, [getReminderData, open, anchorType]);
 
-  const updateReminderData = async () => {
+  const updateReminderData = async () => { // this is hard to test because it fires when the component unrenders
     let updatedObject = {
       type,
       reminders_on,
@@ -102,6 +102,7 @@ export default function RemindersMenu(props: RemindersMenuProps) {
             <FormControlLabel
               control={
                 <Switch
+                  data-testid="reminders_on_toggle"
                   checked={reminders_on}
                   onChange={handleRemindersStatusChange}
                   inputProps={{ 'aria-label': 'controlled' }}
@@ -117,11 +118,11 @@ export default function RemindersMenu(props: RemindersMenuProps) {
             aria-labelledby="radio-buttons-group-label"
             defaultValue="email"
             name="radio-buttons-group"
-            value={type || null}
+            value={type}
             onChange={handleTypeChange}
           >
             <FormControlLabel disabled={!reminders_on} value="email" control={<Radio />} label="Email" />
-            <FormControlLabel disabled={!reminders_on} value="text" control={<Radio />} label="Text" />
+            <FormControlLabel disabled={!reminders_on} value="text" control={<Radio />} label="Text" data-testid="reminder_type_text"/>
             <FormControlLabel disabled={!reminders_on} value="notification" control={<Radio />} label="Notification" />
           </RadioGroup>
         </MenuItem>
@@ -130,28 +131,28 @@ export default function RemindersMenu(props: RemindersMenuProps) {
             <FormLabel id="checkbox-buttons-group-label" sx={{pr: 2}}>Time before event:</FormLabel>
             <FormControlLabel
               control={
-                <Checkbox checked={_15 || false} onChange={handleTimeChange} name="_15" />
+                <Checkbox checked={_15 || false} onChange={handleTimeChange} name="_15" data-testid="reminder_checkbox_15"/>
               }
               label="15 Minutes"
               disabled={!reminders_on}
             />
             <FormControlLabel
               control={
-                <Checkbox checked={_30 || false} onChange={handleTimeChange} name="_30" />
+                <Checkbox checked={_30 || false} onChange={handleTimeChange} name="_30" data-testid="reminder_checkbox_30"/>
               }
               label="30 Minutes"
               disabled={!reminders_on}
             />
             <FormControlLabel
               control={
-                <Checkbox checked={_45 || false} onChange={handleTimeChange} name="_45" />
+                <Checkbox checked={_45 || false} onChange={handleTimeChange} name="_45" data-testid="reminder_checkbox_45"/>
               }
               label="45 Minutes"
               disabled={!reminders_on}
             />
             <FormControlLabel
               control={
-                <Checkbox checked={_60 || false} onChange={handleTimeChange} name="_60" />
+                <Checkbox checked={_60 || false} onChange={handleTimeChange} name="_60" data-testid="reminder_checkbox_60"/>
               }
               label="1 Hour"
               disabled={!reminders_on}
